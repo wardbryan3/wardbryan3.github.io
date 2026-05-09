@@ -1,0 +1,148 @@
+<section class="terminal-hero">
+  <div class="terminal-header">
+    <span class="dot dot-red"></span>
+    <span class="dot dot-yellow"></span>
+    <span class="dot dot-green"></span>
+    <span class="terminal-title">bryan@ward ~ fastfetch</span>
+  </div>
+
+  <pre class="ascii">
+  ___                   ___                __
+ | _ )_  _ _ _  __ _   / /_ ___ _  _ ___ / /
+ | _ \ || | ' \/ _` | / / / // _ `/ // / -_)_/
+ |___/\_, |_||_\__,_|/_/ /_/ \_,_/\_, /\__(_)
+      |__/                         /___/
+  </pre>
+
+  <table class="info-table">
+    <tbody>
+      <tr> <td class="label">name</td>   <td>Bryan Ward</td> </tr>
+      <tr> <td class="label">status</td> <td><span class="status-active">CS Student</span></td> </tr>
+      <tr> <td class="label">level</td>  <td>2nd Year (200-level)</td> </tr>
+      <tr> <td class="label">focus</td>  <td>Full-stack development</td> </tr>
+      <tr> <td class="label">tools</td>  <td><span class="tools">TypeScript, Python, Java, C++</span></td> </tr>
+      <tr> <td class="label">shell</td>  <td>bash</td> </tr>
+    </tbody>
+  </table>
+
+  <div class="prompt-line">
+    <span class="prompt-symbol">$</span>
+    <span class="typed-text" id="typed-text">building the web, one commit at a time</span>
+    <span class="cursor blink"></span>
+  </div>
+</section>
+
+<style>
+  .terminal-hero {
+    max-width: 720px;
+    margin: 3rem auto;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27c93f; }
+
+  .terminal-title {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-left: 0.5rem;
+  }
+
+  .ascii {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    white-space: pre;
+    text-shadow: 0 0 4px var(--accent-glow);
+  }
+
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+
+  .info-table td {
+    padding: 0.375rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    vertical-align: top;
+  }
+
+  .info-table .label {
+    color: var(--accent);
+    padding-right: 1.5rem;
+    white-space: nowrap;
+  }
+
+  .status-active {
+    color: var(--accent);
+    text-shadow: 0 0 4px var(--accent-glow);
+  }
+
+  .prompt-line {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent);
+  }
+
+  .prompt-symbol {
+    color: var(--accent);
+    margin-right: 0.5rem;
+  }
+
+  .typed-text {
+    color: var(--text);
+  }
+
+  .cursor.blink {
+    display: inline-block;
+    width: 0.5em;
+    height: 1em;
+    background: var(--accent);
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  @media (max-width: 600px) {
+    .terminal-hero {
+      margin: 1.5rem 1rem;
+      padding: 1rem;
+    }
+
+    .ascii {
+      font-size: 0.55rem;
+    }
+
+    .info-table td {
+      font-size: 0.7rem;
+    }
+  }
+</style>
