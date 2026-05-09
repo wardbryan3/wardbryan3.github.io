@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "description": "Personal website for Bryan Ward — CS student and developer",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --host",
     "dev:host": "astro dev --host",
     "build": "astro check && astro build",
     "preview": "astro preview",
@@ -12,9 +12,15 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.5",
+    "@astrojs/react": "^5.0.4",
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.3.0",
-    "astro": "^5.15.0"
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "astro": "^5.15.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
