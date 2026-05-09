@@ -71,7 +71,7 @@ export default function FastfetchWindow({ projectCount = 0, postCount = 0 }) {
   const fieldSegmentsRef = useRef(buildFieldSegments(fieldsRef.current));
   const maxOutputRef = useRef(Math.max(
     tuxCharsRef.current.length,
-    fieldSegmentsRef.current.filter(s => s.part !== 'newline').length
+    fieldSegmentsRef.current.length
   ));
 
   // Phase: growing → prompt (after CSS animation completes)
@@ -153,13 +153,13 @@ export default function FastfetchWindow({ projectCount = 0, postCount = 0 }) {
   const showCursor = phase === 'prompt' || phase === 'command';
 
   return (
-    <div className={`terminal-window ${phase === 'growing' ? 'growing' : ''}`}>
+    <div className={`terminal-window${phase === 'growing' ? ' growing' : ''}`}>
       <div className="terminal-window-body">
         {/* Prompt + command line */}
         <div className="ff-line">
           <span className="ff-prompt">bryan@ward:~$ </span>
-          {(phase === 'command' || phase === 'output' || phase === 'done') && (
-            <span className="ff-command">{commandText || 'fastfetch'}</span>
+          {(phase === 'command' || phase === 'output' || phase === 'done') && commandText && (
+            <span className="ff-command">{commandText}</span>
           )}
           {showCursor && <span className="ff-cursor">&nbsp;</span>}
         </div>
