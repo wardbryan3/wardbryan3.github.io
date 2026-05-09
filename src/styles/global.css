@@ -244,11 +244,7 @@ pre code {
   line-height: 1.6;
 }
 
-.tux-panel-body {
-  padding: 0;
-  height: 200px;
-  overflow: hidden;
-}
+
 
 .info-table {
   width: 100%;
@@ -388,9 +384,6 @@ pre code {
       "links links";
   }
 
-  .tux-panel-body {
-    height: 220px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -403,4 +396,32 @@ pre code {
       "skills"
       "links";
   }
+}
+
+.tux-terminal {
+  font-family: var(--font-mono);
+  font-size: inherit;
+  line-height: 1.6;
+}
+
+.tux-line {
+  min-height: 1.2em;
+}
+
+.tux-art {
+  font-family: var(--font-mono);
+  font-size: inherit;
+  line-height: 1.0;
+  color: var(--accent);
+  white-space: pre;
+  margin: 0;
+}
+
+.tux-cursor {
+  color: var(--accent);
+  animation: blink 0.8s step-end infinite;
+}
+
+.tux-prompt-line {
+  color: var(--text-muted);
 }

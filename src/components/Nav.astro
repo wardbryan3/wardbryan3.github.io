@@ -11,7 +11,6 @@ const links = [
   <div class="nav-inner">
     <a href="/" class="logo">
       <span class="prompt">bryan@ward</span>
-      <span class="cursor" aria-hidden="true">_</span>
     </a>
     <ul class="nav-links">
       {links.map(({ href, label }) => (
@@ -55,23 +54,11 @@ const links = [
     font-size: 1rem;
     color: var(--accent);
     text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
     cursor: pointer;
   }
 
   .logo:hover {
     text-shadow: 0 0 8px var(--accent-glow);
-  }
-
-  .logo .cursor {
-    display: inline-block;
-    width: 0.5em;
-    height: 1em;
-    background: var(--accent);
-    animation: blink 1s step-end infinite;
-    vertical-align: text-bottom;
   }
 
   .nav-links {
