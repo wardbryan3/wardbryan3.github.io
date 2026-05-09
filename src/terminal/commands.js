@@ -1,3 +1,19 @@
+function renderSearchResults(results, keyword) {
+  if (results.length === 0) return { output: <div className="term-text term-muted">no matches for: {keyword}</div> };
+  return {
+    output: (
+      <div className="term-output">
+        {results.map((item, i) => (
+          <div key={i} className="term-text">
+            <a href={item.path} className="ff-value-link">{item.type}/{item.slug}</a>
+            <span className="term-muted">  {item.title}</span>
+          </div>
+        ))}
+      </div>
+    ),
+  };
+}
+
 export function createCommands({ page, projectCount, postCount, searchData }) {
   const commands = {};
 
@@ -158,19 +174,7 @@ export function createCommands({ page, projectCount, postCount, searchData }) {
       if (!keyword) return { output: <div className="term-text term-muted">find: missing search term</div> };
       if (!searchData || searchData.length === 0) return { output: <div className="term-text term-muted">no search data</div> };
       const results = searchData.filter(item => item.title.toLowerCase().includes(keyword));
-      if (results.length === 0) return { output: <div className="term-text term-muted">no matches for: {keyword}</div> };
-      return {
-        output: (
-          <div className="term-output">
-            {results.map((item, i) => (
-              <div key={i} className="term-text">
-                <a href={item.path} className="ff-value-link">{item.type}/{item.slug}</a>
-                <span className="term-muted">  {item.title}</span>
-              </div>
-            ))}
-          </div>
-        ),
-      };
+      return renderSearchResults(results, keyword);
     },
   };
 
@@ -180,20 +184,12 @@ export function createCommands({ page, projectCount, postCount, searchData }) {
       const keyword = args.join(' ').toLowerCase();
       if (!keyword) return { output: <div className="term-text term-muted">grep: missing search term</div> };
       if (!searchData || searchData.length === 0) return { output: <div className="term-text term-muted">no search data</div> };
-      const results = searchData.filter(item => item.title.toLowerCase().includes(keyword));
-      if (results.length === 0) return { output: <div className="term-text term-muted">no matches for: {keyword}</div> };
-      return {
-        output: (
-          <div className="term-output">
-            {results.map((item, i) => (
-              <div key={i} className="term-text">
-                <a href={item.path} className="ff-value-link">{item.type}/{item.slug}</a>
-                <span className="term-muted">  {item.title}</span>
-              </div>
-            ))}
-          </div>
-        ),
-      };
+      const results = searchData.filter(item => {
+        const inTitle = item.title.toLowerCase().includes(keyword);
+        const inTags = item.tags && item.tags.some(tag => tag.toLowerCase().includes(keyword));
+        return inTitle || inTags;
+      });
+      return renderSearchResults(results, keyword);
     },
   };
 
