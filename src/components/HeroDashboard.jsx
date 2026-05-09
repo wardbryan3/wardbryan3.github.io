@@ -1,12 +1,18 @@
 import ParticleField from './ParticleField';
-import FastfetchWindow from './FastfetchWindow';
+import Terminal from '../terminal/Terminal';
 
-export default function HeroDashboard({ projectCount = 0, postCount = 0 }) {
+export default function HeroDashboard({ projectCount = 0, postCount = 0, searchData = [] }) {
   return (
     <section className="hero-dashboard">
       <ParticleField />
       <div className="hero-content">
-        <FastfetchWindow projectCount={projectCount} postCount={postCount} />
+        <Terminal
+          page="/home"
+          projectCount={projectCount}
+          postCount={postCount}
+          searchData={searchData}
+          side={false}
+        />
       </div>
     </section>
   );
