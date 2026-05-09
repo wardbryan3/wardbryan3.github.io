@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectList from '../../components/ProjectList.astro';
+
+const allProjects = await getCollection('projects');
+const projects = allProjects.sort((a, b) => {
+  if (a.data.featured && !b.data.featured) return -1;
+  if (!a.data.featured && b.data.featured) return 1;
+  return b.data.date.getTime() - a.data.date.getTime();
+});
+---
+
+<BaseLayout title="Projects" description="Projects I've built">
+  <div class="projects-page">
+    <h1>Projects</h1>
+    <p class="subtitle">Things I've built.</p>
+    <ProjectList projects={projects} />
+  </div>
+</BaseLayout>
+
+<style>
+  .projects-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  .projects-page h1 {
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+</style>
