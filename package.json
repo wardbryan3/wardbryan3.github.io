@@ -2,6 +2,7 @@
   "name": "bryanward.dev",
   "type": "module",
   "version": "0.0.1",
+  "description": "Personal website for Bryan Ward — CS student and developer",
   "scripts": {
     "dev": "astro dev",
     "dev:host": "astro dev --host",
