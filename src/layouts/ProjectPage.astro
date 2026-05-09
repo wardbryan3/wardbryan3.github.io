@@ -1,0 +1,101 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Tag from '../components/Tag.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  tags: string[];
+  url?: string;
+  repo?: string;
+}
+
+const { title, description, date, tags, url, repo } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="project-page">
+    <header class="project-header">
+      <h1>{title}</h1>
+      <time class="project-date" datetime={date.toISOString()}>
+        {date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}
+      </time>
+      <div class="tags">
+        {tags.map((tag) => <Tag label={tag} />)}
+      </div>
+      {(url || repo) && (
+        <div class="project-links">
+          {url && <a href={url} class="project-link" target="_blank" rel="noopener noreferrer">Live Demo</a>}
+          {repo && <a href={repo} class="project-link" target="_blank" rel="noopener noreferrer">Source Code</a>}
+        </div>
+      )}
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .project-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  .project-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-date {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .project-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .project-link {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--accent);
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .project-link:hover {
+    background: rgba(0, 255, 102, 0.1);
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .prose {
+    line-height: 1.8;
+  }
+</style>
