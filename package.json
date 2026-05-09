@@ -1,0 +1,22 @@
+{
+  "name": "bryanward.dev",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "dev:host": "astro dev --host",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.2.5",
+    "@astrojs/rss": "^4.0.12",
+    "@astrojs/sitemap": "^3.3.0",
+    "astro": "^5.15.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "typescript": "^5.9.3"
+  }
+}
