@@ -11,6 +11,7 @@ interface Props {
   terminalPage?: string;
   projectCount?: number;
   postCount?: number;
+  searchData?: any[];
 }
 
 const {
@@ -20,6 +21,7 @@ const {
   terminalPage = '/home',
   projectCount = 0,
   postCount = 0,
+  searchData = [],
 } = Astro.props;
 const fullTitle = `${title} | Bryan Ward`;
 ---
@@ -44,6 +46,7 @@ const fullTitle = `${title} | Bryan Ward`;
         page={terminalPage}
         projectCount={projectCount}
         postCount={postCount}
+        searchData={searchData}
         side={true}
         defaultOpen={true}
         client:load

@@ -58,7 +58,7 @@ export default function Terminal({
   page = '/home',
   projectCount = 0,
   postCount = 0,
-  searchData = [],
+  searchData = /** @type {any[]} */ ([]),
   side = false,
   defaultOpen = true,
 }) {

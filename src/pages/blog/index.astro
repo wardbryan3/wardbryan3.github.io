@@ -9,6 +9,12 @@ const sortedPosts = posts.sort(
 
 const latestPost = sortedPosts[0];
 const { Content } = await latestPost.render();
+
+const allProjects = await getCollection('projects');
+const searchData = [
+  ...sortedPosts.map(p => ({ title: p.data.title, slug: p.slug, path: `/blog/${p.slug}`, type: 'blog' })),
+  ...allProjects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects' })),
+];
 ---
 
 <BlogPost
@@ -19,6 +25,7 @@ const { Content } = await latestPost.render();
   showTerminal={true}
   terminalPage="/blog"
   postCount={sortedPosts.length}
+  searchData={searchData}
 >
   <Content />
 </BlogPost>

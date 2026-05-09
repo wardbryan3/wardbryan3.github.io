@@ -12,6 +12,13 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await project.render();
+
+const allPosts = await getCollection('blog');
+const allProjects = await getCollection('projects');
+const searchData = [
+  ...allPosts.map(p => ({ title: p.data.title, slug: p.slug, path: `/blog/${p.slug}`, type: 'blog' })),
+  ...allProjects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects' })),
+];
 ---
 
 <ProjectPage
@@ -23,6 +30,8 @@ const { Content } = await project.render();
   repo={project.data.repo}
   showTerminal={true}
   terminalPage={`/projects/${project.slug}`}
+  projectCount={allProjects.length}
+  searchData={searchData}
 >
   <Content />
 </ProjectPage>

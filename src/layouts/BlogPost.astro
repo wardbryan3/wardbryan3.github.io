@@ -11,9 +11,10 @@ interface Props {
   showTerminal?: boolean;
   terminalPage?: string;
   postCount?: number;
+  searchData?: any[];
 }
 
-const { title, description, date, tags, showTerminal = false, terminalPage = '', postCount = 0 } = Astro.props;
+const { title, description, date, tags, showTerminal = false, terminalPage = '', postCount = 0, searchData = [] } = Astro.props;
 ---
 
 <BaseLayout
@@ -22,6 +23,7 @@ const { title, description, date, tags, showTerminal = false, terminalPage = '',
   showTerminal={showTerminal}
   terminalPage={terminalPage}
   postCount={postCount}
+  searchData={searchData}
 >
   <div class="blog-layout">
     <BlogSidebar />
