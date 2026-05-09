@@ -21,7 +21,7 @@ const links = [
             class:list={[
               'nav-link',
               {
-                active: currentPath === href || (href !== '/' && currentPath.startsWith(href)),
+                active: currentPath === href || (href !== '/' && currentPath.startsWith(href + '/')),
               },
             ]}
           >
@@ -74,11 +74,6 @@ const links = [
     background: var(--accent);
     animation: blink 1s step-end infinite;
     vertical-align: text-bottom;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
   }
 
   .nav-links {
