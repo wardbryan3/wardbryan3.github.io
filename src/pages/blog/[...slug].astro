@@ -19,6 +19,8 @@ const { Content } = await post.render();
   description={post.data.description}
   date={post.data.date}
   tags={post.data.tags}
+  showTerminal={true}
+  terminalPage={`/blog/${post.slug}`}
 >
   <Content />
 </BlogPost>

@@ -21,6 +21,8 @@ const { Content } = await project.render();
   tags={project.data.tags}
   url={project.data.url}
   repo={project.data.repo}
+  showTerminal={true}
+  terminalPage={`/projects/${project.slug}`}
 >
   <Content />
 </ProjectPage>

@@ -11,7 +11,13 @@ const projects = allProjects.sort((a, b) => {
 });
 ---
 
-<BaseLayout title="Projects" description="Projects I've built">
+<BaseLayout
+  title="Projects"
+  description="Projects I've built"
+  showTerminal={true}
+  terminalPage="/projects"
+  projectCount={projects.length}
+>
   <div class="projects-page">
     <h1>Projects</h1>
     <p class="subtitle">Things I've built.</p>

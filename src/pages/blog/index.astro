@@ -16,6 +16,9 @@ const { Content } = await latestPost.render();
   description={latestPost.data.description}
   date={latestPost.data.date}
   tags={latestPost.data.tags}
+  showTerminal={true}
+  terminalPage="/blog"
+  postCount={sortedPosts.length}
 >
   <Content />
 </BlogPost>
