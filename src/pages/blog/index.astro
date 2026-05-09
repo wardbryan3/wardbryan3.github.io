@@ -1,0 +1,21 @@
+---
+import { getCollection } from 'astro:content';
+import BlogPost from '../../layouts/BlogPost.astro';
+
+const posts = await getCollection('blog');
+const sortedPosts = posts.sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+
+const latestPost = sortedPosts[0];
+const { Content } = await latestPost.render();
+---
+
+<BlogPost
+  title={latestPost.data.title}
+  description={latestPost.data.description}
+  date={latestPost.data.date}
+  tags={latestPost.data.tags}
+>
+  <Content />
+</BlogPost>
