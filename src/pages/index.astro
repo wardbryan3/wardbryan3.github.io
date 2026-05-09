@@ -1,8 +1,14 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import TerminalHero from '../components/TerminalHero.astro';
+import HeroDashboard from '../components/HeroDashboard';
+
+const projects = await getCollection('projects');
+const posts = await getCollection('blog');
+const projectCount = projects.length;
+const postCount = posts.length;
 ---
 
 <BaseLayout title="Home" description="Bryan Ward - CS student and developer">
-  <TerminalHero />
+  <HeroDashboard projectCount={projectCount} postCount={postCount} client:load />
 </BaseLayout>
