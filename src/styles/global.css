@@ -214,6 +214,16 @@ pre code {
   color: var(--text);
 }
 
+@media (max-width: 768px) {
+  .ff-tux {
+    font-size: 0.55rem;
+  }
+
+  .ff-output {
+    gap: 1rem;
+  }
+}
+
 @media (max-width: 480px) {
   .ff-tux {
     display: none;
