@@ -1,0 +1,100 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import BlogSidebar from '../components/BlogSidebar.astro';
+import Tag from '../components/Tag.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  tags?: string[];
+}
+
+const { title, description, date, tags } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="blog-layout">
+    <BlogSidebar />
+    <article class="blog-content">
+      <header class="post-header">
+        <h1>{title}</h1>
+        <time class="post-date" datetime={date.toISOString()}>
+          {date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </time>
+        {tags && tags.length > 0 && (
+          <div class="tags">
+            {tags.map((tag) => <Tag label={tag} />)}
+          </div>
+        )}
+      </header>
+      <div class="prose">
+        <slot />
+      </div>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .blog-layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    min-height: calc(100vh - 100px);
+  }
+
+  .blog-content {
+    flex: 1;
+    padding: 2rem 2rem;
+    max-width: 800px;
+  }
+
+  .post-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .post-date {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .prose {
+    line-height: 1.8;
+  }
+
+  @media (max-width: 768px) {
+    .blog-layout {
+      flex-direction: column;
+    }
+
+    .blog-sidebar {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      max-width: 100%;
+    }
+
+    .blog-content {
+      padding: 1.5rem 1rem;
+    }
+  }
+</style>
