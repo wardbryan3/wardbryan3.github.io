@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { CommandRegistry } from './CommandRegistry';
 import { createCommands } from './commands';
 
@@ -63,13 +63,13 @@ export default function Terminal({
   defaultOpen = true,
 }) {
   const [phase, setPhase] = useState(side ? 'interactive' : 'growing');
-  const [commandText, setCommandText] = useState(side ? 'fastfetch' : '');
+  const [commandText, setCommandText] = useState('');
   const [input, setInput] = useState('');
   const [outputLines, setOutputLines] = useState([]);
   const [collapsed, setCollapsed] = useState(!defaultOpen);
 
-  const fieldsRef = useRef(buildFields(projectCount, postCount));
-  const fieldLinesRef = useRef(buildFieldLines(fieldsRef.current));
+  const fields = useMemo(() => buildFields(projectCount, postCount), [projectCount, postCount]);
+  const fieldLines = useMemo(() => buildFieldLines(fields), [fields]);
   const registryRef = useRef(new CommandRegistry());
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
@@ -189,7 +189,6 @@ export default function Terminal({
 
   const showCursor = phase === 'prompt' || phase === 'command';
   const isInteractive = phase === 'interactive';
-  const fieldLines = fieldLinesRef.current;
 
   const renderFieldLines = () => (
     <div className="ff-fields">
