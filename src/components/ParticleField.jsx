@@ -1,12 +1,11 @@
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 function Particles({ count = 600 }) {
   const meshRef = useRef(null);
 
-  const positions = useMemo(() => {
+  const particleData = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const accentColor = new THREE.Color('#00ff66');
@@ -41,13 +40,13 @@ function Particles({ count = 600 }) {
         <bufferAttribute
           attach="attributes-position"
           count={count}
-          array={positions.positions}
+          array={particleData.positions}
           itemSize={3}
         />
         <bufferAttribute
           attach="attributes-color"
           count={count}
-          array={positions.colors}
+          array={particleData.colors}
           itemSize={3}
         />
       </bufferGeometry>
