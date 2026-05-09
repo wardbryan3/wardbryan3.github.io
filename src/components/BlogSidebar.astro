@@ -1,0 +1,97 @@
+---
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog', ({ data }) => {
+  return import.meta.env.PROD ? true : true;
+});
+
+const sortedPosts = posts.sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+
+const currentPath = Astro.url.pathname;
+---
+
+<aside class="blog-sidebar">
+  <h3 class="sidebar-heading">Posts</h3>
+  <ul class="post-list">
+    {sortedPosts.map((post) => {
+      const postPath = `/blog/${post.slug}`;
+      const isActive = currentPath === postPath;
+      return (
+        <li>
+          <a
+            href={postPath}
+            class:list={['post-link', { active: isActive }]}
+          >
+            <span class="post-title">{post.data.title}</span>
+            <span class="post-date">
+              {post.data.date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </span>
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</aside>
+
+<style>
+  .blog-sidebar {
+    padding: 1.5rem 1rem;
+    border-right: 1px solid var(--border);
+    min-width: 240px;
+    max-width: 260px;
+    overflow-y: auto;
+  }
+
+  .sidebar-heading {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+  }
+
+  .post-list {
+    list-style: none;
+  }
+
+  .post-link {
+    display: block;
+    padding: 0.5rem 0.5rem;
+    border-radius: 4px;
+    color: var(--text-muted);
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .post-link:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+
+  .post-link.active {
+    background: rgba(0, 255, 102, 0.06);
+    color: var(--accent);
+    border-left: 2px solid var(--accent);
+  }
+
+  .post-title {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .post-date {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.125rem;
+  }
+</style>
