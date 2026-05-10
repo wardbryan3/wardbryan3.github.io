@@ -29,6 +29,7 @@ const {
   terminalPage = '',
   postCount = 0,
   searchData = [],
+  dirs = [],
   headings = [],
   prevPost = null,
   nextPost = null,
@@ -94,7 +95,7 @@ const {
       projectCount={0}
       postCount={postCount}
       searchData={searchData}
-      dirs={[{ name: 'blog', description: 'blog posts', count: postCount }, { name: 'projects', description: 'projects', count: 0 }]}
+      dirs={dirs}
       flow={true}
       defaultOpen={true}
       client:load

@@ -252,7 +252,7 @@ export default function Terminal({
     Object.entries(allCommands).forEach(([name, cmd]) => {
       reg.register(name, cmd.handler, cmd.description);
     });
-  }, [page, projectCount, postCount, searchData]);
+  }, [page, projectCount, postCount, searchData, dirs]);
 
   // Execute command
   const executeCommand = useCallback((raw) => {
