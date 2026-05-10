@@ -10,6 +10,7 @@ interface Props {
   description?: string;
   image?: string;
   showTerminal?: boolean;
+  renderTerminal?: boolean;
   terminalPage?: string;
   projectCount?: number;
   postCount?: number;
@@ -21,6 +22,7 @@ const {
   description,
   image,
   showTerminal = false,
+  renderTerminal = true,
   terminalPage = '/home',
   projectCount = 0,
   postCount = 0,
@@ -56,7 +58,7 @@ const ogImage = image || `${siteUrl}/og-default.png`;
       <slot />
     </main>
     <Footer />
-    {showTerminal && (
+    {showTerminal && renderTerminal && (
       <ErrorBoundary>
         <Terminal
           page={terminalPage}
