@@ -16,8 +16,8 @@ const { Content } = await post.render();
 const allPosts = await getCollection('blog');
 const allProjects = await getCollection('projects');
 const searchData = [
-  ...allPosts.map(p => ({ title: p.data.title, slug: p.slug, path: `/blog/${p.slug}`, type: 'blog' })),
-  ...allProjects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects' })),
+  ...allPosts.map(p => ({ title: p.data.title, slug: p.slug, path: `/blog/${p.slug}`, type: 'blog', tags: p.data.tags })),
+  ...allProjects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects', tags: p.data.tags })),
 ];
 ---
 

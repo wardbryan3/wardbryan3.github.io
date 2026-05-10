@@ -230,6 +230,23 @@ pre code {
   cursor: nwse-resize;
 }
 
+.terminal-maximized {
+  border-radius: 0;
+}
+
+@media (max-width: 768px) {
+  .terminal-maximized {
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    box-shadow: none;
+  }
+
+  .terminal-resize-handle {
+    display: none;
+  }
+}
+
 .terminal-resize-handle::after {
   content: '';
   position: absolute;
@@ -481,6 +498,18 @@ pre code {
   .ff-tux {
     display: none;
   }
+}
+
+.error-boundary-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
 }
 
 .hero-dashboard {

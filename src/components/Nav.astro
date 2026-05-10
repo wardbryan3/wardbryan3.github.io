@@ -12,7 +12,12 @@ const links = [
     <a href="/" class="logo">
       <span class="prompt">bryan@ward</span>
     </a>
-    <ul class="nav-links">
+    <button class="nav-toggle" aria-label="Toggle navigation menu" data-toggle>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <ul class="nav-links" data-nav>
       {links.map(({ href, label }) => (
         <li>
           <a
@@ -31,6 +36,17 @@ const links = [
     </ul>
   </div>
 </nav>
+
+<script>
+  const toggle = document.querySelector('[data-toggle]');
+  const nav = document.querySelector('[data-nav]');
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      nav.classList.toggle('nav-open');
+      toggle.classList.toggle('nav-toggle-active');
+    });
+  }
+</script>
 
 <style>
   nav {
@@ -85,5 +101,66 @@ const links = [
     color: var(--accent);
     border-bottom-color: var(--accent);
     text-shadow: 0 0 6px var(--accent-glow);
+  }
+
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .nav-toggle-bar {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--text-muted);
+    border-radius: 1px;
+    transition: background 0.2s;
+  }
+
+  .nav-toggle:hover .nav-toggle-bar {
+    background: var(--text);
+  }
+
+  @media (max-width: 640px) {
+    .nav-toggle {
+      display: flex;
+    }
+
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 0;
+      background: rgba(5, 0, 10, 0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 0;
+    }
+
+    .nav-links.nav-open {
+      display: flex;
+    }
+
+    .nav-links li {
+      width: 100%;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.75rem 2rem;
+      border-bottom: none;
+    }
+
+    .nav-link.active {
+      border-bottom: none;
+      background: var(--surface);
+    }
   }
 </style>

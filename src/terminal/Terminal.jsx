@@ -32,6 +32,7 @@ const TUX_ART = `                .88888888:.
 const DEFAULT_W = 760;
 const DEFAULT_H = 520;
 const MARGIN = 8;
+const MOBILE_BP = 768;
 
 function buildFields(projectCount, postCount) {
   return [
@@ -99,10 +100,18 @@ export default function Terminal({
   // Center on mount (client-side)
   useEffect(() => {
     if (!side && typeof window !== 'undefined') {
-      setPos({
-        x: Math.max(MARGIN, (window.innerWidth - DEFAULT_W) / 2),
-        y: Math.max(navRef.current + MARGIN, (window.innerHeight - DEFAULT_H) / 2),
-      });
+      const navH = navRef.current;
+      if (window.innerWidth <= MOBILE_BP) {
+        setMaximized(true);
+        setSize({ w: window.innerWidth, h: window.innerHeight - navH });
+        setPos({ x: 0, y: navH });
+        setPhase('prompt');
+      } else {
+        setPos({
+          x: Math.max(MARGIN, (window.innerWidth - DEFAULT_W) / 2),
+          y: Math.max(navH + MARGIN, (window.innerHeight - DEFAULT_H) / 2),
+        });
+      }
       setReady(true);
     }
   }, [side]);
@@ -151,10 +160,16 @@ export default function Terminal({
       const m = maximizedRef.current;
       if (!s) return;
       if (m) {
-        const w = Math.round(window.innerWidth * 0.9);
-        const h = Math.round(window.innerHeight * 0.85);
-        setSize({ w, h });
-        setPos({ x: Math.round((window.innerWidth - w) / 2), y: Math.round((window.innerHeight - h) / 2) });
+        if (window.innerWidth <= MOBILE_BP) {
+          const navH = navRef.current;
+          setSize({ w: window.innerWidth, h: window.innerHeight - navH });
+          setPos({ x: 0, y: navH });
+        } else {
+          const w = Math.round(window.innerWidth * 0.9);
+          const h = Math.round(window.innerHeight * 0.85);
+          setSize({ w, h });
+          setPos({ x: Math.round((window.innerWidth - w) / 2), y: Math.round((window.innerHeight - h) / 2) });
+        }
       } else {
         setPos(prev => {
           if (!prev) return prev;
@@ -176,15 +191,17 @@ export default function Terminal({
 
   const startDrag = useCallback((e) => {
     if (side || !pos || !size) return;
+    if (maximized && window.innerWidth <= MOBILE_BP) return;
     dragRef.current = { startX: e.clientX, startY: e.clientY, origX: pos.x, origY: pos.y, sizeW: size.w, sizeH: size.h };
     e.preventDefault();
-  }, [side, pos, size]);
+  }, [side, pos, size, maximized]);
 
   const startResize = useCallback((e) => {
     if (side || !pos || !size) return;
+    if (maximized && window.innerWidth <= MOBILE_BP) return;
     resizeRef.current = { startX: e.clientX, startY: e.clientY, origW: size.w, origH: size.h, posX: pos.x, posY: pos.y };
     e.preventDefault();
-  }, [side, pos, size]);
+  }, [side, pos, size, maximized]);
 
   // Register commands
   useEffect(() => {
@@ -210,18 +227,18 @@ export default function Terminal({
     if (result.action === 'navigate') {
       setOutputLines(prev => [...prev, { type: 'input', text: trimmed }, { type: 'output', content: result.output }]);
       setInput('');
-      window.open(result.url, '_self');
+      window.location.href = result.url;
       return;
     }
 
     setOutputLines(prev => [...prev, { type: 'input', text: trimmed }, { type: 'output', content: result.output }]);
     setInput('');
-    setTimeout(() => { if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight; }, 20);
   }, []);
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter') executeCommand(input);
     else if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); setCollapsed(prev => !prev); }
+    else if ((e.ctrlKey || e.metaKey) && e.key === 'l') { e.preventDefault(); setOutputLines([]); }
   }, [input, executeCommand]);
 
   const toggleMaximize = useCallback(() => {
@@ -230,10 +247,16 @@ export default function Terminal({
     setMaximized(prev => {
       const next = !prev;
       if (next) {
-        const w = Math.round(window.innerWidth * 0.9);
-        const h = Math.round(window.innerHeight * 0.85);
-        setSize({ w, h });
-        setPos({ x: Math.round((window.innerWidth - w) / 2), y: Math.round((window.innerHeight - h) / 2) });
+        if (window.innerWidth <= MOBILE_BP) {
+          const navH = navRef.current;
+          setSize({ w: window.innerWidth, h: window.innerHeight - navH });
+          setPos({ x: 0, y: navH });
+        } else {
+          const w = Math.round(window.innerWidth * 0.9);
+          const h = Math.round(window.innerHeight * 0.85);
+          setSize({ w, h });
+          setPos({ x: Math.round((window.innerWidth - w) / 2), y: Math.round((window.innerHeight - h) / 2) });
+        }
       } else {
         setSize({ w: DEFAULT_W, h: DEFAULT_H });
         setPos({ x: Math.round((window.innerWidth - DEFAULT_W) / 2), y: Math.round((window.innerHeight - DEFAULT_H) / 2) });
@@ -243,24 +266,23 @@ export default function Terminal({
   }, [side]);
 
   const closeWindow = useCallback(() => {
-    if (side || !pos || !size) return;
-    setCollapsed(prev => {
-      if (!prev) {
-        // Minimizing: save pre-minimize state and center the 480×34 bar
-        preMinRef.current = { x: pos.x, y: pos.y, w: size.w, h: size.h };
-        const newX = pos.x + (size.w - 480) / 2;
-        const newY = pos.y;
-        setPos({ x: Math.max(MARGIN, newX), y: Math.max(navRef.current + MARGIN, newY) });
-        setSize({ w: 480, h: 34 });
-      } else if (preMinRef.current) {
-        // Restoring: return to saved position and size
+    if (side) return;
+    if (!collapsed) {
+      preMinRef.current = { x: pos.x, y: pos.y, w: size.w, h: size.h };
+      const newX = pos.x + (size.w - 480) / 2;
+      const newY = pos.y;
+      setPos({ x: Math.max(MARGIN, newX), y: Math.max(navRef.current + MARGIN, newY) });
+      setSize({ w: 480, h: 34 });
+      setCollapsed(true);
+    } else {
+      if (preMinRef.current) {
         setPos({ x: preMinRef.current.x, y: preMinRef.current.y });
         setSize({ w: preMinRef.current.w, h: preMinRef.current.h });
         preMinRef.current = null;
       }
-      return !prev;
-    });
-  }, [side, pos, size]);
+      setCollapsed(false);
+    }
+  }, [side, collapsed, pos, size]);
 
   useEffect(() => {
     if (!collapsed && phase === 'interactive' && inputRef.current) inputRef.current.focus();
@@ -272,6 +294,13 @@ export default function Terminal({
       bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
     }
   }, [size, side]);
+
+  // Auto-scroll when new output is added
+  useEffect(() => {
+    if (bodyRef.current) {
+      bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+    }
+  }, [outputLines]);
 
   // Animation phases
   useEffect(() => {
@@ -378,13 +407,13 @@ export default function Terminal({
       {isInteractive && (
         <div className="ff-line term-input-line">
           <span className="ff-prompt">bryan@ward:~$ </span>
-          <input ref={inputRef} className="term-input" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} spellCheck={false} />
+          <input ref={inputRef} className="term-input" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} spellCheck={false} aria-label="Terminal command input" />
         </div>
       )}
     </div>
   );
 
-  const windowClasses = `terminal-window${!side && phase === 'growing' && ready ? ' growing' : ''}${side ? ' terminal-sidebar' : ''}${collapsed ? ' terminal-collapsed' : ''}`;
+  const windowClasses = `terminal-window${!side && phase === 'growing' && ready ? ' growing' : ''}${side ? ' terminal-sidebar' : ''}${collapsed ? ' terminal-collapsed' : ''}${maximized ? ' terminal-maximized' : ''}`;
 
   if (side) {
     return (
@@ -405,9 +434,9 @@ export default function Terminal({
       <div className="terminal-titlebar" onMouseDown={startDrag}>
         <span className="titlebar-title">bryan@ward — fastfetch</span>
         <div className="titlebar-buttons">
-          <span className="titlebar-btn titlebar-minimize" onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} title="Minimize">_</span>
-          <span className="titlebar-btn titlebar-maximize" onMouseDown={(e) => { e.stopPropagation(); toggleMaximize(); }} title={maximized ? 'Restore' : 'Maximize'}>{maximized ? '❐' : '□'}</span>
-          <span className="titlebar-btn titlebar-close" onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} title="Close">×</span>
+          <span className="titlebar-btn titlebar-minimize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Minimize">_</span>
+          <span className="titlebar-btn titlebar-maximize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); toggleMaximize(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMaximize(); } }} title={maximized ? 'Restore' : 'Maximize'}>{maximized ? '❐' : '□'}</span>
+          <span className="titlebar-btn titlebar-close" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Close">×</span>
         </div>
       </div>
       {!collapsed && terminalBody}

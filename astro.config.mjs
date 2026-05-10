@@ -4,6 +4,6 @@ import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 
 export default defineConfig({
-  site: 'https://bryanward.dev',
+  site: 'https://wardbryan3.github.io',
   integrations: [mdx(), sitemap(), react()],
 });
