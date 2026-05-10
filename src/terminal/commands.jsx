@@ -134,6 +134,7 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
   commands.ls = {
     description: 'list sections',
     handler: (args) => {
+      if (!searchData || searchData.length === 0) return { output: <div className="term-text term-muted">no search data</div> };
       const raw = args[0];
       if (!raw || raw === '/' || raw === '~') {
         return {
@@ -162,7 +163,7 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
                 <div key={item.slug} className="term-text">
                   <a href={item.path} className="ff-value-link">{item.slug}/</a>
                   <span className="term-muted">  {item.title}</span>
-                  <span className="term-muted" style={{ float: 'right' }}>{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  {item.date && <span className="term-muted" style={{ float: 'right' }}>{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>}
                 </div>
               ))}
             </div>
