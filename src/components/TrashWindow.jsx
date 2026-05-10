@@ -10,7 +10,7 @@ const DUMMY_FILES = [
 ];
 
 export default function TrashWindow() {
-  const [items] = useState([]);
+  const [items] = useState(DUMMY_FILES);
   const [openedFile, setOpenedFile] = useState(null);
 
   return (
