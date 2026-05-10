@@ -31,7 +31,7 @@ export function createCommands({ page, projectCount, postCount, searchData }) {
             ['echo', 'echo text back'],
             ['clear', 'clear terminal'],
             ['history', 'recent commands'],
-            ['neofetch', 'system info'],
+            ['fastfetch', 'system info'],
             ['ls', 'list sections'],
             ['cd', 'navigate to page'],
             ['cat', 'view content'],
@@ -106,7 +106,7 @@ export function createCommands({ page, projectCount, postCount, searchData }) {
     },
   };
 
-  commands.neofetch = {
+  commands.fastfetch = {
     description: 'system info',
     handler: () => ({
       output: (
