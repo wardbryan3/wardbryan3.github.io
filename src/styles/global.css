@@ -635,7 +635,15 @@ pre code {
     display: none;
   }
 
+  .terminal-sidebar {
+    display: none;
+  }
+
   body.show-mobile-terminal .terminal-flow {
     display: flex;
+  }
+
+  body.show-mobile-terminal .terminal-sidebar {
+    display: block;
   }
 }
