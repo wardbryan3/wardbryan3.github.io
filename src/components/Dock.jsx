@@ -47,7 +47,7 @@ export default function Dock() {
   return (
     <div
       style={{
-        display: 'flex', alignItems: 'center', height: '32px', padding: '0 10px',
+        position: 'relative', display: 'flex', alignItems: 'center', height: '32px', padding: '0 10px',
         background: 'var(--surface)', borderBottom: '1px solid var(--border)',
         fontSize: '0.7rem', userSelect: 'none', flexShrink: 0,
       }}
@@ -66,14 +66,15 @@ export default function Dock() {
 
       <span
         style={{
-          flex: 1, textAlign: 'center', fontWeight: 600,
-          color: 'var(--accent)', fontSize: '0.75rem',
+          position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+          fontWeight: 600, color: 'var(--accent)', fontSize: '0.75rem',
+          whiteSpace: 'nowrap',
         }}
       >
         {activeTitle}
       </span>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
         <button
           onClick={() => openWindow('settings')}
           style={{

@@ -69,6 +69,7 @@ export default function Terminal({
   flow = false,
   defaultOpen = true,
   embedded = false,
+  terminalFont = 'mono',
 }) {
   const [phase, setPhase] = useState(side ? 'interactive' : 'growing');
   const [commandText, setCommandText] = useState('');
@@ -428,6 +429,7 @@ export default function Terminal({
     <div
       className={`terminal-window-body${isInteractive ? ' terminal-body-interactive' : ''}`}
       ref={bodyRef}
+      style={{ fontFamily: terminalFont === 'sans-serif' ? 'var(--font-sans)' : 'var(--font-mono)' }}
     >
       {(phase !== 'growing' || side) && (
         <div className="ff-line">

@@ -22,12 +22,14 @@ export default function AppBar() {
     const showTimer = setTimeout(() => setVisible(false), 3000);
     let hideTimer;
     const handleMouseMove = (e) => {
-      const viewportH = window.innerHeight;
-      if (e.clientY >= viewportH - 30) {
+      const footer = document.querySelector('footer');
+      const footerHeight = footer ? footer.offsetHeight : 50;
+      const sectionBottom = window.innerHeight - footerHeight;
+      if (e.clientY >= sectionBottom - 30) {
         setVisible(true);
         clearTimeout(hideTimer);
         clearTimeout(showTimer);
-      } else if (e.clientY < viewportH - 80) {
+      } else if (e.clientY < sectionBottom - 80) {
         hideTimer = setTimeout(() => setVisible(false), 500);
       }
     };
@@ -55,7 +57,7 @@ export default function AppBar() {
   return (
     <div
       style={{
-        position: 'fixed', bottom: visible ? '10px' : '-50px',
+        position: 'absolute', bottom: visible ? '10px' : '-50px',
         left: '50%', transform: 'translateX(-50%)',
         transition: 'bottom 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
         background: 'var(--surface)', border: '1px solid var(--border)',

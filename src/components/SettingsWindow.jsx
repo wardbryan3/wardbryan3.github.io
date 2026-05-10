@@ -5,7 +5,7 @@ const THEMES = [
   'catppuccin-macchiato', 'gruvbox', 'kanagawa', 'nord', 'matrix', 'one-dark',
 ];
 
-const WALLPAPERS = ['particle-field'];
+const WALLPAPERS = ['particle-field', 'dots', 'grid', 'none'];
 const FONTS = ['mono', 'sans-serif'];
 const DOCK_POSITIONS = ['top', 'bottom'];
 const CLOCK_FORMATS = ['12h', '24h'];

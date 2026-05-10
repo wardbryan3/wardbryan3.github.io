@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { useOSStore } from '../stores/osStore';
 
 const ICONS = {
@@ -18,19 +18,48 @@ export default function Window({ id, children, menubar }) {
   const toggleMaximize = useOSStore((s) => s.toggleMaximize);
   const setPosition = useOSStore((s) => s.setPosition);
   const setSize = useOSStore((s) => s.setSize);
+  const dockPosition = useOSStore((s) => s.dockPosition);
 
   const dragStart = useRef(null);
   const posStart = useRef(null);
+
+  const [navH, setNavH] = useState(48);
+  const [footerH, setFooterH] = useState(50);
+
+  useEffect(() => {
+    const nav = document.querySelector('nav');
+    if (nav) setNavH(nav.offsetHeight);
+    const footer = document.querySelector('footer');
+    if (footer) setFooterH(footer.offsetHeight);
+  }, []);
+
+  const dockAtTop = dockPosition === 'top';
+  const topOffset = navH + (dockAtTop ? 32 : 0);
+
+  const clampPos = useCallback((x, y, w, h) => {
+    const nav = document.querySelector('nav');
+    const footer = document.querySelector('footer');
+    const t = (nav ? nav.offsetHeight : 48) + (dockAtTop ? 32 : 0);
+    const fh = footer ? footer.offsetHeight : 50;
+    const b = dockAtTop ? fh : fh + 32;
+    return {
+      x: Math.max(0, Math.min(x, window.innerWidth - w)),
+      y: Math.max(t, Math.min(y, window.innerHeight - b - h)),
+    };
+  }, [dockAtTop]);
 
   const handleTitleMouseDown = useCallback((e) => {
     if (e.target.closest('.window-controls') || e.target.closest('.window-menubar')) return;
     focusWindow(id);
     dragStart.current = { x: e.clientX, y: e.clientY };
     posStart.current = { x: win.position.x, y: win.position.y };
+    const w = win.size.width;
+    const h = win.size.height;
     const handleMouseMove = (e) => {
       const dx = e.clientX - dragStart.current.x;
       const dy = e.clientY - dragStart.current.y;
-      setPosition(id, posStart.current.x + dx, posStart.current.y + dy);
+      const clamped = clampPos(posStart.current.x + dx, posStart.current.y + dy, w, h);
+      setPosition(id, clamped.x, clamped.y);
     };
     const handleMouseUp = () => {
       document.removeEventListener('mousemove', handleMouseMove);
@@ -38,20 +67,26 @@ export default function Window({ id, children, menubar }) {
     };
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  }, [id, win.position, focusWindow, setPosition]);
+  }, [id, win.position, win.size, focusWindow, setPosition, clampPos]);
 
   const handleResizeStart = useCallback((e) => {
     e.stopPropagation();
+    focusWindow(id);
     const startX = e.clientX;
     const startY = e.clientY;
     const startW = win.size.width;
     const startH = win.size.height;
+    const startPos = { x: win.position.x, y: win.position.y };
     const handleMouseMove = (e) => {
-      setSize(
-        id,
-        Math.max(280, startW + e.clientX - startX),
-        Math.max(200, startH + e.clientY - startY)
-      );
+      let newW = Math.max(280, startW + e.clientX - startX);
+      let newH = Math.max(200, startH + e.clientY - startY);
+      const footer = document.querySelector('footer');
+      const footerHeight = footer ? footer.offsetHeight : 50;
+      const maxW = window.innerWidth - startPos.x;
+      const maxH = window.innerHeight - footerHeight - startPos.y;
+      newW = Math.min(newW, maxW);
+      newH = Math.min(newH, maxH);
+      setSize(id, newW, newH);
     };
     const handleMouseUp = () => {
       document.removeEventListener('mousemove', handleMouseMove);
@@ -59,7 +94,7 @@ export default function Window({ id, children, menubar }) {
     };
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  }, [id, win.size, setSize]);
+  }, [id, win.size, win.position, setSize, focusWindow]);
 
   const handleTitleDblClick = useCallback(() => {
     toggleMaximize(id);
@@ -68,11 +103,11 @@ export default function Window({ id, children, menubar }) {
   if (!win || !win.open) return null;
 
   const isMaximized = win.maximized;
-  const dockH = 32;
 
+  const maxBottom = dockAtTop ? footerH : footerH + 32;
   const frameSx = isMaximized
-    ? { position: 'fixed', top: dockH, left: 0, width: '100%', height: 'calc(100vh - 32px)', zIndex: win.zIndex, borderRadius: 0 }
-    : { position: 'fixed', top: Math.max(dockH, win.position.y), left: Math.max(0, win.position.x), width: win.size.width, height: win.size.height, zIndex: win.zIndex, borderRadius: '6px' };
+    ? { position: 'fixed', top: topOffset, left: 0, width: '100%', height: `calc(100vh - ${topOffset + maxBottom}px)`, zIndex: win.zIndex, borderRadius: 0 }
+    : { position: 'fixed', top: Math.max(topOffset, win.position.y), left: Math.max(0, win.position.x), width: win.size.width, height: win.size.height, zIndex: win.zIndex, borderRadius: '6px' };
 
   return (
     <div
@@ -92,14 +127,14 @@ export default function Window({ id, children, menubar }) {
         onMouseDown={handleTitleMouseDown}
         onDoubleClick={handleTitleDblClick}
         style={{
-          display: 'flex', alignItems: 'center', padding: '0.3rem 0.6rem',
+          position: 'relative', display: 'flex', alignItems: 'center', padding: '0.3rem 0.6rem',
           borderBottom: '1px solid var(--border)', cursor: 'grab',
           userSelect: 'none', background: 'var(--surface)',
         }}
       >
         <span style={{ marginRight: '0.4rem', fontSize: '0.75rem' }}>{ICONS[win.icon] || ''}</span>
-        <span style={{ flex: 1, fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>{win.title}</span>
-        <div className="window-controls" style={{ display: 'flex', gap: '4px' }}>
+        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: '0.7rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{win.title}</span>
+        <div className="window-controls" style={{ marginLeft: 'auto', display: 'flex', gap: '4px' }}>
           <button
             className="titlebar-btn"
             onClick={() => toggleMinimize(id)}

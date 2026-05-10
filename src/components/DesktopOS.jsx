@@ -11,23 +11,44 @@ import TrashWindow from './TrashWindow';
 import SettingsWindow from './SettingsWindow';
 import TerminalWindow from './TerminalWindow';
 
+const WALLPAPER_CSS = {
+  'particle-field': {},
+  dots: { backgroundImage: 'radial-gradient(var(--border) 1px, transparent 1px)', backgroundSize: '24px 24px' },
+  grid: { backgroundImage: 'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)', backgroundSize: '40px 40px' },
+  none: {},
+};
+
 export default function DesktopOS({ projects, projectCount, postCount, searchData, dirs }) {
   const theme = useOSStore((s) => s.theme);
+  const wallpaper = useOSStore((s) => s.wallpaper);
+  const dockPosition = useOSStore((s) => s.dockPosition);
   const windows = useOSStore((s) => s.windows);
+  const openWindow = useOSStore((s) => s.openWindow);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    openWindow('terminal');
+  }, [openWindow]);
+
+  const wallpaperStyle = wallpaper !== 'particle-field'
+    ? { background: 'var(--bg)', ...WALLPAPER_CSS[wallpaper] }
+    : {};
+
+  const dockAtTop = dockPosition === 'top';
+
   return (
     <section
       style={{
-        position: 'relative', height: '100%', overflow: 'hidden',
+        position: 'relative', flex: 1, overflow: 'hidden',
         isolation: 'isolate', display: 'flex', flexDirection: 'column',
+        ...wallpaperStyle,
       }}
     >
-      <ParticleField />
-      <Dock />
+      {wallpaper === 'particle-field' && <ParticleField />}
+      {dockAtTop && <Dock />}
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
         {Object.entries(windows).map(([id, win]) => {
           if (!win.open) return null;
@@ -51,6 +72,7 @@ export default function DesktopOS({ projects, projectCount, postCount, searchDat
           );
         })}
       </div>
+      {!dockAtTop && <Dock />}
       <AppBar />
     </section>
   );
