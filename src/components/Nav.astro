@@ -33,6 +33,12 @@ const links = [
           </a>
         </li>
       ))}
+      <li class="nav-terminal-item">
+        <button class="nav-terminal-btn" data-terminal-toggle aria-label="Toggle terminal">
+          <span class="terminal-icon">&gt;_</span>
+          Terminal
+        </button>
+      </li>
     </ul>
   </div>
 </nav>
@@ -44,6 +50,14 @@ const links = [
     toggle.addEventListener('click', () => {
       nav.classList.toggle('nav-open');
       toggle.classList.toggle('nav-toggle-active');
+    });
+  }
+
+  const termBtn = document.querySelector('[data-terminal-toggle]');
+  if (termBtn) {
+    termBtn.addEventListener('click', () => {
+      document.body.classList.toggle('show-mobile-terminal');
+      termBtn.classList.toggle('active');
     });
   }
 </script>
@@ -124,6 +138,50 @@ const links = [
 
   .nav-toggle:hover .nav-toggle-bar {
     background: var(--text);
+  }
+
+  .nav-terminal-item {
+    display: none;
+  }
+
+  .nav-terminal-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 2rem;
+    background: none;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .nav-terminal-btn:hover {
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  .nav-terminal-btn.active {
+    color: var(--accent);
+    background: var(--surface);
+  }
+
+  .terminal-icon {
+    color: var(--accent);
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 768px) {
+    .nav-terminal-item {
+      display: block;
+      border-top: 1px solid var(--border);
+      margin-top: 0.25rem;
+      padding-top: 0.25rem;
+    }
   }
 
   @media (max-width: 640px) {

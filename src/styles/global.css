@@ -628,3 +628,14 @@ pre code {
 .terminal-flow .term-input {
   width: 100%;
 }
+
+/* Mobile: hide terminal by default, toggle via body class */
+@media (max-width: 768px) {
+  .terminal-flow {
+    display: none;
+  }
+
+  body.show-mobile-terminal .terminal-flow {
+    display: flex;
+  }
+}
