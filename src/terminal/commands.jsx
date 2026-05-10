@@ -15,6 +15,13 @@ function renderSearchResults(results, keyword) {
 }
 
 export function createCommands({ page, projectCount, postCount, searchData, dirs = [] }) {
+  const normalizePage = (p) => p === '/home' ? '/' : p;
+  const resolveParent = (p) => {
+    if (p === '/') return '/';
+    const parts = p.replace(/^\/|\/$/g, '').split('/');
+    parts.pop();
+    return parts.length === 0 ? '/' : '/' + parts.join('/');
+  };
   const commands = {};
 
   commands.help = {
@@ -141,19 +148,99 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
     description: 'navigate to a page',
     handler: (args) => {
       const target = args[0];
-      const paths = { blog: '/blog', projects: '/projects', home: '/', about: '/' };
-      if (!target) return { output: <div className="term-text term-muted">cd: missing argument</div> };
-      const url = paths[target];
-      if (!url) return { output: <div className="term-text term-muted">cd: no such directory: {target}</div> };
-      return {
-        output: (
-          <div className="term-text">
-            navigating to <a href={url} className="ff-value-link">{url}</a>...
-          </div>
-        ),
-        action: 'navigate',
-        url,
-      };
+      const current = normalizePage(page);
+
+      if (!target || target === '~' || target === '/' || target === 'home') {
+        if (current === '/')
+          return { output: <div className="term-text">already at /</div> };
+        return {
+          output: <div className="term-text">navigating to <a href="/" className="ff-value-link">/</a>...</div>,
+          action: 'navigate',
+          url: '/',
+        };
+      }
+
+      if (target === '.') {
+        return { output: <div className="term-text">{current}</div> };
+      }
+
+      if (target === '..') {
+        const parent = resolveParent(current);
+        if (parent === current)
+          return { output: <div className="term-text term-muted">already at root</div> };
+        return {
+          output: <div className="term-text">navigating to <a href={parent} className="ff-value-link">{parent}</a>...</div>,
+          action: 'navigate',
+          url: parent,
+        };
+      }
+
+      if (target === 'blog') {
+        return {
+          output: <div className="term-text">navigating to <a href="/blog" className="ff-value-link">/blog</a>...</div>,
+          action: 'navigate',
+          url: '/blog',
+        };
+      }
+
+      if (target === 'projects') {
+        return {
+          output: <div className="term-text">navigating to <a href="/projects" className="ff-value-link">/projects</a>...</div>,
+          action: 'navigate',
+          url: '/projects',
+        };
+      }
+
+      const slashIndex = target.indexOf('/');
+      if (slashIndex > 0) {
+        const prefix = target.slice(0, slashIndex);
+        const slug = target.slice(slashIndex + 1);
+        if ((prefix === 'blog' || prefix === 'projects') && slug) {
+          const entry = searchData.find(e => e.type === prefix && e.slug === slug);
+          if (entry) {
+            return {
+              output: <div className="term-text">navigating to <a href={entry.path} className="ff-value-link">{entry.path}</a>...</div>,
+              action: 'navigate',
+              url: entry.path,
+            };
+          }
+        }
+        return { output: <div className="term-text term-muted">cd: no such directory: {target}</div> };
+      }
+
+      const exactMatch = searchData.find(e => e.slug === target);
+      if (exactMatch) {
+        return {
+          output: <div className="term-text">navigating to <a href={exactMatch.path} className="ff-value-link">{exactMatch.path}</a>...</div>,
+          action: 'navigate',
+          url: exactMatch.path,
+        };
+      }
+
+      const matches = searchData.filter(e => e.slug.includes(target));
+      if (matches.length === 1) {
+        return {
+          output: <div className="term-text">navigating to <a href={matches[0].path} className="ff-value-link">{matches[0].path}</a>...</div>,
+          action: 'navigate',
+          url: matches[0].path,
+        };
+      }
+      if (matches.length > 1) {
+        return {
+          output: (
+            <div className="term-output">
+              {matches.map((item, i) => (
+                <div key={i} className="term-text">
+                  <a href={item.path} className="ff-value-link">{item.type}/{item.slug}</a>
+                  <span className="term-muted">  {item.title}</span>
+                </div>
+              ))}
+            </div>
+          ),
+        };
+      }
+
+      return { output: <div className="term-text term-muted">cd: no such directory: {target}</div> };
     },
   };
 
