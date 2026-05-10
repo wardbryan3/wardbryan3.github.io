@@ -65,6 +65,7 @@ export default function Terminal({
   postCount = 0,
   searchData = /** @type {any[]} */ ([]),
   side = false,
+  flow = false,
   defaultOpen = true,
 }) {
   const [phase, setPhase] = useState(side ? 'interactive' : 'growing');
@@ -76,6 +77,24 @@ export default function Terminal({
   const [pos, setPos] = useState(side ? null : { x: 0, y: 0 });
   const [size, setSize] = useState(side ? null : { w: DEFAULT_W, h: DEFAULT_H });
   const [ready, setReady] = useState(false);
+
+  // Restore terminal state from sessionStorage
+  const [restored] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('terminal-state-v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed;
+      }
+    } catch {}
+    return null;
+  });
+
+  useEffect(() => {
+    if (restored && restored.outputLines) {
+      setOutputLines(restored.outputLines);
+    }
+  }, [restored]);
 
   const dragRef = useRef(null);
   const resizeRef = useRef(null);
@@ -222,7 +241,12 @@ export default function Terminal({
     const args = parts.slice(1);
     const result = registryRef.current.execute(cmdName, args, { registry: registryRef.current });
 
-    if (result.action === 'clear') { setOutputLines([]); setInput(''); return; }
+    if (result.action === 'clear') {
+      setOutputLines([]);
+      setInput('');
+      try { sessionStorage.removeItem('terminal-state-v1'); } catch {}
+      return;
+    }
 
     if (result.action === 'navigate') {
       setOutputLines(prev => [...prev, { type: 'input', text: trimmed }, { type: 'output', content: result.output }]);
@@ -300,6 +324,13 @@ export default function Terminal({
     if (bodyRef.current) {
       bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
     }
+  }, [outputLines]);
+
+  // Persist terminal state to sessionStorage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('terminal-state-v1', JSON.stringify({ outputLines }));
+    } catch {}
   }, [outputLines]);
 
   // Animation phases
@@ -414,6 +445,26 @@ export default function Terminal({
   );
 
   const windowClasses = `terminal-window${!side && phase === 'growing' && ready ? ' growing' : ''}${side ? ' terminal-sidebar' : ''}${collapsed ? ' terminal-collapsed' : ''}${maximized ? ' terminal-maximized' : ''}`;
+
+  if (flow) {
+    return (
+      <div className={`terminal-window terminal-flow${collapsed ? ' terminal-collapsed' : ''}`}>
+        <button
+          className="terminal-minimize terminal-flow-minimize"
+          onClick={() => setCollapsed(prev => !prev)}
+          aria-label={collapsed ? 'Open terminal' : 'Close terminal'}
+          title={collapsed ? 'Open terminal (Ctrl+K)' : 'Close terminal (Ctrl+K)'}
+        >
+          {collapsed ? '>' : '<'}
+        </button>
+        {!collapsed && (
+          <div className="terminal-flow-body">
+            {terminalBody}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   if (side) {
     return (
