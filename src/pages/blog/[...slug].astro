@@ -19,6 +19,16 @@ const searchData = [
   ...allPosts.map(p => ({ title: p.data.title, slug: p.slug, path: `/blog/${p.slug}`, type: 'blog', tags: p.data.tags })),
   ...allProjects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects', tags: p.data.tags })),
 ];
+const sortedAllPosts = [...allPosts].sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+const currentIndex = sortedAllPosts.findIndex((p) => p.slug === post.slug);
+const prevPost = currentIndex < sortedAllPosts.length - 1
+  ? { title: sortedAllPosts[currentIndex + 1].data.title, slug: sortedAllPosts[currentIndex + 1].slug }
+  : null;
+const nextPost = currentIndex > 0
+  ? { title: sortedAllPosts[currentIndex - 1].data.title, slug: sortedAllPosts[currentIndex - 1].slug }
+  : null;
 ---
 
 <BlogPost
@@ -31,6 +41,8 @@ const searchData = [
   postCount={allPosts.length}
   searchData={searchData}
   headings={headings}
+  prevPost={prevPost}
+  nextPost={nextPost}
 >
   <Content />
 </BlogPost>

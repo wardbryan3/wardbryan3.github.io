@@ -15,6 +15,8 @@ interface Props {
   postCount?: number;
   searchData?: any[];
   headings?: { depth: number; slug: string; text: string }[];
+  prevPost?: { title: string; slug: string } | null;
+  nextPost?: { title: string; slug: string } | null;
 }
 
 const {
@@ -27,6 +29,8 @@ const {
   postCount = 0,
   searchData = [],
   headings = [],
+  prevPost = null,
+  nextPost = null,
 } = Astro.props;
 ---
 
@@ -62,6 +66,22 @@ const {
       <div class="prose">
         <slot />
       </div>
+      {(prevPost || nextPost) && (
+        <nav class="post-nav">
+          {prevPost ? (
+            <a href={`/blog/${prevPost.slug}`} class="post-nav-link post-nav-prev">
+              <span class="post-nav-direction">Previous</span>
+              <span class="post-nav-title">{prevPost.title}</span>
+            </a>
+          ) : <div />}
+          {nextPost ? (
+            <a href={`/blog/${nextPost.slug}`} class="post-nav-link post-nav-next">
+              <span class="post-nav-direction">Next</span>
+              <span class="post-nav-title">{nextPost.title}</span>
+            </a>
+          ) : <div />}
+        </nav>
+      )}
     </article>
     {headings.length > 0 && (
       <div class="toc-column">
@@ -152,5 +172,51 @@ const {
     .blog-content {
       padding: 1.5rem 1rem;
     }
+  }
+
+  .post-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .post-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-decoration: none;
+    max-width: 50%;
+  }
+
+  .post-nav-next {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .post-nav-prev {
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .post-nav-direction {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .post-nav-title {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--accent);
+    transition: text-shadow 0.2s;
+  }
+
+  .post-nav-link:hover .post-nav-title {
+    text-shadow: 0 0 8px var(--accent-glow);
   }
 </style>

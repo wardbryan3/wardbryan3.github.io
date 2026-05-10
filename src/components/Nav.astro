@@ -1,10 +1,21 @@
 ---
+import { getCollection } from 'astro:content';
+
 const currentPath = Astro.url.pathname;
 const links = [
   { href: '/', label: 'Home' },
   { href: '/blog', label: 'Blog' },
   { href: '/projects', label: 'Projects' },
 ];
+
+const isBlogPage = currentPath.startsWith('/blog/');
+let blogPosts = [];
+if (isBlogPage) {
+  const allPosts = await getCollection('blog');
+  blogPosts = allPosts
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+    .map((p) => ({ slug: p.slug, title: p.data.title }));
+}
 ---
 
 <nav>
@@ -28,6 +39,23 @@ const links = [
           </a>
         </li>
       ))}
+      {isBlogPage && blogPosts.length > 0 && (
+        <li class="nav-blog-section">
+          <span class="nav-blog-heading">Posts</span>
+          <ul class="nav-blog-list">
+            {blogPosts.map((p) => (
+              <li>
+                <a
+                  href={`/blog/${p.slug}`}
+                  class:list={['nav-link nav-blog-link', { active: currentPath === `/blog/${p.slug}` }]}
+                >
+                  {p.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      )}
     </ul>
     <div class="nav-actions">
       <button class="nav-term-toggle" data-terminal-toggle aria-label="Toggle terminal">
@@ -168,6 +196,36 @@ const links = [
     border-color: var(--accent);
     color: var(--accent);
     box-shadow: 0 0 6px var(--accent-glow);
+  }
+
+  .nav-blog-section {
+    display: none;
+  }
+
+  .nav-blog-heading {
+    display: block;
+    padding: 0.5rem 2rem 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  .nav-blog-list {
+    list-style: none;
+  }
+
+  .nav-blog-link {
+    padding-left: 2.5rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  @media (max-width: 640px) {
+    .nav-blog-section {
+      display: block;
+    }
   }
 
   @media (max-width: 640px) {
