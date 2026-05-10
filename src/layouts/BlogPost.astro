@@ -164,9 +164,15 @@ const {
 
   @media (max-width: 768px) {
     .blog-docs-layout {
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1;
     }
     .blog-sidebar-column {
+      display: none;
+    }
+    .blog-content {
       display: none;
     }
   }

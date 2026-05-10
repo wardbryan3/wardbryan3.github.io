@@ -58,9 +58,6 @@ if (isBlogPage) {
       )}
     </ul>
     <div class="nav-actions">
-      <button class="nav-term-toggle" data-terminal-toggle aria-label="Toggle terminal">
-        &gt;_
-      </button>
       <button class="nav-toggle" aria-label="Toggle navigation menu" data-toggle>
         <span class="nav-toggle-bar"></span>
         <span class="nav-toggle-bar"></span>
@@ -80,14 +77,6 @@ if (isBlogPage) {
     });
   }
 
-  const termBtn = document.querySelector('[data-terminal-toggle]');
-  if (termBtn) {
-    termBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      document.body.classList.toggle('terminal-mobile-open');
-      termBtn.classList.toggle('active');
-    });
-  }
 </script>
 
 <style>
@@ -174,30 +163,6 @@ if (isBlogPage) {
     background: var(--text);
   }
 
-  .nav-term-toggle {
-    display: none;
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    padding: 0.2rem 0.4rem;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
-  }
-
-  .nav-term-toggle:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .nav-term-toggle.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    box-shadow: 0 0 6px var(--accent-glow);
-  }
-
   .nav-blog-section {
     display: none;
   }
@@ -265,8 +230,5 @@ if (isBlogPage) {
       background: var(--surface);
     }
 
-    .nav-links.nav-open ~ .nav-actions .nav-term-toggle {
-      display: inline-block;
-    }
   }
 </style>

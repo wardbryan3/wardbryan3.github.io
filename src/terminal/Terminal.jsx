@@ -80,22 +80,6 @@ export default function Terminal({
   const [ready, setReady] = useState(false);
   const [globalFocusKey, setGlobalFocusKey] = useState(0);
 
-  // Mobile floating state
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const check = () => setMobileOpen(document.body.classList.contains('terminal-mobile-open'));
-    check();
-    const observer = new MutationObserver(check);
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
-
-  const closeMobileTerminal = useCallback(() => {
-    document.body.classList.remove('terminal-mobile-open');
-    setMobileOpen(false);
-  }, []);
-
   // Restore terminal state from sessionStorage
   const [restored] = useState(() => {
     try {
@@ -117,7 +101,6 @@ export default function Terminal({
   const dragRef = useRef(null);
   const resizeRef = useRef(null);
   const navRef = useRef(48);
-  const footerRef = useRef(0);
   const preMinRef = useRef(null);
   const sizeRef = useRef(size);
   sizeRef.current = size;
@@ -128,6 +111,7 @@ export default function Terminal({
   const registryRef = useRef(new CommandRegistry());
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
+  const footerRef = useRef(0);
 
   // Measure nav height and footer height
   useEffect(() => {
@@ -487,37 +471,24 @@ export default function Terminal({
     </div>
   );
 
-  const windowClasses = `terminal-window${!side && phase === 'growing' && ready ? ' growing' : ''}${side ? ' terminal-sidebar' : ''}${collapsed ? ' terminal-collapsed' : ''}${maximized ? ' terminal-maximized' : ''}`;
-
-  // Mobile floating: when toggled on mobile, render full-screen like the homepage terminal
-  const isMobileView = typeof window !== 'undefined' && window.innerWidth <= 768;
-
-  if (mobileOpen && isMobileView && (flow || side)) {
-    return (
-      <div className="terminal-window terminal-mobile-floating">
-        <div className="terminal-titlebar">
-          <span className="titlebar-title">bryan@ward — terminal</span>
-          <div className="titlebar-buttons">
-            <span className="titlebar-btn titlebar-close" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeMobileTerminal(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeMobileTerminal(); } }} title="Close">×</span>
-          </div>
-        </div>
-        {terminalBody}
-      </div>
-    );
-  }
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+  const effectiveCollapsed = isMobile ? false : collapsed;
+  const windowClasses = `terminal-window${!side && phase === 'growing' && ready ? ' growing' : ''}${side ? ' terminal-sidebar' : ''}${effectiveCollapsed ? ' terminal-collapsed' : ''}${maximized ? ' terminal-maximized' : ''}`;
 
   if (flow) {
     return (
-      <div className={`terminal-window terminal-flow${collapsed ? ' terminal-collapsed' : ''}`}>
-        <button
-          className="terminal-minimize terminal-flow-minimize"
-          onClick={() => setCollapsed(prev => !prev)}
-          aria-label={collapsed ? 'Open terminal' : 'Close terminal'}
-          title={collapsed ? 'Open terminal (Ctrl+K)' : 'Close terminal (Ctrl+K)'}
-        >
-          {collapsed ? '>' : '<'}
-        </button>
-        {!collapsed && (
+      <div className={`terminal-window terminal-flow${effectiveCollapsed ? ' terminal-collapsed' : ''}`}>
+        {!isMobile && (
+          <button
+            className="terminal-minimize terminal-flow-minimize"
+            onClick={() => setCollapsed(prev => !prev)}
+            aria-label={collapsed ? 'Open terminal' : 'Close terminal'}
+            title={collapsed ? 'Open terminal (Ctrl+K)' : 'Close terminal (Ctrl+K)'}
+          >
+            {collapsed ? '>' : '<'}
+          </button>
+        )}
+        {!effectiveCollapsed && (
           <div className="terminal-flow-body">
             {terminalBody}
           </div>
@@ -529,10 +500,12 @@ export default function Terminal({
   if (side) {
     return (
       <div className={windowClasses}>
-        <button className="terminal-minimize" onClick={() => setCollapsed(prev => !prev)} aria-label={collapsed ? 'Open terminal' : 'Close terminal'} title={collapsed ? 'Open terminal (Ctrl+K)' : 'Close terminal (Ctrl+K)'}>
-          {collapsed ? '▶' : '▼'}
-        </button>
-        {!collapsed && terminalBody}
+        {!isMobile && (
+          <button className="terminal-minimize" onClick={() => setCollapsed(prev => !prev)} aria-label={collapsed ? 'Open terminal' : 'Close terminal'} title={collapsed ? 'Open terminal (Ctrl+K)' : 'Close terminal (Ctrl+K)'}>
+            {collapsed ? '▶' : '▼'}
+          </button>
+        )}
+        {!effectiveCollapsed && terminalBody}
       </div>
     );
   }
@@ -540,18 +513,20 @@ export default function Terminal({
   return (
     <div
       className={windowClasses}
-      style={{ position: 'fixed', left: pos?.x ?? 0, top: pos?.y ?? 0, width: size?.w ?? DEFAULT_W, height: collapsed ? '34px' : (size?.h ?? DEFAULT_H) + 'px', minHeight: collapsed ? '34px' : undefined, zIndex: 10, opacity: ready ? 1 : 0 }}
+      style={{ position: 'fixed', left: pos?.x ?? 0, top: pos?.y ?? 0, width: size?.w ?? DEFAULT_W, height: effectiveCollapsed ? '34px' : (size?.h ?? DEFAULT_H) + 'px', minHeight: effectiveCollapsed ? '34px' : undefined, zIndex: 10, opacity: ready ? 1 : 0 }}
     >
       <div className="terminal-titlebar" onMouseDown={startDrag}>
         <span className="titlebar-title">bryan@ward — fastfetch</span>
-        <div className="titlebar-buttons">
-          <span className="titlebar-btn titlebar-minimize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Minimize">_</span>
-          <span className="titlebar-btn titlebar-maximize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); toggleMaximize(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMaximize(); } }} title={maximized ? 'Restore' : 'Maximize'}>{maximized ? '❐' : '□'}</span>
-          <span className="titlebar-btn titlebar-close" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Close">×</span>
-        </div>
+        {!isMobile && (
+          <div className="titlebar-buttons">
+            <span className="titlebar-btn titlebar-minimize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Minimize">_</span>
+            <span className="titlebar-btn titlebar-maximize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); toggleMaximize(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMaximize(); } }} title={maximized ? 'Restore' : 'Maximize'}>{maximized ? '❐' : '□'}</span>
+            <span className="titlebar-btn titlebar-close" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Close">×</span>
+          </div>
+        )}
       </div>
-      {!collapsed && terminalBody}
-      {!collapsed && <div className="terminal-resize-handle" onMouseDown={startResize} />}
+      {!effectiveCollapsed && terminalBody}
+      {!effectiveCollapsed && <div className="terminal-resize-handle" onMouseDown={startResize} />}
     </div>
   );
 }

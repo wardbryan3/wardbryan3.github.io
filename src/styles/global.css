@@ -633,37 +633,63 @@ pre code {
   width: 100%;
 }
 
-/* Mobile: hide terminal by default, toggle as floating window */
+/* Mobile: terminal fills space between nav and footer, body doesn't scroll */
 @media (max-width: 768px) {
-  body .terminal-window.terminal-flow,
-  body .terminal-sidebar {
+  body {
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  main {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Blog: terminal in flow mode fills main */
+  .blog-docs-layout {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .project-page,
+  .projects-page {
     display: none;
   }
 
-  body.terminal-mobile-open .terminal-window.terminal-mobile-floating {
-    display: flex;
+  .terminal-flow {
+    width: 100%;
+    border-left: none;
+    flex: 1;
+    min-height: 0;
   }
-}
 
-.terminal-mobile-floating {
-  position: fixed;
-  top: 48px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-  display: none;
-  flex-direction: column;
-  border: 1px solid var(--accent);
-  border-top: none;
-  border-radius: 0;
-  background: rgba(18, 0, 26, 0.95);
-  backdrop-filter: blur(4px);
-  font-family: var(--font-mono);
-}
+  .terminal-flow-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
 
-.terminal-mobile-floating .terminal-window-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.25rem;
+  /* Project pages: sidebar terminal positioned fixed between nav and footer */
+  .terminal-sidebar {
+    position: fixed;
+    top: 48px;
+    left: 0;
+    right: 0;
+    bottom: 52px;
+    width: 100%;
+    height: auto;
+    border-left: none;
+    border-radius: 0;
+    transform: none !important;
+  }
+
+  .terminal-sidebar .terminal-window-body {
+    max-height: none;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
 }
