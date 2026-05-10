@@ -9,11 +9,12 @@ const projectCount = projects.length;
 const postCount = posts.length;
 
 const searchData = [
-  ...posts.map(p => ({ title: p.data.title, slug: p.slug, path: `/blog/${p.slug}`, type: 'blog', tags: p.data.tags })),
-  ...projects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects', tags: p.data.tags })),
+  ...posts.map(p => ({ title: p.data.title, slug: p.slug, path: `/blog/${p.slug}`, type: 'blog', tags: p.data.tags, date: p.data.date })),
+  ...projects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects', tags: p.data.tags, date: p.data.date })),
 ];
+const dirs = [{ name: 'blog', description: 'blog posts', count: postCount }, { name: 'projects', description: 'projects', count: projectCount }];
 ---
 
 <BaseLayout title="Home" description="Bryan Ward - CS student and developer">
-  <HeroDashboard projectCount={projectCount} postCount={postCount} searchData={searchData} client:load />
+  <HeroDashboard projectCount={projectCount} postCount={postCount} searchData={searchData} dirs={dirs} client:load />
 </BaseLayout>

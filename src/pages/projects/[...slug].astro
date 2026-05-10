@@ -16,9 +16,10 @@ const { Content } = await project.render();
 const allPosts = await getCollection('blog');
 const allProjects = await getCollection('projects');
 const searchData = [
-  ...allPosts.map(p => ({ title: p.data.title, slug: p.slug, path: `/blog/${p.slug}`, type: 'blog', tags: p.data.tags })),
-  ...allProjects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects', tags: p.data.tags })),
+  ...allPosts.map(p => ({ title: p.data.title, slug: p.slug, path: `/blog/${p.slug}`, type: 'blog', tags: p.data.tags, date: p.data.date })),
+  ...allProjects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects', tags: p.data.tags, date: p.data.date })),
 ];
+const dirs = [{ name: 'blog', description: 'blog posts', count: allPosts.length }, { name: 'projects', description: 'projects', count: allProjects.length }];
 ---
 
 <ProjectPage
@@ -32,6 +33,7 @@ const searchData = [
   terminalPage={`/projects/${project.slug}`}
   projectCount={allProjects.length}
   searchData={searchData}
+  dirs={dirs}
 >
   <Content />
 </ProjectPage>

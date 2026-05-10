@@ -64,6 +64,7 @@ export default function Terminal({
   projectCount = 0,
   postCount = 0,
   searchData = /** @type {any[]} */ ([]),
+  dirs = /** @type {{ name: string; description: string; count: number }[]} */ ([]),
   side = false,
   flow = false,
   defaultOpen = true,
@@ -115,6 +116,7 @@ export default function Terminal({
   const dragRef = useRef(null);
   const resizeRef = useRef(null);
   const navRef = useRef(48);
+  const footerRef = useRef(0);
   const preMinRef = useRef(null);
   const sizeRef = useRef(size);
   sizeRef.current = size;
@@ -126,25 +128,29 @@ export default function Terminal({
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
 
-  // Measure nav height
+  // Measure nav height and footer height
   useEffect(() => {
     const nav = document.querySelector('nav');
     if (nav) navRef.current = nav.offsetHeight;
+    const footer = document.querySelector('footer');
+    if (footer) footerRef.current = footer.offsetHeight;
   }, []);
 
   // Center on mount (client-side)
   useEffect(() => {
     if (!side && typeof window !== 'undefined') {
       const navH = navRef.current;
+      const footerH = footerRef.current;
       if (window.innerWidth <= MOBILE_BP) {
         setMaximized(true);
         setSize({ w: window.innerWidth, h: window.innerHeight - navH });
         setPos({ x: 0, y: navH });
         setPhase('prompt');
       } else {
+        const maxY = Math.max(navH + MARGIN, Math.min((window.innerHeight - DEFAULT_H) / 2, window.innerHeight - DEFAULT_H - footerH - MARGIN));
         setPos({
           x: Math.max(MARGIN, (window.innerWidth - DEFAULT_W) / 2),
-          y: Math.max(navH + MARGIN, (window.innerHeight - DEFAULT_H) / 2),
+          y: maxY,
         });
       }
       setReady(true);
@@ -162,7 +168,7 @@ export default function Terminal({
         const rawX = d.origX + (e.clientX - d.startX);
         const rawY = d.origY + (e.clientY - d.startY);
         const clampedX = Math.max(MARGIN, Math.min(rawX, window.innerWidth - w - MARGIN));
-        const clampedY = Math.max(navRef.current + MARGIN, Math.min(rawY, window.innerHeight - h - MARGIN));
+        const clampedY = Math.max(navRef.current + MARGIN, Math.min(rawY, window.innerHeight - h - footerRef.current - MARGIN));
         setPos({ x: clampedX, y: clampedY });
       }
       if (resizeRef.current) {
@@ -170,7 +176,7 @@ export default function Terminal({
         const newW = Math.max(480, r.origW + (e.clientX - r.startX));
         const newH = Math.max(320, r.origH + (e.clientY - r.startY));
         const maxW = window.innerWidth - r.posX - MARGIN;
-        const maxH = window.innerHeight - r.posY - MARGIN;
+        const maxH = window.innerHeight - r.posY - footerRef.current - MARGIN;
         setSize({ w: Math.min(newW, maxW), h: Math.min(newH, maxH) });
       }
     };
@@ -209,13 +215,13 @@ export default function Terminal({
         setPos(prev => {
           if (!prev) return prev;
           const clampedX = Math.max(MARGIN, Math.min(prev.x, window.innerWidth - s.w - MARGIN));
-          const clampedY = Math.max(navH + MARGIN, Math.min(prev.y, window.innerHeight - s.h - MARGIN));
+          const clampedY = Math.max(navH + MARGIN, Math.min(prev.y, window.innerHeight - s.h - footerRef.current - MARGIN));
           return { x: clampedX, y: clampedY };
         });
         setSize(prev => {
           if (!prev) return prev;
           const clampedW = Math.min(prev.w, window.innerWidth - MARGIN * 2);
-          const clampedH = Math.min(prev.h, window.innerHeight - navH - MARGIN * 2);
+          const clampedH = Math.min(prev.h, window.innerHeight - navH - footerRef.current - MARGIN * 2);
           return { w: Math.max(480, clampedW), h: Math.max(320, clampedH) };
         });
       }
@@ -242,7 +248,7 @@ export default function Terminal({
   useEffect(() => {
     const reg = registryRef.current;
     reg.commands.clear();
-    const allCommands = createCommands({ page, projectCount, postCount, searchData });
+    const allCommands = createCommands({ page, projectCount, postCount, searchData, dirs });
     Object.entries(allCommands).forEach(([name, cmd]) => {
       reg.register(name, cmd.handler, cmd.description);
     });

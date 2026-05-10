@@ -15,6 +15,7 @@ interface Props {
   projectCount?: number;
   postCount?: number;
   searchData?: any[];
+  dirs?: { name: string; description: string; count: number }[];
 }
 
 const {
@@ -27,6 +28,7 @@ const {
   projectCount = 0,
   postCount = 0,
   searchData = [],
+  dirs = [],
 } = Astro.props;
 const fullTitle = `${title} | Bryan Ward`;
 const siteUrl = 'https://wardbryan3.github.io';
@@ -65,6 +67,7 @@ const ogImage = image || `${siteUrl}/og-default.png`;
           projectCount={projectCount}
           postCount={postCount}
           searchData={searchData}
+          dirs={dirs}
           side={true}
           defaultOpen={true}
           client:load

@@ -13,9 +13,10 @@ interface Props {
   terminalPage?: string;
   projectCount?: number;
   searchData?: any[];
+  dirs?: { name: string; description: string; count: number }[];
 }
 
-const { title, description, date, tags, url, repo, showTerminal = false, terminalPage = '', projectCount = 0, searchData = [] } = Astro.props;
+const { title, description, date, tags, url, repo, showTerminal = false, terminalPage = '', projectCount = 0, searchData = [], dirs = [] } = Astro.props;
 ---
 
 <BaseLayout
@@ -25,6 +26,7 @@ const { title, description, date, tags, url, repo, showTerminal = false, termina
   terminalPage={terminalPage}
   projectCount={projectCount}
   searchData={searchData}
+  dirs={dirs}
 >
   <div class="project-page">
     <header class="project-header">
