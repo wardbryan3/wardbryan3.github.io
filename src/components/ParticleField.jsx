@@ -1,15 +1,31 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
+import { useOSStore } from '../stores/osStore';
+
+function getCSSVar(name) {
+  if (typeof document === 'undefined') return { r: 0, g: 1, b: 0.4 };
+  const val = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  if (!val) return { r: 0, g: 1, b: 0.4 };
+  const hex = val.replace('#', '');
+  return {
+    r: parseInt(hex.substring(0, 2), 16) / 255,
+    g: parseInt(hex.substring(2, 4), 16) / 255,
+    b: parseInt(hex.substring(4, 6), 16) / 255,
+  };
+}
 
 function Particles({ count = 600 }) {
   const meshRef = useRef(null);
+  const theme = useOSStore((s) => s.theme);
 
   const particleData = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
-    const accentColor = new THREE.Color('#00ff66');
-    const primaryColor = new THREE.Color('#8800cc');
+    const accent = getCSSVar('--accent');
+    const primary = getCSSVar('--primary');
+    const accentColor = new THREE.Color(accent.r, accent.g, accent.b);
+    const primaryColor = new THREE.Color(primary.r, primary.g, primary.b);
 
     for (let i = 0; i < count; i++) {
       const r = 4 + Math.random() * 3;
@@ -25,7 +41,7 @@ function Particles({ count = 600 }) {
       colors[i * 3 + 2] = colorChoice.b;
     }
     return { positions: pos, colors: colors };
-  }, [count]);
+  }, [count, theme]);
 
   useFrame((state) => {
     if (meshRef.current) {

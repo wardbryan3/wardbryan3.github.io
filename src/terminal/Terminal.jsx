@@ -68,6 +68,7 @@ export default function Terminal({
   side = false,
   flow = false,
   defaultOpen = true,
+  embedded = false,
 }) {
   const [phase, setPhase] = useState(side ? 'interactive' : 'growing');
   const [commandText, setCommandText] = useState('');
@@ -470,6 +471,10 @@ export default function Terminal({
       )}
     </div>
   );
+
+  if (embedded) {
+    return <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>{terminalBody}</div>;
+  }
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
   const effectiveCollapsed = isMobile ? false : collapsed;

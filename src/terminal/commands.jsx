@@ -1,3 +1,5 @@
+import { useOSStore } from '../stores/osStore';
+
 function renderSearchResults(results, keyword) {
   if (results.length === 0) return { output: <div className="term-text term-muted">no matches for: {keyword}</div> };
   return {
@@ -33,6 +35,9 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
           {[
             ['help', 'show this message'],
             ['whoami', 'about me'],
+            ['open', 'open an app window'],
+            ['close', 'close an app window'],
+            ['windows', 'list open windows'],
             ['pwd', 'current page'],
             ['date', 'date and time'],
             ['echo', 'echo text back'],
@@ -346,6 +351,44 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
         </div>
       ),
     }),
+  };
+
+  commands.open = {
+    description: 'open an app window (explorer, resume, media, settings, trash)',
+    handler: (args) => {
+      const app = args?.[0];
+      if (!app) return { output: <div className="term-text term-muted">Usage: open &lt;app&gt;<br />Apps: explorer, resume, media, settings, trash</div> };
+      const valid = ['explorer', 'resume', 'media', 'settings', 'trash'];
+      const id = app === 'media' ? 'media-player' : app;
+      if (valid.includes(app)) {
+        useOSStore.getState().openWindow(id);
+        return { output: <div className="term-text ff-value-green">Opening {app}...</div> };
+      }
+      return { output: <div className="term-text term-muted">Unknown app: {app}</div> };
+    },
+  };
+
+  commands.close = {
+    description: 'close an app window',
+    handler: (args) => {
+      const app = args?.[0];
+      if (!app) return { output: <div className="term-text term-muted">Usage: close &lt;app&gt;</div> };
+      const id = app === 'media' ? 'media-player' : app;
+      useOSStore.getState().closeWindow(id);
+      return { output: <div className="term-text">Closing {app}...</div> };
+    },
+  };
+
+  commands.windows = {
+    description: 'list open windows',
+    handler: () => {
+      const state = useOSStore.getState();
+      const open = Object.entries(state.windows)
+        .filter(([, w]) => w.open)
+        .map(([id, w]) => `  ${id}${w.minimized ? ' (minimized)' : ''}`);
+      const list = open.join('\n') || '  (none)';
+      return { output: <div className="term-text" style={{ whiteSpace: 'pre' }}>Open windows:\n{list}</div> };
+    },
   };
 
   return commands;
