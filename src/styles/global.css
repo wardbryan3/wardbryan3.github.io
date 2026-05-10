@@ -566,6 +566,7 @@ pre code {
 
 /* Flow mode (in-grid terminal) */
 .terminal-flow {
+  position: relative;
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--border);
