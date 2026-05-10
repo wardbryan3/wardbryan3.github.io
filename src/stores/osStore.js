@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 
 const DEFAULT_WINDOWS = {
-  explorer:     { id: 'explorer',     title: 'Projects ~ Portfolio',   icon: 'folder',  open: false, minimized: false, maximized: false, position: { x: 60, y: 60 },    size: { width: 640, height: 480 },  zIndex: 1 },
-  resume:       { id: 'resume',       title: 'resume_current.pdf \u2014 Preview', icon: 'file', open: false, minimized: false, maximized: false, position: { x: 680, y: 100 },   size: { width: 520, height: 600 },  zIndex: 2 },
+  explorer:     { id: 'explorer',     title: 'Projects ~ Portfolio',   icon: 'folder',  open: true, minimized: false, maximized: false, position: { x: 60, y: 60 },    size: { width: 640, height: 480 },  zIndex: 1 },
+  resume:       { id: 'resume',       title: 'resume_current.pdf \u2014 Preview', icon: 'file', open: true, minimized: false, maximized: false, position: { x: 680, y: 100 },   size: { width: 520, height: 600 },  zIndex: 2 },
   'media-player': { id: 'media-player', title: 'Now Playing',          icon: 'music',  open: false, minimized: false, maximized: false, position: { x: 200, y: 200 },   size: { width: 420, height: 360 },  zIndex: 3 },
   trash:        { id: 'trash',        title: 'Trash (0 items)',        icon: 'trash',  open: false, minimized: false, maximized: false, position: { x: 800, y: 350 },   size: { width: 360, height: 280 },  zIndex: 4 },
   settings:     { id: 'settings',     title: 'Settings \u2014 Portfolio OS', icon: 'gear',  open: false, minimized: false, maximized: false, position: { x: 400, y: 150 },   size: { width: 400, height: 380 },  zIndex: 5 },
@@ -37,13 +37,16 @@ function getDefaultPositions() {
 }
 
 const settings = loadSettings();
+const initialOpenIds = Object.entries(DEFAULT_WINDOWS)
+  .filter(([, w]) => w.open)
+  .map(([id]) => id);
 
 export const useOSStore = create((set, get) => ({
   windows: Object.fromEntries(
     Object.entries(DEFAULT_WINDOWS).map(([id, w]) => [id, { ...w }])
   ),
-  windowOrder: [],
-  activeApp: null,
+  windowOrder: [...initialOpenIds],
+  activeApp: initialOpenIds.length > 0 ? initialOpenIds[initialOpenIds.length - 1] : null,
   nextZIndex: 7,
   ...settings,
 

@@ -16,15 +16,17 @@ export default function AppBar() {
   const openWindow = useOSStore((s) => s.openWindow);
   const focusWindow = useOSStore((s) => s.focusWindow);
   const toggleMinimize = useOSStore((s) => s.toggleMinimize);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    const showTimer = setTimeout(() => setVisible(false), 3000);
     let hideTimer;
     const handleMouseMove = (e) => {
       const viewportH = window.innerHeight;
       if (e.clientY >= viewportH - 30) {
         setVisible(true);
         clearTimeout(hideTimer);
+        clearTimeout(showTimer);
       } else if (e.clientY < viewportH - 80) {
         hideTimer = setTimeout(() => setVisible(false), 500);
       }
@@ -33,6 +35,7 @@ export default function AppBar() {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       clearTimeout(hideTimer);
+      clearTimeout(showTimer);
     };
   }, []);
 

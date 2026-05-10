@@ -21,9 +21,8 @@ export default function DesktopOS({ projects, projectCount, postCount, searchDat
 
   return (
     <section
-      className="hero-dashboard"
       style={{
-        position: 'relative', minHeight: '100vh', overflow: 'hidden',
+        position: 'relative', height: '100%', overflow: 'hidden',
         isolation: 'isolate', display: 'flex', flexDirection: 'column',
       }}
     >

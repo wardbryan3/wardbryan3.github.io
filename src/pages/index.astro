@@ -17,19 +17,36 @@ const dirs = [{ name: 'blog', description: 'blog posts', count: postCount }, { n
 ---
 
 <BaseLayout title="Home" description="Bryan Ward - CS student and developer">
-  <DesktopOS
-    projects={projects}
-    projectCount={projectCount}
-    postCount={postCount}
-    searchData={searchData}
-    dirs={dirs}
-    client:media="(min-width: 769px)"
-  />
-  <HeroDashboard
-    projectCount={projectCount}
-    postCount={postCount}
-    searchData={searchData}
-    dirs={dirs}
-    client:media="(max-width: 768px)"
-  />
+  <div class="os-desktop">
+    <DesktopOS
+      projects={projects}
+      projectCount={projectCount}
+      postCount={postCount}
+      searchData={searchData}
+      dirs={dirs}
+      client:media="(min-width: 769px)"
+    />
+  </div>
+  <div class="os-mobile">
+    <HeroDashboard
+      projectCount={projectCount}
+      postCount={postCount}
+      searchData={searchData}
+      dirs={dirs}
+      client:media="(max-width: 768px)"
+    />
+  </div>
 </BaseLayout>
+
+<style>
+  .os-desktop { display: contents; }
+  .os-mobile { display: contents; }
+
+  @media (max-width: 768px) {
+    .os-desktop { display: none; }
+  }
+
+  @media (min-width: 769px) {
+    .os-mobile { display: none; }
+  }
+</style>
