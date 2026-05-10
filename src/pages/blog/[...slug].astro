@@ -11,7 +11,7 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content, headings } = await post.render();
 
 const allPosts = await getCollection('blog');
 const allProjects = await getCollection('projects');
@@ -30,6 +30,7 @@ const searchData = [
   terminalPage={`/blog/${post.slug}`}
   postCount={allPosts.length}
   searchData={searchData}
+  headings={headings}
 >
   <Content />
 </BlogPost>
