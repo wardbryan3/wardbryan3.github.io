@@ -78,6 +78,7 @@ export default function Terminal({
   const [pos, setPos] = useState(side ? null : { x: 0, y: 0 });
   const [size, setSize] = useState(side ? null : { w: DEFAULT_W, h: DEFAULT_H });
   const [ready, setReady] = useState(false);
+  const [globalFocusKey, setGlobalFocusKey] = useState(0);
 
   // Mobile floating state
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -229,6 +230,26 @@ export default function Terminal({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [side, ready]);
+
+  // Global Ctrl+` keybinding to focus terminal
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.ctrlKey && e.key === '`') {
+        e.preventDefault();
+        setCollapsed(false);
+        setGlobalFocusKey(k => k + 1);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
+
+  // Focus from global Ctrl+` shortcut
+  useEffect(() => {
+    if (globalFocusKey > 0 && !collapsed && phase === 'interactive' && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [globalFocusKey, collapsed, phase]);
 
   const startDrag = useCallback((e) => {
     if (side || !pos || !size) return;

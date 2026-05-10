@@ -39,8 +39,8 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
             ['clear', 'clear terminal'],
             ['history', 'recent commands'],
             ['fastfetch', 'system info'],
-            ['ls', 'list sections'],
-            ['cd', 'navigate to page'],
+            ['ls', 'list directories (ls, ls blog)'],
+            ['cd', 'navigate pages (cd blog, cd post)'],
             ['cat', 'view content'],
             ['find', 'search by name'],
             ['grep', 'search by content'],
@@ -71,7 +71,7 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
   commands.pwd = {
     description: 'current page',
     handler: () => ({
-      output: <div className="term-text">{page}</div>,
+      output: <div className="term-text">{normalizePage(page)}</div>,
     }),
   };
 
