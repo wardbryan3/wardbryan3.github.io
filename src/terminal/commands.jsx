@@ -14,7 +14,7 @@ function renderSearchResults(results, keyword) {
   };
 }
 
-export function createCommands({ page, projectCount, postCount, searchData }) {
+export function createCommands({ page, projectCount, postCount, searchData, dirs = [] }) {
   const commands = {};
 
   commands.help = {
