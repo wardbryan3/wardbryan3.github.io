@@ -133,15 +133,61 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
 
   commands.ls = {
     description: 'list sections',
-    handler: () => ({
-      output: (
-        <div className="term-output">
-          <div className="term-text"><span className="ff-value-link">blog/</span></div>
-          <div className="term-text"><span className="ff-value-link">projects/</span></div>
-          <div className="term-text">README.md</div>
-        </div>
-      ),
-    }),
+    handler: (args) => {
+      const raw = args[0];
+      if (!raw || raw === '/' || raw === '~') {
+        return {
+          output: (
+            <div className="term-output">
+              {dirs.map(d => (
+                <div key={d.name} className="term-text">
+                  <span className="ff-value-link">{d.name}/</span>
+                  <span className="term-muted">  {d.description} ({d.count})</span>
+                </div>
+              ))}
+              <div className="term-text">README.md</div>
+            </div>
+          ),
+        };
+      }
+
+      const target = raw.replace(/\/+$/, '');
+
+      if (target === 'blog') {
+        const items = searchData.filter(e => e.type === 'blog');
+        return {
+          output: (
+            <div className="term-output">
+              {items.map(item => (
+                <div key={item.slug} className="term-text">
+                  <a href={item.path} className="ff-value-link">{item.slug}/</a>
+                  <span className="term-muted">  {item.title}</span>
+                  <span className="term-muted" style={{ float: 'right' }}>{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+              ))}
+            </div>
+          ),
+        };
+      }
+
+      if (target === 'projects') {
+        const items = searchData.filter(e => e.type === 'projects');
+        return {
+          output: (
+            <div className="term-output">
+              {items.map(item => (
+                <div key={item.slug} className="term-text">
+                  <a href={item.path} className="ff-value-link">{item.slug}/</a>
+                  <span className="term-muted">  {item.title}</span>
+                </div>
+              ))}
+            </div>
+          ),
+        };
+      }
+
+      return { output: <div className="term-text term-muted">ls: cannot access '{raw}': No such directory</div> };
+    },
   };
 
   commands.cd = {
