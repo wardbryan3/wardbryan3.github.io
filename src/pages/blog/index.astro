@@ -15,6 +15,14 @@ const searchData = [
   ...sortedPosts.map(p => ({ title: p.data.title, slug: p.slug, path: `/blog/${p.slug}`, type: 'blog', tags: p.data.tags })),
   ...allProjects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects', tags: p.data.tags })),
 ];
+
+const currentIndex = sortedPosts.findIndex((p) => p.slug === latestPost.slug);
+const prevPost = currentIndex < sortedPosts.length - 1
+  ? { title: sortedPosts[currentIndex + 1].data.title, slug: sortedPosts[currentIndex + 1].slug }
+  : null;
+const nextPost = currentIndex > 0
+  ? { title: sortedPosts[currentIndex - 1].data.title, slug: sortedPosts[currentIndex - 1].slug }
+  : null;
 ---
 
 <BlogPost
@@ -26,6 +34,8 @@ const searchData = [
   terminalPage="/blog"
   postCount={sortedPosts.length}
   searchData={searchData}
+  prevPost={prevPost}
+  nextPost={nextPost}
 >
   <Content />
 </BlogPost>

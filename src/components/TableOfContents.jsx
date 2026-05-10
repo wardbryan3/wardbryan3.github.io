@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
 
+/**
+ * @param {Object} props
+ * @param {{ depth: number; slug: string; text: string }[]} [props.headings]
+ */
 export default function TableOfContents({ headings = [] }) {
   const [activeId, setActiveId] = useState('');
 
@@ -12,7 +16,7 @@ export default function TableOfContents({ headings = [] }) {
           }
         });
       },
-      { rootMargin: '0px 0px -80% 0px' }
+      { rootMargin: '-48px 0px -80% 0px' }
     );
 
     headings.forEach((h) => {

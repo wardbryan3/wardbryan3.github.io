@@ -54,7 +54,8 @@ export function createCommands({ page, projectCount, postCount, searchData }) {
     handler: () => ({
       output: (
         <div className="term-text">
-          Bryan Ward — full-stack developer and CS student. I build things.
+          Bryan Ward — CS student and developer from southern Oregon. Linux
+          enthusiast, FOSS advocate, exploring agentic engineering and AI tooling.
         </div>
       ),
     }),
@@ -112,9 +113,10 @@ export function createCommands({ page, projectCount, postCount, searchData }) {
       output: (
         <div className="term-output">
           <div className="term-text"><span className="term-muted">name     </span><span className="ff-value-green">Bryan Ward</span></div>
-          <div className="term-text"><span className="term-muted">status   </span><span className="ff-value-green">building cool stuff</span></div>
+          <div className="term-text"><span className="term-muted">status   </span><span className="ff-value-green">learning and building</span></div>
           <div className="term-text"><span className="term-muted">level    </span><span className="ff-value-purple">CS student / developer</span></div>
-          <div className="term-text"><span className="term-muted">focus    </span>full-stack web</div>
+          <div className="term-text"><span className="term-muted">focus    </span>full-stack web, Linux, FOSS</div>
+          <div className="term-text"><span className="term-muted">tools    </span>Python, Java, JavaScript, HTML, CSS, Bash, Node.js, React, Spring Boot, Git, Linux, Astro</div>
           <div className="term-text"><span className="term-muted">projects </span>{projectCount} active</div>
           <div className="term-text"><span className="term-muted">posts    </span>{postCount} published</div>
         </div>
@@ -161,7 +163,7 @@ export function createCommands({ page, projectCount, postCount, searchData }) {
       const file = args[0];
       if (!file) return { output: <div className="term-text term-muted">cat: missing filename</div> };
       if (file === 'README.md') {
-        return { output: <div className="term-text">Hi, I'm Bryan — a CS student and full-stack developer. Type 'ls' to explore.</div> };
+        return { output: <div className="term-text">Hi, I'm Bryan — a CS student and developer from southern Oregon. Type 'ls' to explore.</div> };
       }
       return { output: <div className="term-text term-muted">cat: no such file: {file}</div> };
     },

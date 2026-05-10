@@ -9,7 +9,7 @@ const links = [
 ];
 
 const isBlogPage = currentPath.startsWith('/blog/');
-let blogPosts = [];
+let blogPosts: { slug: string; title: string }[] = [];
 if (isBlogPage) {
   const allPosts = await getCollection('blog');
   blogPosts = allPosts
