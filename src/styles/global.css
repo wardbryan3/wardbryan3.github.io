@@ -518,3 +518,48 @@ pre code {
   overflow: hidden;
   isolation: isolate;
 }
+
+.toc {
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+}
+
+.toc-heading {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.toc-list {
+  list-style: none;
+}
+
+.toc-item {
+  margin-bottom: 0.2rem;
+}
+
+.toc-item.active > .toc-link {
+  color: var(--accent);
+}
+
+.toc-link {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  display: block;
+  padding: 0.2rem 0;
+  transition: color 0.15s;
+}
+
+.toc-link:hover {
+  color: var(--accent);
+}
+
+.toc-depth-3 .toc-link {
+  padding-left: 0.75rem;
+  font-size: 0.7rem;
+}
