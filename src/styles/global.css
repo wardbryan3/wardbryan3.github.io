@@ -629,21 +629,37 @@ pre code {
   width: 100%;
 }
 
-/* Mobile: hide terminal by default, toggle via body class */
+/* Mobile: hide terminal by default, toggle as floating window */
 @media (max-width: 768px) {
-  .terminal-flow {
+  body .terminal-window.terminal-flow,
+  body .terminal-sidebar {
     display: none;
   }
 
-  .terminal-sidebar {
-    display: none;
-  }
-
-  body.show-mobile-terminal .terminal-flow {
+  body.terminal-mobile-open .terminal-window.terminal-mobile-floating {
     display: flex;
   }
+}
 
-  body.show-mobile-terminal .terminal-sidebar {
-    display: block;
-  }
+.terminal-mobile-floating {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  border: 1px solid var(--accent);
+  border-top: none;
+  border-radius: 0;
+  background: rgba(18, 0, 26, 0.95);
+  backdrop-filter: blur(4px);
+  font-family: var(--font-mono);
+}
+
+.terminal-mobile-floating .terminal-window-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
 }

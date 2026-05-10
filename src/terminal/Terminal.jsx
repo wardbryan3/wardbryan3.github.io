@@ -37,10 +37,10 @@ const MOBILE_BP = 768;
 function buildFields(projectCount, postCount) {
   return [
     { key: 'name',      value: 'Bryan Ward',                                                            cls: 'green' },
-    { key: 'status',    value: 'building cool stuff',                                                   cls: 'green' },
+    { key: 'status',    value: 'learning and building',                                                 cls: 'green' },
     { key: 'level',     value: 'CS student / developer',                                                cls: 'purple' },
-    { key: 'focus',     value: 'full-stack web',                                                        cls: 'white' },
-    { key: 'tools',     value: 'TypeScript, JavaScript, React, Next.js, Node.js, Python, Java, C++, Rust, SQL, Git, Docker, Linux, Astro', cls: 'white' },
+    { key: 'focus',     value: 'full-stack web, Linux, FOSS',                                           cls: 'white' },
+    { key: 'tools',     value: 'Python, Java, JavaScript, HTML, CSS, Bash, Node.js, React, Spring Boot, Git, Linux, Astro', cls: 'white' },
     { key: 'projects',  value: `${projectCount} active`,                                                cls: 'white' },
     { key: 'posts',     value: `${postCount} published`,                                                cls: 'white' },
     { key: 'github',    value: 'github.com/wardbryan3',                                                 cls: 'link', href: 'https://github.com/wardbryan3' },
@@ -77,6 +77,22 @@ export default function Terminal({
   const [pos, setPos] = useState(side ? null : { x: 0, y: 0 });
   const [size, setSize] = useState(side ? null : { w: DEFAULT_W, h: DEFAULT_H });
   const [ready, setReady] = useState(false);
+
+  // Mobile floating state
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const check = () => setMobileOpen(document.body.classList.contains('terminal-mobile-open'));
+    check();
+    const observer = new MutationObserver(check);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
+  const closeMobileTerminal = useCallback(() => {
+    document.body.classList.remove('terminal-mobile-open');
+    setMobileOpen(false);
+  }, []);
 
   // Restore terminal state from sessionStorage
   const [restored] = useState(() => {
@@ -445,6 +461,23 @@ export default function Terminal({
   );
 
   const windowClasses = `terminal-window${!side && phase === 'growing' && ready ? ' growing' : ''}${side ? ' terminal-sidebar' : ''}${collapsed ? ' terminal-collapsed' : ''}${maximized ? ' terminal-maximized' : ''}`;
+
+  // Mobile floating: when toggled on mobile, render full-screen like the homepage terminal
+  const isMobileView = typeof window !== 'undefined' && window.innerWidth <= 768;
+
+  if (mobileOpen && isMobileView && (flow || side)) {
+    return (
+      <div className="terminal-window terminal-mobile-floating">
+        <div className="terminal-titlebar">
+          <span className="titlebar-title">bryan@ward — terminal</span>
+          <div className="titlebar-buttons">
+            <span className="titlebar-btn titlebar-close" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeMobileTerminal(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeMobileTerminal(); } }} title="Close">×</span>
+          </div>
+        </div>
+        {terminalBody}
+      </div>
+    );
+  }
 
   if (flow) {
     return (
