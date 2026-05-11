@@ -125,7 +125,9 @@ function HexGrid() {
   const { camera } = useThree();
 
   useFrame((state) => {
-    if (!meshRef.current) return;
+    const m = meshRef.current;
+    if (!m) return;
+    const geo = m.geometry;
     const time = state.clock.elapsedTime;
 
     raycaster.current.setFromCamera(mouseNDC.current, camera);
@@ -145,9 +147,9 @@ function HexGrid() {
     }
 
     const count = GRID_ROWS * GRID_COLS;
-    const vertexCount = geometry.attributes.position.count;
+    const vertexCount = geo.attributes.position.count;
     const vertsPerHex = vertexCount / count;
-    const posAttr = geometry.attributes.position;
+    const posAttr = geo.attributes.position;
 
     for (let i = 0; i < count; i++) {
       const row = Math.floor(i / GRID_COLS);
@@ -175,7 +177,7 @@ function HexGrid() {
       }
     }
 
-    const colorAttr = geometry.attributes.color;
+    const colorAttr = geo.attributes.color;
     const baseColors = baseColorsRef.current;
 
     for (let i = 0; i < count; i++) {
@@ -203,7 +205,7 @@ function HexGrid() {
 
     colorAttr.needsUpdate = true;
     posAttr.needsUpdate = true;
-    geometry.computeVertexNormals();
+    geo.computeVertexNormals();
   });
 
   return (
