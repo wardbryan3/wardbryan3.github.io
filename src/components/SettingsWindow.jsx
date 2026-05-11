@@ -5,10 +5,11 @@ const THEMES = [
   'catppuccin-macchiato', 'gruvbox', 'kanagawa', 'nord', 'matrix', 'one-dark',
 ];
 
-const WALLPAPERS = ['particle-field', 'dots', 'grid', 'none'];
+const WALLPAPERS = ['particle-field', 'digital-rain', 'hex-field', 'dots', 'grid', 'none'];
 const FONTS = ['mono', 'sans-serif'];
 const DOCK_POSITIONS = ['top', 'bottom'];
 const CLOCK_FORMATS = ['12h', '24h'];
+const FONT_SIZES = ['small', 'medium', 'large'];
 
 export default function SettingsWindow() {
   const theme = useOSStore((s) => s.theme);
@@ -21,12 +22,14 @@ export default function SettingsWindow() {
   const setTerminalFont = useOSStore((s) => s.setTerminalFont);
   const setDockPosition = useOSStore((s) => s.setDockPosition);
   const setClockFormat = useOSStore((s) => s.setClockFormat);
+  const fontSize = useOSStore((s) => s.fontSize);
+  const setFontSize = useOSStore((s) => s.setFontSize);
   const resetWindows = useOSStore((s) => s.resetWindows);
 
   return (
     <div
       style={{
-        padding: '10px', fontSize: '0.7rem', height: '100%',
+        padding: '10px', fontSize: 'calc(0.7rem * var(--os-font-mult))', height: '100%',
         overflow: 'auto',
       }}
     >
@@ -100,6 +103,20 @@ export default function SettingsWindow() {
         </select>
       </SettingRow>
 
+      <SettingRow label="Font size">
+        <select
+          value={fontSize}
+          onChange={(e) => setFontSize(e.target.value)}
+          style={selectStyle}
+        >
+          {FONT_SIZES.map((f) => (
+            <option key={f} value={f}>
+              {f}
+            </option>
+          ))}
+        </select>
+      </SettingRow>
+
       <div style={{ padding: '6px 0' }}>
         <button
           onClick={resetWindows}
@@ -107,7 +124,7 @@ export default function SettingsWindow() {
             width: '100%', padding: '5px 0',
             background: 'var(--surface-hover)',
             border: '1px solid var(--border)', borderRadius: '4px',
-            cursor: 'pointer', color: 'var(--text)', fontSize: '0.65rem',
+            cursor: 'pointer', color: 'var(--text)', fontSize: 'calc(0.65rem * var(--os-font-mult))',
           }}
         >
           Reset window positions
@@ -117,7 +134,7 @@ export default function SettingsWindow() {
       <div
         style={{
           padding: '8px 0', textAlign: 'center',
-          color: 'var(--text-muted)', fontSize: '0.6rem',
+          color: 'var(--text-muted)', fontSize: 'calc(0.6rem * var(--os-font-mult))',
           borderTop: '1px solid var(--border)',
         }}
       >
@@ -145,5 +162,5 @@ function SettingRow({ label, children }) {
 const selectStyle = {
   background: 'var(--surface)', color: 'var(--text)',
   border: '1px solid var(--border)', borderRadius: '3px',
-  padding: '2px 6px', fontSize: '0.65rem', cursor: 'pointer',
+  padding: '2px 6px', fontSize: 'calc(0.65rem * var(--os-font-mult))', cursor: 'pointer',
 };
