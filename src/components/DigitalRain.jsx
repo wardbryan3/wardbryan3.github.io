@@ -74,6 +74,7 @@ export default function DigitalRain() {
       canvas.style.width = window.innerWidth + 'px';
       canvas.style.height = window.innerHeight + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.font = `${FONT_SIZE}px monospace`;
       const numCols = Math.ceil(window.innerWidth / COLUMN_WIDTH);
       const oldLen = columnsRef.current.length;
       if (numCols > oldLen) {

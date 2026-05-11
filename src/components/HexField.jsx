@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useOSStore } from '../stores/osStore';
 
@@ -52,7 +52,6 @@ function HexGrid() {
   })());
   const theme = useOSStore((s) => s.theme);
   const hoveredIdxRef = useRef(null);
-  const [, setHoveredIdx] = useState(null);
   const mouseNDC = useRef(new THREE.Vector2(-999, -999));
   const raycaster = useRef(new THREE.Raycaster());
   const baseColorsRef = useRef(null);
@@ -137,12 +136,10 @@ function HexGrid() {
       const idx = getGridCell(pt.x, pt.z);
       if (idx !== hoveredIdxRef.current) {
         hoveredIdxRef.current = idx;
-        setHoveredIdx(idx);
       }
     } else {
       if (hoveredIdxRef.current !== null) {
         hoveredIdxRef.current = null;
-        setHoveredIdx(null);
       }
     }
 
