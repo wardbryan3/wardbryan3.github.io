@@ -80,8 +80,8 @@ function HexGrid() {
     const primaryColor = new THREE.Color(primary.r, primary.g, primary.b);
 
     for (let row = 0; row < GRID_ROWS; row++) {
-      for (let col = 0; col < GRID_COLS; col++) {
-        const c = getHexCenter(row, col);
+      for (let ccol = 0; ccol < GRID_COLS; ccol++) {
+        const c = getHexCenter(row, ccol);
         const matrix = new THREE.Matrix4().makeTranslation(c.x, 0, c.z);
         const color = Math.random() > 0.4 ? accentColor : primaryColor;
         for (let v = 0; v < geo.attributes.position.count; v++) {
