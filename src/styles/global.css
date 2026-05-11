@@ -754,13 +754,22 @@ pre code {
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
-.loading-tux svg {
+.loading-tux-img {
   width: 80px;
   height: 80px;
-  fill: #fff;
+  color: #fff;
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
 
 .loading-text {
@@ -769,33 +778,14 @@ pre code {
   letter-spacing: 0.1em;
 }
 
-.loading-bar-track {
-  width: 120px;
-  height: 2px;
-  background: #333;
-  overflow: hidden;
-}
-
-.loading-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: #fff;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-}
-
-.loading-bar-fill.animate {
-  animation: loading-fill 2s ease-in-out forwards;
-}
-
 .loading-sub {
   color: #666;
   font-size: 0.75rem;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
-@keyframes loading-fill {
-  0% { width: 0%; }
-  100% { width: 100%; }
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* BIOS screen */
@@ -806,7 +796,6 @@ pre code {
   background: #0000aa;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
   font-family: var(--font-mono);
   color: #c0c0c0;
 }
@@ -814,89 +803,153 @@ pre code {
 .bios-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between;
   border-bottom: 2px solid #c0c0c0;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
+  padding: 8px 12px;
 }
 
-.bios-header-label {
-  background: #c0c0c0;
-  color: #0000aa;
-  padding: 0.2rem 0.6rem;
+.bios-header-title {
+  color: #fff;
   font-weight: bold;
   font-size: 0.75rem;
 }
 
-.bios-header-version {
-  font-size: 0.7rem;
-  color: #aaa;
+.bios-header-copyright {
+  color: #c0c0c0;
+  font-size: 0.65rem;
+}
+
+.bios-tabbar {
+  display: flex;
+  gap: 0;
+  padding: 4px 8px;
+}
+
+.bios-tab {
+  padding: 2px 12px;
+  font-size: 0.75rem;
+  color: #c0c0c0;
+  cursor: default;
+  user-select: none;
+}
+
+.bios-tab-selected {
+  background: #000080;
+  color: #fff;
+  font-weight: bold;
 }
 
 .bios-body {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  border-top: 1px solid #0000cc;
+  min-height: 0;
+}
+
+.bios-body-left {
+  flex: 1;
+  display: flex;
   align-items: center;
   justify-content: center;
+  padding: 16px 12px;
+}
+
+.bios-body-right {
+  width: 180px;
+  border-left: 1px solid #0000cc;
+  padding: 10px 8px;
+  font-size: 0.65rem;
+  color: #c0c0c0;
+}
+
+.bios-help-heading {
+  color: #fff;
+  font-weight: bold;
+  margin-bottom: 6px;
+  font-size: 0.65rem;
+}
+
+.bios-help-separator {
+  border: none;
+  border-top: 1px solid #0000cc;
+  margin: 6px 0;
+}
+
+.bios-help-hints {
+  color: #888;
+  font-size: 0.6rem;
 }
 
 .bios-window {
   background: #c0c0c0;
   color: #000;
   border: 2px solid #fff;
-  min-width: 400px;
-  max-width: 500px;
+  min-width: 380px;
+  max-width: 420px;
 }
 
 .bios-window-titlebar {
   background: #000080;
   color: #fff;
-  padding: 0.3rem 1rem;
+  padding: 4px 10px;
   font-weight: bold;
-  font-size: 0.8rem;
-  text-align: left;
+  font-size: 0.75rem;
 }
 
 .bios-window-body {
-  padding: 2rem 1.5rem;
+  padding: 20px 16px;
   text-align: center;
 }
 
 .bios-window-text {
   color: #000;
-  font-size: 0.85rem;
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+  line-height: 1.6;
 }
 
 .bios-choices {
   display: flex;
-  gap: 2rem;
+  gap: 20px;
   justify-content: center;
-  font-size: 0.85rem;
-  color: #000;
+  font-size: 0.8rem;
 }
 
 .bios-choice {
-  padding: 0.25rem 0.5rem;
+  padding: 3px 10px;
   cursor: pointer;
   user-select: none;
+  color: #444;
 }
 
 .bios-choice-selected {
   background: #000080;
   color: #fff;
+  font-weight: bold;
 }
 
 .bios-choice-label {
   font-weight: bold;
 }
 
-.bios-footer {
-  margin-top: 1.5rem;
-  font-size: 0.7rem;
-  color: #444;
+.bios-dialog-footer {
+  margin-top: 16px;
   border-top: 1px solid #888;
-  padding-top: 0.5rem;
+  padding-top: 8px;
+  font-size: 0.65rem;
+  color: #444;
+}
+
+.bios-footer {
+  border-top: 2px solid #c0c0c0;
+  padding: 4px 12px;
+  display: flex;
+  gap: 16px;
+  font-size: 0.65rem;
+  color: #c0c0c0;
+}
+
+.bios-footer-key {
+  color: #fff;
+  font-weight: bold;
 }
