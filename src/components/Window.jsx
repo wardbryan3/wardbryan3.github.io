@@ -1,13 +1,13 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useOSStore } from '../stores/osStore';
 
-const ICONS = {
-  folder: '\uD83D\uDCC1',
-  file: '\uD83D\uDCC4',
-  music: '\u266A',
-  trash: '\uD83D\uDDD1',
-  gear: '\u2699',
-  terminal: '\u203A_',
+const ICON_PATHS = {
+  folder: '/img/icons/folder.svg',
+  file: '/img/icons/file-earmark-pdf.svg',
+  music: '/img/icons/music-player.svg',
+  trash: '/img/icons/trash.svg',
+  gear: '/img/icons/gear.svg',
+  terminal: '/img/icons/terminal.svg',
 };
 
 export default function Window({ id, children, menubar }) {
@@ -114,12 +114,14 @@ export default function Window({ id, children, menubar }) {
       className={`os-window${isMaximized ? ' os-window-maximized' : ''}`}
       style={{
         ...frameSx,
-        background: 'var(--surface)',
+        background: 'transparent',
         border: '1px solid var(--border)',
-        display: 'flex',
+        display: win.minimized ? 'none' : 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
         boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+        backdropFilter: 'blur(4px)',
+        WebkitBackdropFilter: 'blur(4px)',
       }}
       onMouseDown={() => focusWindow(id)}
     >
@@ -129,41 +131,47 @@ export default function Window({ id, children, menubar }) {
         style={{
           position: 'relative', display: 'flex', alignItems: 'center', padding: '0.3rem 0.6rem',
           borderBottom: '1px solid var(--border)', cursor: 'grab',
-          userSelect: 'none', background: 'var(--surface)',
+          userSelect: 'none', background: 'var(--surface)', opacity: 0.9,
         }}
       >
-        <span style={{ marginRight: '0.4rem', fontSize: '0.75rem' }}>{ICONS[win.icon] || ''}</span>
-        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: '0.7rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{win.title}</span>
+        {ICON_PATHS[win.icon] && <img src={ICON_PATHS[win.icon]} style={{ width: '14px', height: '14px', marginRight: '0.4rem' }} alt="" />}
+        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 'calc(0.7rem * var(--os-font-mult))', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{win.title}</span>
         <div className="window-controls" style={{ marginLeft: 'auto', display: 'flex', gap: '4px' }}>
           <button
             className="titlebar-btn"
             onClick={() => toggleMinimize(id)}
             style={btnStyle}
-          >_</button>
+          >
+            <img src="/img/icons/icons8-minimize-window-50.png" style={{ width: '10px', height: '10px', display: 'block' }} alt="" />
+          </button>
           <button
             className="titlebar-btn"
             onClick={() => toggleMaximize(id)}
             style={btnStyle}
-          >{isMaximized ? '\u21F1' : '\u25A1'}</button>
+          >
+            <img src={isMaximized ? '/img/icons/icons8-restore-window-50.png' : '/img/icons/icons8-maximize-window-50.png'} style={{ width: '10px', height: '10px', display: 'block' }} alt="" />
+          </button>
           <button
             className="titlebar-btn titlebar-close"
             onClick={() => closeWindow(id)}
             style={{ ...btnStyle, color: 'var(--text-muted)' }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#cc3333'; e.currentTarget.style.color = 'white'; e.currentTarget.style.borderColor = '#cc3333'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
-          >X</button>
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#cc3333'; e.currentTarget.style.borderColor = '#cc3333'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+          >
+            <img src="/img/icons/icons8-close-window-50.png" style={{ width: '10px', height: '10px', display: 'block' }} alt="" />
+          </button>
         </div>
       </div>
 
       {menubar && (
-        <div className="window-menubar" style={{ display: 'flex', gap: '10px', padding: '2px 8px', borderBottom: '1px solid var(--border)', fontSize: '0.65rem', background: 'var(--surface)' }}>
+        <div className="window-menubar" style={{ display: 'flex', gap: '10px', padding: '2px 8px', borderBottom: '1px solid var(--border)', fontSize: 'calc(0.65rem * var(--os-font-mult))', background: 'var(--surface)', opacity: 0.9 }}>
           {menubar.map((item) => (
             <span key={item} style={{ cursor: 'pointer', color: 'var(--text-muted)' }}>{item}</span>
           ))}
         </div>
       )}
 
-      <div style={{ flex: 1, minHeight: 0, overflow: 'auto', background: 'var(--bg)' }}>
+      <div style={{ flex: 1, minHeight: 0, overflow: 'auto', background: 'var(--bg)', opacity: 0.9 }}>
         {children}
       </div>
 

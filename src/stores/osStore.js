@@ -39,13 +39,13 @@ function loadSettings() {
     const saved = localStorage.getItem('portfolio-os-settings');
     if (saved) return JSON.parse(saved);
   } catch {}
-  return { theme: 'system', wallpaper: 'particle-field', terminalFont: 'mono', clockFormat: '12h', dockPosition: 'top' };
+  return { theme: 'system', wallpaper: 'particle-field', terminalFont: 'mono', clockFormat: '12h', dockPosition: 'top', fontSize: 'small' };
 }
 
 function saveSettings(s) {
   try {
     localStorage.setItem('portfolio-os-settings', JSON.stringify({
-      theme: s.theme, wallpaper: s.wallpaper, terminalFont: s.terminalFont, clockFormat: s.clockFormat, dockPosition: s.dockPosition,
+      theme: s.theme, wallpaper: s.wallpaper, terminalFont: s.terminalFont, clockFormat: s.clockFormat, dockPosition: s.dockPosition, fontSize: s.fontSize,
     }));
   } catch {}
 }
@@ -246,5 +246,10 @@ export const useOSStore = create((set, get) => ({
   setDockPosition: (dockPosition) => {
     saveSettings({ ...get(), dockPosition });
     set({ dockPosition });
+  },
+
+  setFontSize: (fontSize) => {
+    saveSettings({ ...get(), fontSize });
+    set({ fontSize });
   },
 }));

@@ -2,12 +2,11 @@ import { useOSStore } from '../stores/osStore';
 import { useState, useEffect } from 'react';
 
 const APPS = [
-  { id: 'explorer', icon: '\uD83D\uDCC1', label: 'Explorer' },
-  { id: 'resume', icon: '\uD83D\uDCC4', label: 'Resume' },
-  { id: 'media-player', icon: '\u266A', label: 'Media Player' },
-  { id: 'trash', icon: '\uD83D\uDDD1', label: 'Trash' },
-  { id: 'settings', icon: '\u2699', label: 'Settings' },
-  { id: 'terminal', icon: '\u203A_', label: 'Terminal' },
+  { id: 'explorer', icon: '/img/icons/folder.svg', label: 'Explorer' },
+  { id: 'resume', icon: '/img/icons/file-earmark-pdf.svg', label: 'Resume' },
+  { id: 'media-player', icon: '/img/icons/music-player.svg', label: 'Media Player' },
+  { id: 'settings', icon: '/img/icons/gear.svg', label: 'Settings' },
+  { id: 'terminal', icon: '/img/icons/terminal.svg', label: 'Terminal' },
 ];
 
 export default function AppBar() {
@@ -46,7 +45,7 @@ export default function AppBar() {
     if (!w.open) {
       openWindow(id);
     } else if (w.minimized) {
-      focusWindow(id);
+      openWindow(id);
     } else if (activeApp === id) {
       toggleMinimize(id);
     } else {
@@ -64,10 +63,10 @@ export default function AppBar() {
         borderRadius: '12px', padding: '6px 14px',
         display: 'flex', gap: '12px', alignItems: 'center',
         boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-        zIndex: 10000, fontSize: '0.8rem',
+        zIndex: 10000, fontSize: 'calc(0.8rem * var(--os-font-mult))',
       }}
     >
-      {APPS.map((app) => {
+      {[...APPS, ...(windows['trash']?.open ? [{ id: 'trash', icon: '/img/icons/trash.svg', label: 'Trash' }] : [])].map((app) => {
         const w = windows[app.id];
         const isOpen = w?.open && !w.minimized;
         const isActive = activeApp === app.id && isOpen;
@@ -86,10 +85,10 @@ export default function AppBar() {
                 : isOpen || w?.open
                   ? 'var(--text)'
                   : 'var(--text-muted)',
-              fontSize: '0.8rem',
+              fontSize: 'calc(0.8rem * var(--os-font-mult))',
             }}
           >
-            <span>{app.icon}</span>
+            <img src={app.icon} style={{ width: '18px', height: '18px' }} alt={app.label} />
             {w?.open && (
               <span
                 style={{

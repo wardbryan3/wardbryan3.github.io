@@ -1,17 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
-@import './themes.css';
+
 
 :root {
-  --bg: #05000a;
-  --surface: #12001a;
-  --surface-hover: #1a0028;
-  --text: #d0c0e0;
-  --text-muted: #7a6a8a;
-  --primary: #8800cc;
-  --primary-glow: rgba(136, 0, 204, 0.4);
-  --accent: #00ff66;
-  --accent-glow: rgba(0, 255, 102, 0.4);
-  --border: #2a1040;
   --font-mono: 'JetBrains Mono', monospace;
   --font-sans: 'Inter', sans-serif;
 }
@@ -132,6 +121,9 @@ pre code {
 
 .terminal-window {
   background: var(--surface);
+  opacity: 0.9;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   border: 1px solid var(--accent);
   border-radius: 6px;
   overflow: hidden;
@@ -144,7 +136,6 @@ pre code {
 .terminal-window:not(.terminal-sidebar) {
   display: flex;
   flex-direction: column;
-  background: rgba(18, 0, 26, 0.8);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
@@ -198,7 +189,7 @@ pre code {
   width: 18px;
   height: 18px;
   border-radius: 3px;
-  font-size: 0.65rem;
+  font-size: calc(0.65rem * var(--os-font-mult, 1));
   line-height: 1;
   cursor: pointer;
   color: var(--text-muted);
@@ -221,7 +212,7 @@ pre code {
 .titlebar-title {
   flex: 1;
   text-align: center;
-  font-size: 0.7rem;
+  font-size: calc(0.7rem * var(--os-font-mult, 1));
   color: var(--text-muted);
 }
 
@@ -277,12 +268,12 @@ pre code {
   display: flex;
   gap: 1.5rem;
   align-items: flex-start;
-  font-size: 0.8rem;
+  font-size: calc(0.8rem * var(--os-font-mult, 1));
 }
 
 .ff-tux {
   flex-shrink: 0;
-  font-size: 0.65rem;
+  font-size: calc(0.65rem * var(--os-font-mult, 1));
   line-height: 1.0;
   color: var(--accent);
   white-space: pre;
@@ -419,6 +410,9 @@ pre code {
   width: 380px;
   height: 100vh;
   z-index: 50;
+  opacity: 0.9;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   border-radius: 0;
   border-right: none;
   border-top: none;
@@ -447,7 +441,7 @@ pre code {
   border-radius: 4px;
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: calc(0.7rem * var(--os-font-mult, 1));
   padding: 0.15rem 0.4rem;
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -491,7 +485,7 @@ pre code {
 
 @media (max-width: 768px) {
   .ff-tux {
-    font-size: 0.55rem;
+    font-size: calc(0.55rem * var(--os-font-mult, 1));
   }
 
   .ff-output {
@@ -511,7 +505,7 @@ pre code {
   justify-content: center;
   padding: 2rem;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: calc(0.8rem * var(--os-font-mult, 1));
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface);
@@ -531,7 +525,7 @@ pre code {
 
 .toc-heading {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: calc(0.7rem * var(--os-font-mult, 1));
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-muted);
@@ -566,7 +560,7 @@ pre code {
 
 .toc-depth-3 .toc-link {
   padding-left: 0.75rem;
-  font-size: 0.7rem;
+  font-size: calc(0.7rem * var(--os-font-mult, 1));
 }
 
 /* Flow mode (in-grid terminal) */
@@ -576,6 +570,9 @@ pre code {
   flex-direction: column;
   border-left: 1px solid var(--border);
   background: var(--surface);
+  opacity: 0.9;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   width: 320px;
   min-width: 320px;
   overflow: hidden;
@@ -612,7 +609,7 @@ pre code {
   border-radius: 4px;
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: calc(0.7rem * var(--os-font-mult, 1));
   padding: 0.15rem 0.4rem;
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;

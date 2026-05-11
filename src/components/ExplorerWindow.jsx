@@ -11,7 +11,7 @@ export default function ExplorerWindow({ projects }) {
     <div
       style={{
         display: 'flex', flexDirection: 'column', height: '100%',
-        fontSize: '0.7rem',
+        fontSize: 'calc(0.7rem * var(--os-font-mult))',
       }}
     >
       <div
@@ -28,7 +28,7 @@ export default function ExplorerWindow({ projects }) {
           style={{
             flex: 1, background: 'var(--bg)', padding: '2px 6px',
             borderRadius: '3px', color: 'var(--text-muted)',
-            fontSize: '0.65rem',
+            fontSize: 'calc(0.65rem * var(--os-font-mult))',
           }}
         >
           ~/Projects/
@@ -40,7 +40,7 @@ export default function ExplorerWindow({ projects }) {
           style={{
             width: '130px', borderRight: '1px solid var(--border)',
             padding: '6px', overflow: 'auto', background: 'var(--surface)',
-            fontSize: '0.65rem',
+            fontSize: 'calc(0.65rem * var(--os-font-mult))',
           }}
         >
           <div
@@ -49,7 +49,7 @@ export default function ExplorerWindow({ projects }) {
               marginBottom: '4px',
             }}
           >
-            {'\uD83D\uDCC1'} Projects
+            <img src="/img/icons/folder.svg" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" /> Projects
           </div>
           {projects.map((p) => (
             <div
@@ -59,7 +59,7 @@ export default function ExplorerWindow({ projects }) {
                 color: 'var(--text)',
               }}
             >
-              {'\uD83D\uDCC1'} {p.data.title}
+              <img src="/img/icons/folder.svg" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" /> {p.data.title}
             </div>
           ))}
         </div>
@@ -72,7 +72,7 @@ export default function ExplorerWindow({ projects }) {
                 background: 'none', border: '1px solid var(--border)',
                 color: 'var(--text)', padding: '4px 8px',
                 borderRadius: '4px', cursor: 'pointer',
-                marginBottom: '10px', fontSize: '0.65rem',
+                marginBottom: '10px', fontSize: 'calc(0.65rem * var(--os-font-mult))',
               }}
             >
               {'\u2190'} Back
@@ -94,7 +94,7 @@ export default function ExplorerWindow({ projects }) {
                   key={t}
                   style={{
                     background: 'var(--surface)', padding: '2px 6px',
-                    borderRadius: '3px', fontSize: '0.6rem',
+                    borderRadius: '3px', fontSize: 'calc(0.6rem * var(--os-font-mult))',
                     color: 'var(--accent)',
                   }}
                 >
@@ -143,11 +143,11 @@ export default function ExplorerWindow({ projects }) {
                 }}
               >
                 <div style={{ fontSize: '1.3rem', marginBottom: '4px' }}>
-                  {'\uD83D\uDCC1'}
+                  <img src="/img/icons/folder.svg" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" />
                 </div>
                 <div
                   style={{
-                    fontWeight: 600, fontSize: '0.7rem',
+                    fontWeight: 600, fontSize: 'calc(0.7rem * var(--os-font-mult))',
                     marginBottom: '4px',
                   }}
                 >
@@ -155,7 +155,7 @@ export default function ExplorerWindow({ projects }) {
                 </div>
                 <div
                   style={{
-                    fontSize: '0.6rem', color: 'var(--text-muted)',
+                    fontSize: 'calc(0.6rem * var(--os-font-mult))', color: 'var(--text-muted)',
                     marginBottom: '6px',
                   }}
                 >
@@ -189,7 +189,7 @@ export default function ExplorerWindow({ projects }) {
                     background: 'var(--surface-hover)',
                     border: '1px solid var(--border)', borderRadius: '3px',
                     padding: '2px 8px', cursor: 'pointer',
-                    color: 'var(--text)', fontSize: '0.6rem',
+                    color: 'var(--text)', fontSize: 'calc(0.6rem * var(--os-font-mult))',
                   }}
                 >
                   Open
@@ -205,11 +205,11 @@ export default function ExplorerWindow({ projects }) {
 
 const addrBtnStyle = {
   background: 'none', border: 'none', cursor: 'pointer',
-  color: 'var(--text-muted)', fontSize: '0.65rem',
+  color: 'var(--text-muted)', fontSize: 'calc(0.65rem * var(--os-font-mult))',
 };
 
 const linkBtnStyle = {
   padding: '4px 10px', border: '1px solid var(--accent)',
   borderRadius: '4px', color: 'var(--accent)',
-  textDecoration: 'none', fontSize: '0.65rem',
+  textDecoration: 'none', fontSize: 'calc(0.65rem * var(--os-font-mult))',
 };

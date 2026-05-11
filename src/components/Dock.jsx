@@ -49,25 +49,25 @@ export default function Dock() {
       style={{
         position: 'relative', display: 'flex', alignItems: 'center', height: '32px', padding: '0 10px',
         background: 'var(--surface)', borderBottom: '1px solid var(--border)',
-        fontSize: '0.7rem', userSelect: 'none', flexShrink: 0,
+        fontSize: 'calc(0.7rem * var(--os-font-mult))', userSelect: 'none', flexShrink: 0,
       }}
     >
       <button
         onClick={handlePeek}
         style={{
           background: 'var(--surface-hover)', border: '1px solid var(--border)',
-          borderRadius: '3px', padding: '2px 6px', fontSize: '0.6rem',
+          borderRadius: '3px', padding: '2px 6px', fontSize: 'calc(0.6rem * var(--os-font-mult))',
           cursor: 'pointer', color: 'var(--text-muted)',
         }}
         title={allMinimized ? 'Restore windows' : 'Peek desktop'}
       >
-        {allMinimized ? '\u25A3' : '\u25A2'}
+        <img src="/img/icons/window-desktop.svg" style={{ width: '14px', height: '14px', display: 'block' }} alt="" />
       </button>
 
       <span
         style={{
           position: 'absolute', left: '50%', transform: 'translateX(-50%)',
-          fontWeight: 600, color: 'var(--accent)', fontSize: '0.75rem',
+          fontWeight: 600, color: 'var(--accent)', fontSize: 'calc(0.75rem * var(--os-font-mult))',
           whiteSpace: 'nowrap',
         }}
       >
@@ -79,21 +79,19 @@ export default function Dock() {
           onClick={() => openWindow('settings')}
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
-            color: 'var(--text-muted)', fontSize: '0.8rem',
+            color: 'var(--text-muted)', display: 'flex', alignItems: 'center',
           }}
           title="Settings"
         >
-          {'\u2699'}
+          <img src="/img/icons/gear.svg" style={{ width: '14px', height: '14px' }} alt="" />
         </button>
-        <span style={{ color: 'var(--text-muted)', fontSize: '0.6rem' }}>
-          {'\u25A0'} {'\u25A1'}
-        </span>
+        <img src="/img/icons/wifi.svg" style={{ width: '14px', height: '14px' }} alt="" />
         <button
           onClick={() => setShowGreeting(!showGreeting)}
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
             color: 'var(--text-muted)', fontFamily: 'var(--font-mono)',
-            fontSize: '0.7rem', position: 'relative',
+            fontSize: 'calc(0.7rem * var(--os-font-mult))', position: 'relative',
           }}
         >
           {time}
@@ -103,7 +101,7 @@ export default function Dock() {
                 position: 'absolute', top: '100%', right: 0,
                 background: 'var(--surface)', border: '1px solid var(--border)',
                 borderRadius: '4px', padding: '8px 12px', whiteSpace: 'nowrap',
-                zIndex: 1000, fontSize: '0.7rem', marginTop: '4px',
+                zIndex: 1000, fontSize: 'calc(0.7rem * var(--os-font-mult))', marginTop: '4px',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
               }}
             >

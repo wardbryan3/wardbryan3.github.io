@@ -1,63 +1,11 @@
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { CommandRegistry } from './CommandRegistry';
-import { createCommands } from './commands';
-
-const TUX_ART = `                .88888888:.
-                88888888.88888.
-              .8888888888888888.
-              888888888888888888
-              88' _\`88'_  \`88888
-              88 88 88 88  88888
-              88_88_::_88_:88888
-              88:::,::,:::::8888
-              88\`:::::::::'\`8888
-             .88  \`::::'    8:88.
-            8888            \`8:888.
-          .8888'             \`888888.
-         .8888:..  .::.  ...:'8888888:.
-        .8888.'     :'     \`'::\`88:88888
-       .8888        '         \`.888:8888.
-      888:8         .           888:88888
-    .888:88        .:           888:88888:
-    8888888.       ::           88:888888
-    \`.::.888.      ::          .88888888
-   .::::::.888.    ::         :::\`8888'.:.
-  ::::::::::.888   '         .::::::::::::
-  ::::::::::::.8    '      .:8::::::::::::.
- .::::::::::::::.        .:888:::::::::::::
- :::::::::::::::88:.__..:88888:::::::::::'
-  \`'.:::::::::::88888888888.88:::::::::'
-     \`':::_:' -- '' -'-' \`':_::::'\``;
+import { createCommands, renderFastfetchOutput } from './commands';
 
 const DEFAULT_W = 760;
 const DEFAULT_H = 520;
 const MARGIN = 8;
 const MOBILE_BP = 768;
-
-function buildFields(projectCount, postCount) {
-  return [
-    { key: 'name',      value: 'Bryan Ward',                                                            cls: 'green' },
-    { key: 'status',    value: 'learning and building',                                                 cls: 'green' },
-    { key: 'level',     value: 'CS student / developer',                                                cls: 'purple' },
-    { key: 'focus',     value: 'full-stack web, Linux, FOSS',                                           cls: 'white' },
-    { key: 'tools',     value: 'Python, Java, JavaScript, HTML, CSS, Bash, Node.js, React, Spring Boot, Git, Linux, Astro', cls: 'white' },
-    { key: 'projects',  value: `${projectCount} active`,                                                cls: 'white' },
-    { key: 'posts',     value: `${postCount} published`,                                                cls: 'white' },
-    { key: 'github',    value: 'github.com/wardbryan3',                                                 cls: 'link', href: 'https://github.com/wardbryan3' },
-    { key: 'linkedin',  value: 'linkedin.com/in/bryan-ward-298292196',                                  cls: 'link', href: 'https://www.linkedin.com/in/bryan-ward-298292196/' },
-  ];
-}
-
-function buildFieldLines(fields) {
-  const maxKeyLen = Math.max(...fields.map(f => f.key.length));
-  const padLen = maxKeyLen + 5;
-  return fields.map(f => ({
-    key: f.key.padEnd(padLen, ' '),
-    value: f.value,
-    cls: f.cls,
-    href: f.href || null,
-  }));
-}
 
 export default function Terminal({
   page = '/home',
@@ -81,6 +29,8 @@ export default function Terminal({
   const [size, setSize] = useState(side ? null : { w: DEFAULT_W, h: DEFAULT_H });
   const [ready, setReady] = useState(false);
   const [globalFocusKey, setGlobalFocusKey] = useState(0);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const savedInputRef = useRef('');
 
   // Restore terminal state from sessionStorage
   const [restored] = useState(() => {
@@ -108,8 +58,6 @@ export default function Terminal({
   sizeRef.current = size;
   const maximizedRef = useRef(maximized);
   maximizedRef.current = maximized;
-  const fields = useMemo(() => buildFields(projectCount, postCount), [projectCount, postCount]);
-  const fieldLines = useMemo(() => buildFieldLines(fields), [fields]);
   const registryRef = useRef(new CommandRegistry());
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
@@ -289,10 +237,33 @@ export default function Terminal({
   }, []);
 
   const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter') executeCommand(input);
-    else if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); setCollapsed(prev => !prev); }
+    if (e.key === 'Enter') {
+      executeCommand(input);
+      setHistoryIndex(-1);
+      savedInputRef.current = '';
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const hist = registryRef.current.getHistory();
+      if (hist.length === 0) return;
+      if (historyIndex === -1) savedInputRef.current = input;
+      const newIdx = Math.min(historyIndex + 1, hist.length - 1);
+      setHistoryIndex(newIdx);
+      setInput(hist[hist.length - 1 - newIdx]);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex === -1) return;
+      const newIdx = historyIndex - 1;
+      if (newIdx < 0) {
+        setHistoryIndex(-1);
+        setInput(savedInputRef.current);
+      } else {
+        const hist = registryRef.current.getHistory();
+        setHistoryIndex(newIdx);
+        setInput(hist[hist.length - 1 - newIdx]);
+      }
+    } else if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); setCollapsed(prev => !prev); }
     else if ((e.ctrlKey || e.metaKey) && e.key === 'l') { e.preventDefault(); setOutputLines([]); }
-  }, [input, executeCommand]);
+  }, [input, executeCommand, historyIndex]);
 
   const toggleMaximize = useCallback(() => {
     if (side) return;
@@ -401,34 +372,11 @@ export default function Terminal({
   const showCursor = phase === 'prompt' || phase === 'command';
   const isInteractive = phase === 'interactive';
 
-  const renderFieldLines = () => (
-    <div className="ff-fields">
-      {fieldLines.map((fl, i) => {
-        const valueCls = fl.cls === 'green'
-          ? 'ff-value ff-value-green'
-          : fl.cls === 'purple'
-            ? 'ff-value ff-value-purple'
-            : fl.cls === 'link'
-              ? 'ff-value ff-value-link'
-              : 'ff-value';
-        return (
-          <div key={i} className="ff-line">
-            <span className="ff-key">{fl.key}</span>
-            {fl.cls === 'link' ? (
-              <a href={fl.href} target="_blank" rel="noopener noreferrer" className={valueCls}>{fl.value}</a>
-            ) : (
-              <span className={valueCls}>{fl.value}</span>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-
   const terminalBody = (
     <div
       className={`terminal-window-body${isInteractive ? ' terminal-body-interactive' : ''}`}
       ref={bodyRef}
+      onClick={() => isInteractive && inputRef.current?.focus()}
       style={{ fontFamily: terminalFont === 'sans-serif' ? 'var(--font-sans)' : 'var(--font-mono)' }}
     >
       {(phase !== 'growing' || side) && (
@@ -439,15 +387,10 @@ export default function Terminal({
         </div>
       )}
 
-      {!side && phase !== 'growing' && phase !== 'prompt' && phase !== 'command' && (
-        <div className="ff-output">
-          <pre className="ff-tux">{TUX_ART}</pre>
-          {renderFieldLines()}
-        </div>
-      )}
+      {!side && phase !== 'growing' && phase !== 'prompt' && phase !== 'command' && renderFastfetchOutput(projectCount, postCount)}
 
       {isInteractive && outputLines.length === 0 && (
-        <div className="term-muted" style={{ marginTop: '0.5rem', fontSize: '0.75rem' }}>
+        <div className="term-muted" style={{ marginTop: '0.5rem', fontSize: 'calc(0.75rem * var(--os-font-mult, 1))' }}>
           Type 'help' for a list of available commands
         </div>
       )}

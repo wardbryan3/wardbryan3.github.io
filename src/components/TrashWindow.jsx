@@ -17,7 +17,7 @@ export default function TrashWindow() {
     <div
       style={{
         height: '100%', display: 'flex', flexDirection: 'column',
-        fontSize: '0.7rem',
+        fontSize: 'calc(0.7rem * var(--os-font-mult))',
       }}
     >
       {openedFile ? (
@@ -27,7 +27,7 @@ export default function TrashWindow() {
             style={{
               background: 'none', border: '1px solid var(--border)',
               borderRadius: '3px', padding: '4px 8px', cursor: 'pointer',
-              color: 'var(--text)', marginBottom: '10px', fontSize: '0.65rem',
+              color: 'var(--text)', marginBottom: '10px', fontSize: 'calc(0.65rem * var(--os-font-mult))',
             }}
           >
             {'\u2190'} Back
@@ -78,7 +78,7 @@ export default function TrashWindow() {
           <p
             style={{
               color: 'var(--text-muted)', fontStyle: 'italic',
-              fontSize: '0.7rem', lineHeight: '1.6',
+              fontSize: 'calc(0.7rem * var(--os-font-mult))', lineHeight: '1.6',
             }}
           >
             Nothing spilled yet. Drag my other windows over the trash to delete

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const TRACKS = [
-  { num: '01', title: 'Featured on CSS Design Awards', duration: '2:14' },
-  { num: '02', title: 'Open-source contributor \u2014 500+ stars', duration: '3:02' },
+  { num: '01', title: 'Southern New Hampshire University — B.S. Computer Science (Expected 02/2027) — GPA: 4.0', duration: '4:00' },
+  { num: '02', title: 'Responsive Web Design Certification (freeCodeCamp.com)', duration: '2:02' },
   { num: '03', title: 'Guest speaker: Design Systems Summit', duration: '1:58' },
 ];
 
@@ -13,10 +13,14 @@ const SHUFFLE_QUOTES = [
   '"Technical skills and design sense are a rare combo." \u2014 Client',
 ];
 
+const BAR_COUNT = 8;
+const INITIAL_BARS = [50, 65, 70, 35, 50, 25, 45, 30];
+
 export default function MediaPlayerWindow() {
   const [currentTrack, setCurrentTrack] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [quote, setQuote] = useState(null);
+  const [bars, setBars] = useState(INITIAL_BARS);
 
   const handlePlay = () => {
     if (currentTrack < 0) setCurrentTrack(0);
@@ -33,6 +37,17 @@ export default function MediaPlayerWindow() {
     setIsPlaying(true);
   };
 
+  useEffect(() => {
+    if (!isPlaying || currentTrack < 0) {
+      setBars(INITIAL_BARS);
+      return;
+    }
+    const interval = setInterval(() => {
+      setBars(INITIAL_BARS.map(min => min + Math.floor(Math.random() * 30)));
+    }, 180);
+    return () => clearInterval(interval);
+  }, [isPlaying, currentTrack]);
+
   const handleShuffle = () => {
     const q = SHUFFLE_QUOTES[Math.floor(Math.random() * SHUFFLE_QUOTES.length)];
     setQuote(q);
@@ -43,7 +58,7 @@ export default function MediaPlayerWindow() {
     <div
       style={{
         display: 'flex', flexDirection: 'column', height: '100%',
-        fontSize: '0.7rem',
+        fontSize: 'calc(0.7rem * var(--os-font-mult))',
       }}
     >
       <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
@@ -66,7 +81,7 @@ export default function MediaPlayerWindow() {
               <span style={{ flex: 1 }}>{track.title}</span>
               <span style={{ color: 'var(--text-muted)' }}>{track.duration}</span>
               {isPlaying && currentTrack === i && (
-                <span style={{ color: 'var(--accent)', fontSize: '0.65rem' }}>
+                <span style={{ color: 'var(--accent)', fontSize: 'calc(0.65rem * var(--os-font-mult))' }}>
                   {'\u266A'}
                 </span>
               )}
@@ -78,7 +93,7 @@ export default function MediaPlayerWindow() {
                 marginTop: '12px', padding: '8px',
                 border: '1px solid var(--accent)', borderRadius: '4px',
                 fontStyle: 'italic', color: 'var(--accent)',
-                fontSize: '0.65rem',
+                fontSize: 'calc(0.65rem * var(--os-font-mult))',
               }}
             >
               {quote}
@@ -99,14 +114,14 @@ export default function MediaPlayerWindow() {
               height: '80px',
             }}
           >
-            {[20, 40, 60, 35, 50, 25, 45, 30].map((h, i) => (
+            {bars.map((h, i) => (
               <div
                 key={i}
                 style={{
                   width: '6px',
                   height: isPlaying && currentTrack >= 0 ? `${h}px` : '20px',
                   background: 'var(--accent)', borderRadius: '2px',
-                  transition: 'height 300ms',
+                  transition: 'height 300ms ease',
                   opacity: isPlaying && currentTrack >= 0 ? 0.8 : 0.3,
                 }}
               />
@@ -122,16 +137,20 @@ export default function MediaPlayerWindow() {
           background: 'var(--surface)',
         }}
       >
-        <button onClick={handlePrev} style={ctrlBtnStyle}>{'\u23EE'}</button>
-        <button onClick={handlePlay} style={{ ...ctrlBtnStyle, color: 'var(--accent)', fontSize: '1rem' }}>
-          {isPlaying ? '\u23F8' : '\u25B6'}
+        <button onClick={handlePrev} style={ctrlBtnStyle}>
+          <img src="/img/icons/rewind.svg" style={{ width: '14px', height: '14px', display: 'block' }} alt="Previous" />
         </button>
-        <button onClick={handleNext} style={ctrlBtnStyle}>{'\u23ED'}</button>
+        <button onClick={handlePlay} style={{ ...ctrlBtnStyle }}>
+          <img src={isPlaying ? '/img/icons/pause.svg' : '/img/icons/play.svg'} style={{ width: '16px', height: '16px', display: 'block' }} alt={isPlaying ? 'Pause' : 'Play'} />
+        </button>
+        <button onClick={handleNext} style={ctrlBtnStyle}>
+          <img src="/img/icons/fast-forward.svg" style={{ width: '14px', height: '14px', display: 'block' }} alt="Next" />
+        </button>
         <span style={{ flex: 1 }} />
-        <button onClick={handleShuffle} style={{ ...ctrlBtnStyle, color: 'var(--text-muted)' }} title="Shuffle">
-          {'\uD83D\uDD00'}
+        <button onClick={handleShuffle} style={ctrlBtnStyle} title="Shuffle">
+          <img src="/img/icons/shuffle.svg" style={{ width: '14px', height: '14px', display: 'block' }} alt="Shuffle" />
         </button>
-        <span style={{ color: 'var(--text-muted)', fontSize: '0.6rem' }}>
+        <span style={{ color: 'var(--text-muted)', fontSize: 'calc(0.6rem * var(--os-font-mult))' }}>
           {currentTrack >= 0 ? TRACKS[currentTrack].duration : '0:00'}
         </span>
       </div>
@@ -141,5 +160,5 @@ export default function MediaPlayerWindow() {
 
 const ctrlBtnStyle = {
   background: 'none', border: 'none', cursor: 'pointer',
-  color: 'var(--text)', fontSize: '0.7rem',
+  color: 'var(--text)', fontSize: 'calc(0.7rem * var(--os-font-mult))',
 };

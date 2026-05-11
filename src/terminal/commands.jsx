@@ -1,5 +1,80 @@
 import { useOSStore } from '../stores/osStore';
 
+const TUX_ART = `                .88888888:.
+                88888888.88888.
+              .8888888888888888.
+              888888888888888888
+              88' _\`88'_  \`88888
+              88 88 88 88  88888
+              88_88_::_88_:88888
+              88:::,::,:::::8888
+              88\`:::::::::'\`8888
+             .88  \`::::'    8:88.
+            8888            \`8:888.
+          .8888'             \`888888.
+         .8888:..  .::.  ...:'8888888:.
+        .8888.'     :'     \`'::\`88:88888
+       .8888        '         \`.888:8888.
+      888:8         .           888:88888
+    .888:88        .:           888:88888:
+    8888888.       ::           88:888888
+    \`.::.888.      ::          .88888888
+   .::::::.888.    ::         :::\`8888'.:.
+  ::::::::::.888   '         .::::::::::::
+  ::::::::::::.8    '      .:8::::::::::::.
+ .::::::::::::::.        .:888:::::::::::::
+ :::::::::::::::88:.__..:88888:::::::::::'
+  \`'.:::::::::::88888888888.88:::::::::'
+     \`':::_:' -- '' -'-' \`':_::::'\``;
+
+function buildFastfetchFields(projectCount, postCount) {
+  const maxKeyLen = 8;
+  const padLen = maxKeyLen + 5;
+  return [
+    { key: 'name',     pad: 'name'.padEnd(padLen),     value: 'Bryan Ward',                                         cls: 'green' },
+    { key: 'status',   pad: 'status'.padEnd(padLen),   value: 'learning and building',                               cls: 'green' },
+    { key: 'level',    pad: 'level'.padEnd(padLen),    value: 'CS student / developer',                              cls: 'purple' },
+    { key: 'focus',    pad: 'focus'.padEnd(padLen),    value: 'full-stack web, Linux, FOSS',                         cls: 'white' },
+    { key: 'tools',    pad: 'tools'.padEnd(padLen),    value: 'Python, Java, JavaScript, HTML, CSS, Bash, Node.js, React, Spring Boot, Git, Linux, Astro', cls: 'white' },
+    { key: 'projects', pad: 'projects'.padEnd(padLen),  value: `${projectCount} active`,                              cls: 'white' },
+    { key: 'posts',    pad: 'posts'.padEnd(padLen),    value: `${postCount} published`,                              cls: 'white' },
+    { key: 'github',   pad: 'github'.padEnd(padLen),   value: 'github.com/wardbryan3',                               cls: 'link', href: 'https://github.com/wardbryan3' },
+    { key: 'linkedin', pad: 'linkedin'.padEnd(padLen), value: 'linkedin.com/in/bryan-ward-298292196',                cls: 'link', href: 'https://www.linkedin.com/in/bryan-ward-298292196/' },
+  ];
+}
+
+function renderFastfetchOutput(projectCount, postCount) {
+  const fields = buildFastfetchFields(projectCount, postCount);
+  return (
+    <div className="ff-output">
+      <pre className="ff-tux">{TUX_ART}</pre>
+      <div className="ff-fields">
+        {fields.map((f) => {
+          const valueCls = f.cls === 'green'
+            ? 'ff-value ff-value-green'
+            : f.cls === 'purple'
+              ? 'ff-value ff-value-purple'
+              : f.cls === 'link'
+                ? 'ff-value ff-value-link'
+                : 'ff-value';
+          return (
+            <div key={f.key} className="ff-line">
+              <span className="ff-key">{f.pad}</span>
+              {f.href ? (
+                <a href={f.href} target="_blank" rel="noopener noreferrer" className={valueCls}>{f.value}</a>
+              ) : (
+                <span className={valueCls}>{f.value}</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export { renderFastfetchOutput };
+
 function renderSearchResults(results, keyword) {
   if (results.length === 0) return { output: <div className="term-text term-muted">no matches for: {keyword}</div> };
   return {
@@ -122,17 +197,7 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
   commands.fastfetch = {
     description: 'system info',
     handler: () => ({
-      output: (
-        <div className="term-output">
-          <div className="term-text"><span className="term-muted">name     </span><span className="ff-value-green">Bryan Ward</span></div>
-          <div className="term-text"><span className="term-muted">status   </span><span className="ff-value-green">learning and building</span></div>
-          <div className="term-text"><span className="term-muted">level    </span><span className="ff-value-purple">CS student / developer</span></div>
-          <div className="term-text"><span className="term-muted">focus    </span>full-stack web, Linux, FOSS</div>
-          <div className="term-text"><span className="term-muted">tools    </span>Python, Java, JavaScript, HTML, CSS, Bash, Node.js, React, Spring Boot, Git, Linux, Astro</div>
-          <div className="term-text"><span className="term-muted">projects </span>{projectCount} active</div>
-          <div className="term-text"><span className="term-muted">posts    </span>{postCount} published</div>
-        </div>
-      ),
+      output: renderFastfetchOutput(projectCount, postCount),
     }),
   };
 

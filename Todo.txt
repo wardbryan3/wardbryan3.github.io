@@ -1,0 +1,6 @@
+1. Update my actual Resume
+2. Implement more real information about me throughout.
+3. Add Boot and Bios screen. Upon loading the page will say press (DEL) to enter setup, if a user presses DEL while still on this screen it will bring up an old school BIOS (Grey windows, bright blue background.) The Window in BIOS should Only have one window that says "My wife made me put this here, would you like to boot?" The window has a (Y/n) style choice. The BIOS should look like a normal 90s era bios screen, I really want to capture that feel. Then after the bios or the press del page if the user doesn't press delete, It will show img/tux.svg and a loading icon (Animated circle) For a quick 1-2 seconds -> then my PortfolioOS Loads.
+4. Overhaul folder app. It needs its forward, back, and up arrow icons updated. It should also work more like a functional folder explorer. (Ability to move through a file tree) We will add some pictures, other documents, and more fun easter eggs.
+5. Add cat pictures
+
