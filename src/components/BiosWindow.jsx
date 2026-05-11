@@ -38,35 +38,68 @@ export default function BiosWindow() {
   return (
     <div className="bios-overlay">
       <div className="bios-header">
-        <div className="bios-header-label">BIOS SETUP UTILITY</div>
-        <div className="bios-header-version">Portfolio Edition v1.0</div>
+        <span className="bios-header-title">Aptio Setup Utility - v1.0</span>
+        <span className="bios-header-copyright">Copyright (C) 2025 American Megatrends</span>
       </div>
+
+      <div className="bios-tabbar">
+        <span className="bios-tab bios-tab-selected">Main</span>
+        <span className="bios-tab">Advanced</span>
+        <span className="bios-tab">Chipset</span>
+        <span className="bios-tab">Boot</span>
+        <span className="bios-tab">Security</span>
+        <span className="bios-tab">Save &amp; Exit</span>
+      </div>
+
       <div className="bios-body">
-        <div className="bios-window">
-          <div className="bios-window-titlebar">Boot Confirmation</div>
-          <div className="bios-window-body">
-            <div className="bios-window-text">
-              My wife made me put this here,<br />would you like to boot?
-            </div>
-            <div className="bios-choices">
-              <div
-                className={`bios-choice ${selected === 'Y' ? 'bios-choice-selected' : ''}`}
-                onClick={() => setSelected('Y')}
-              >
-                <span className="bios-choice-label">[Y]</span> Yes
+        <div className="bios-body-left">
+          <div className="bios-window">
+            <div className="bios-window-titlebar">Boot Confirmation</div>
+            <div className="bios-window-body">
+              <div className="bios-window-text">
+                My wife made me put this here,<br />would you like to boot?
               </div>
-              <div
-                className={`bios-choice ${selected === 'N' ? 'bios-choice-selected' : ''}`}
-                onClick={() => setSelected('N')}
-              >
-                <span className="bios-choice-label">[N]</span> No
+              <div className="bios-choices">
+                <div
+                  className={`bios-choice ${selected === 'Y' ? 'bios-choice-selected' : ''}`}
+                  onClick={() => setSelected('Y')}
+                >
+                  <span className="bios-choice-label">[Y]</span> Yes
+                </div>
+                <div
+                  className={`bios-choice ${selected === 'N' ? 'bios-choice-selected' : ''}`}
+                  onClick={() => setSelected('N')}
+                >
+                  <span className="bios-choice-label">[N]</span> No
+                </div>
               </div>
-            </div>
-            <div className="bios-footer">
-              ← → Select   Enter Accept
+              <div className="bios-dialog-footer">
+                &larr; &rarr; Select &nbsp;&nbsp; Enter Accept
+              </div>
             </div>
           </div>
         </div>
+        <div className="bios-body-right">
+          <div className="bios-help-heading">Item Specific Help</div>
+          <hr className="bios-help-separator" />
+          <div>
+            Confirm whether to<br />
+            continue booting into<br />
+            Portfolio OS.
+          </div>
+          <hr className="bios-help-separator" />
+          <div className="bios-help-hints">
+            &larr; &rarr; Change<br />
+            Enter Accept
+          </div>
+        </div>
+      </div>
+
+      <div className="bios-footer">
+        <span><span className="bios-footer-key">F1</span> Help</span>
+        <span><span className="bios-footer-key">ESC</span> Exit</span>
+        <span><span className="bios-footer-key">&larr; &rarr;</span> Select</span>
+        <span><span className="bios-footer-key">Enter</span> Accept</span>
       </div>
     </div>
   );
