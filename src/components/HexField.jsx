@@ -55,6 +55,7 @@ function HexGrid() {
   const mouseNDC = useRef(new THREE.Vector2(-999, -999));
   const raycaster = useRef(new THREE.Raycaster());
   const baseColorsRef = useRef(null);
+  const basePositionsRef = useRef(null);
 
   const hexShape = useMemo(() => {
     const shape = new THREE.Shape();
@@ -110,6 +111,7 @@ function HexGrid() {
   useEffect(() => {
     if (geometry) {
       baseColorsRef.current = new Float32Array(geometry.attributes.color.array);
+      basePositionsRef.current = new Float32Array(geometry.attributes.position.array);
     }
   }, [geometry]);
 
@@ -148,6 +150,7 @@ function HexGrid() {
     const vertexCount = geo.attributes.position.count;
     const vertsPerHex = vertexCount / count;
     const posAttr = geo.attributes.position;
+    const basePos = basePositionsRef.current;
 
     for (let i = 0; i < count; i++) {
       const row = Math.floor(i / GRID_COLS);
@@ -165,10 +168,10 @@ function HexGrid() {
 
       for (let v = 0; v < vertsPerHex; v++) {
         const idx = i * vertsPerHex + v;
-        const baseX = posAttr.array[idx * 3];
-        const baseZ = posAttr.array[idx * 3 + 2];
-        const dx = baseX - c.x;
-        const dz = baseZ - c.z;
+        const bX = basePos[idx * 3];
+        const bZ = basePos[idx * 3 + 2];
+        const dx = bX - c.x;
+        const dz = bZ - c.z;
         posAttr.array[idx * 3] = c.x + dx * scale;
         posAttr.array[idx * 3 + 1] = centerY;
         posAttr.array[idx * 3 + 2] = c.z + dz * scale;
