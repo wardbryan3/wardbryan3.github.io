@@ -55,6 +55,7 @@ function HexGrid() {
   const [, setHoveredIdx] = useState(null);
   const mouseNDC = useRef(new THREE.Vector2(-999, -999));
   const raycaster = useRef(new THREE.Raycaster());
+  const baseColorsRef = useRef(null);
 
   const hexShape = useMemo(() => {
     const shape = new THREE.Shape();
@@ -105,6 +106,12 @@ function HexGrid() {
     geo.computeVertexNormals();
     return geo;
   }, [positions, colors]);
+
+  useEffect(() => {
+    if (geometry) {
+      baseColorsRef.current = new Float32Array(geometry.attributes.color.array);
+    }
+  }, [geometry]);
 
   useEffect(() => {
     function onMouseMove(e) {
@@ -168,6 +175,33 @@ function HexGrid() {
       }
     }
 
+    const colorAttr = geometry.attributes.color;
+    const baseColors = baseColorsRef.current;
+
+    for (let i = 0; i < count; i++) {
+      const row = Math.floor(i / GRID_COLS);
+      const col = i % GRID_COLS;
+      const c = getHexCenter(row, col);
+
+      let brightness;
+      if (hoveredIdxRef.current === i) {
+        const pulse = Math.sin(time * 3) * 0.5 + 0.5;
+        brightness = 0.6 + pulse * 0.4;
+      } else {
+        const wave = Math.sin(c.x * 1.5 + time * 0.5) * 0.15 + Math.cos(c.z * 1.5 + time * 0.4) * 0.15;
+        brightness = 0.2 + (wave + 0.3) * 0.3;
+      }
+
+      for (let v = 0; v < vertsPerHex; v++) {
+        const idx = i * vertsPerHex + v;
+        const baseIdx = idx * 3;
+        colorAttr.array[baseIdx] = baseColors[baseIdx] * brightness;
+        colorAttr.array[baseIdx + 1] = baseColors[baseIdx + 1] * brightness;
+        colorAttr.array[baseIdx + 2] = baseColors[baseIdx + 2] * brightness;
+      }
+    }
+
+    colorAttr.needsUpdate = true;
     posAttr.needsUpdate = true;
     geometry.computeVertexNormals();
   });
