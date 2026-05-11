@@ -70,7 +70,8 @@ function HexGrid() {
   }, []);
 
   const { positions, colors } = useMemo(() => {
-    const geo = new THREE.ShapeGeometry(hexShape);
+    let geo = new THREE.ShapeGeometry(hexShape);
+    geo = geo.toNonIndexed();
     geo.rotateX(-Math.PI / 2);
     const pos = [];
     const col = [];
