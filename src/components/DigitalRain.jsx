@@ -20,7 +20,7 @@ const FALL_SPEED_MIN = 0.5;
 const FALL_SPEED_MAX = 2.5;
 const TRAIL_LENGTH = 8;
 
-function createColumn(colIndex, canvasWidth, canvasHeight) {
+function createColumn(colIndex, canvasHeight) {
   const x = colIndex * COLUMN_WIDTH + COLUMN_WIDTH / 2;
   const speed = FALL_SPEED_MIN + Math.random() * (FALL_SPEED_MAX - FALL_SPEED_MIN);
   return {
@@ -28,7 +28,6 @@ function createColumn(colIndex, canvasWidth, canvasHeight) {
     y: Math.random() * canvasHeight * -1,
     speed,
     chars: Array.from({ length: TRAIL_LENGTH }, () => CHARS[Math.floor(Math.random() * CHARS.length)]),
-    counter: Math.random() * 100,
   };
 }
 
@@ -76,10 +75,13 @@ export default function DigitalRain() {
       canvas.style.height = window.innerHeight + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const numCols = Math.ceil(window.innerWidth / COLUMN_WIDTH);
-      if (columnsRef.current.length === 0) {
-        columnsRef.current = Array.from({ length: numCols }, (_, i) =>
-          createColumn(i, window.innerWidth, window.innerHeight)
-        );
+      const oldLen = columnsRef.current.length;
+      if (numCols > oldLen) {
+        for (let i = oldLen; i < numCols; i++) {
+          columnsRef.current.push(createColumn(i, window.innerHeight));
+        }
+      } else if (numCols < oldLen) {
+        columnsRef.current.length = numCols;
       }
     }
 
@@ -103,7 +105,6 @@ export default function DigitalRain() {
         if (col.y - TRAIL_LENGTH * FONT_SIZE > window.innerHeight) {
           Object.assign(col, createColumn(
             Math.floor(col.x / COLUMN_WIDTH),
-            window.innerWidth,
             window.innerHeight
           ));
         }
