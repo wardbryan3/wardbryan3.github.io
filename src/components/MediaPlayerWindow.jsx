@@ -144,17 +144,17 @@ export default function MediaPlayerWindow() {
         }}
       >
         <button onClick={handlePrev} style={ctrlBtnStyle}>
-          <img src="/img/icons/rewind.svg" style={{ width: '14px', height: '14px', display: 'block' }} alt="Previous" />
+          <img src="/img/icons/rewind.svg" className="icon-img" style={{ width: '14px', height: '14px', display: 'block' }} alt="Previous" />
         </button>
         <button onClick={handlePlay} style={{ ...ctrlBtnStyle }}>
-          <img src={isPlaying ? '/img/icons/pause.svg' : '/img/icons/play.svg'} style={{ width: '16px', height: '16px', display: 'block' }} alt={isPlaying ? 'Pause' : 'Play'} />
+          <img src={isPlaying ? '/img/icons/pause.svg' : '/img/icons/play.svg'} className="icon-img" style={{ width: '16px', height: '16px', display: 'block' }} alt={isPlaying ? 'Pause' : 'Play'} />
         </button>
         <button onClick={handleNext} style={ctrlBtnStyle}>
-          <img src="/img/icons/fast-forward.svg" style={{ width: '14px', height: '14px', display: 'block' }} alt="Next" />
+          <img src="/img/icons/fast-forward.svg" className="icon-img" style={{ width: '14px', height: '14px', display: 'block' }} alt="Next" />
         </button>
         <span style={{ flex: 1 }} />
         <button onClick={handleShuffle} style={ctrlBtnStyle} title="Shuffle">
-          <img src="/img/icons/shuffle.svg" style={{ width: '14px', height: '14px', display: 'block' }} alt="Shuffle" />
+          <img src="/img/icons/shuffle.svg" className="icon-img" style={{ width: '14px', height: '14px', display: 'block' }} alt="Shuffle" />
         </button>
         <span style={{ color: 'var(--text-muted)', fontSize: 'calc(0.6rem * var(--os-font-mult))' }}>
           {currentTrack >= 0 ? TRACKS[currentTrack].duration : '0:00'}

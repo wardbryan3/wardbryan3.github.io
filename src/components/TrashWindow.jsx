@@ -55,7 +55,7 @@ export default function TrashWindow() {
                 display: 'flex', gap: '6px', alignItems: 'center',
               }}
             >
-              <img src="/img/icons/folder.svg" style={{ width: '14px', height: '14px', verticalAlign: 'middle' }} alt="" />
+              <img src="/img/icons/folder.svg" className="icon-img" style={{ width: '14px', height: '14px', verticalAlign: 'middle' }} alt="" />
               <span>{file.name}</span>
             </div>
           ))}
@@ -68,7 +68,7 @@ export default function TrashWindow() {
             padding: '20px', textAlign: 'center',
           }}
         >
-          <img src="/img/icons/trash.svg" style={{ width: '36px', height: '36px', marginBottom: '8px', opacity: 0.5 }} alt="" />
+          <img src="/img/icons/trash.svg" className="icon-img" style={{ width: '36px', height: '36px', marginBottom: '8px', opacity: 0.5 }} alt="" />
           <p
             style={{
               color: 'var(--text-muted)', fontStyle: 'italic',

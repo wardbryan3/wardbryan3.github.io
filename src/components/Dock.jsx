@@ -61,9 +61,9 @@ export default function Dock() {
         }}
         title={allMinimized ? 'Restore windows' : 'Peek desktop'}
       >
-        <img src="/img/icons/window-desktop.svg" style={{ width: '14px', height: '14px', display: 'block' }} alt="" />
+        <img src="/img/icons/window-desktop.svg" className="icon-img" style={{ width: '14px', height: '14px', display: 'block' }} alt="" />
       </button>
-
+ 
       <span
         style={{
           position: 'absolute', left: '50%', transform: 'translateX(-50%)',
@@ -83,9 +83,9 @@ export default function Dock() {
           }}
           title="Settings"
         >
-          <img src="/img/icons/gear.svg" style={{ width: '14px', height: '14px' }} alt="" />
+          <img src="/img/icons/gear.svg" className="icon-img" style={{ width: '14px', height: '14px' }} alt="" />
         </button>
-        <img src="/img/icons/wifi.svg" style={{ width: '14px', height: '14px' }} alt="" />
+        <img src="/img/icons/wifi.svg" className="icon-img" style={{ width: '14px', height: '14px' }} alt="" />
         <button
           onClick={() => setShowGreeting(!showGreeting)}
           style={{

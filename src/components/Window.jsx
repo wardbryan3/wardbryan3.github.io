@@ -118,7 +118,7 @@ export default function Window({ id, children, menubar }) {
           userSelect: 'none', background: 'var(--surface)', opacity: 0.9,
         }}
       >
-        {ICON_PATHS[win.icon] && <img src={ICON_PATHS[win.icon]} style={{ width: '14px', height: '14px', marginRight: '0.4rem' }} alt="" />}
+        {ICON_PATHS[win.icon] && <img src={ICON_PATHS[win.icon]} className="icon-img" style={{ width: '14px', height: '14px', marginRight: '0.4rem' }} alt="" />}
         <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 'calc(0.7rem * var(--os-font-mult))', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{win.title}</span>
         <div className="window-controls" style={{ marginLeft: 'auto', display: 'flex', gap: '4px' }}>
           <button
@@ -126,14 +126,18 @@ export default function Window({ id, children, menubar }) {
             onClick={() => toggleMinimize(id)}
             style={btnStyle}
           >
-            <img src="/img/icons/icons8-minimize-window-50.png" style={{ width: '10px', height: '10px', display: 'block' }} alt="" />
+            <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="4.5" width="8" height="1" fill="currentColor"/></svg>
           </button>
           <button
             className="titlebar-btn"
             onClick={() => toggleMaximize(id)}
             style={btnStyle}
           >
-            <img src={isMaximized ? '/img/icons/icons8-restore-window-50.png' : '/img/icons/icons8-maximize-window-50.png'} style={{ width: '10px', height: '10px', display: 'block' }} alt="" />
+            {isMaximized ? (
+              <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="3.5" width="5.5" height="5.5" fill="none" stroke="currentColor" stroke-width="1"/><rect x="3.5" y="1" width="5.5" height="5.5" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+            ) : (
+              <svg viewBox="0 0 10 10" width="10" height="10"><rect x="2" y="2" width="6" height="6" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+            )}
           </button>
           <button
             className="titlebar-btn titlebar-close"
@@ -142,7 +146,7 @@ export default function Window({ id, children, menubar }) {
             onMouseEnter={(e) => { e.currentTarget.style.background = '#cc3333'; e.currentTarget.style.borderColor = '#cc3333'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
           >
-            <img src="/img/icons/icons8-close-window-50.png" style={{ width: '10px', height: '10px', display: 'block' }} alt="" />
+            <svg viewBox="0 0 10 10" width="10" height="10"><line x1="2" y1="2" x2="8" y2="8" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="2" x2="2" y2="8" stroke="currentColor" stroke-width="1.2"/></svg>
           </button>
         </div>
       </div>

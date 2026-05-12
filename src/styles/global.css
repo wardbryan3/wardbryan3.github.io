@@ -953,3 +953,5 @@ pre code {
   color: #fff;
   font-weight: bold;
 }
+
+.icon-img { color: var(--text-muted); }

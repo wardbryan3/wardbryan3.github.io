@@ -102,7 +102,7 @@ export default function DesktopOS({ projects, projectCount, postCount, searchDat
           borderRadius: '6px', userSelect: 'none',
         }}
       >
-        <img src="/img/icons/trash.svg" style={{ width: '36px', height: '36px' }} alt="Trash" />
+        <img src="/img/icons/trash.svg" className="icon-img" style={{ width: '36px', height: '36px' }} alt="Trash" />
         <span style={{ fontSize: 'calc(0.65rem * var(--os-font-mult))', color: 'var(--text-muted)' }}>Trash</span>
       </div>
 

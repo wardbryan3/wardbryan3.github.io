@@ -91,7 +91,7 @@ export default function AppBar() {
               fontSize: 'calc(0.8rem * var(--os-font-mult))',
             }}
           >
-            <img src={app.icon} style={{ width: '18px', height: '18px' }} alt={app.label} />
+            <img src={app.icon} className="icon-img" style={{ width: '18px', height: '18px' }} alt={app.label} />
             {w?.open && (
               <span
                 style={{

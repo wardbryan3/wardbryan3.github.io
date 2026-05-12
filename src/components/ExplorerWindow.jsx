@@ -49,7 +49,7 @@ export default function ExplorerWindow({ projects }) {
               marginBottom: '4px',
             }}
           >
-            <img src="/img/icons/folder.svg" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" /> Projects
+            <img src="/img/icons/folder.svg" className="icon-img" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" /> Projects
           </div>
           {projects.map((p) => (
             <div
@@ -59,7 +59,7 @@ export default function ExplorerWindow({ projects }) {
                 color: 'var(--text)',
               }}
             >
-              <img src="/img/icons/folder.svg" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" /> {p.data.title}
+              <img src="/img/icons/folder.svg" className="icon-img" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" /> {p.data.title}
             </div>
           ))}
         </div>
@@ -143,7 +143,7 @@ export default function ExplorerWindow({ projects }) {
                 }}
               >
                 <div style={{ fontSize: '1.3rem', marginBottom: '4px' }}>
-                  <img src="/img/icons/folder.svg" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" />
+                  <img src="/img/icons/folder.svg" className="icon-img" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" />
                 </div>
                 <div
                   style={{
