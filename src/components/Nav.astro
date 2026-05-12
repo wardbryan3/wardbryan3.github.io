@@ -84,7 +84,7 @@ if (isBlogPage) {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(5, 0, 10, 0.85);
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
   }
@@ -117,7 +117,7 @@ if (isBlogPage) {
   .nav-link {
     font-family: var(--font-mono);
     font-size: 0.875rem;
-    color: var(--text-muted);
+    color: var(--text);
     text-decoration: none;
     padding-bottom: 0.25rem;
     border-bottom: 2px solid transparent;
@@ -154,7 +154,7 @@ if (isBlogPage) {
     display: block;
     width: 20px;
     height: 2px;
-    background: var(--text-muted);
+    background: var(--text);
     border-radius: 1px;
     transition: background 0.2s;
   }
@@ -174,7 +174,7 @@ if (isBlogPage) {
     font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--text-muted);
+    color: var(--text);
     opacity: 0.6;
   }
 
@@ -206,7 +206,7 @@ if (isBlogPage) {
       right: 0;
       flex-direction: column;
       gap: 0;
-      background: rgba(5, 0, 10, 0.95);
+      background: color-mix(in srgb, var(--bg) 95%, transparent);
       border-bottom: 1px solid var(--border);
       padding: 0.5rem 0;
     }
