@@ -38,7 +38,9 @@ export default function DesktopOS({ projects, projectCount, postCount, searchDat
   }, [theme]);
 
   useEffect(() => {
-    openWindow('terminal');
+    const onBootComplete = () => openWindow('terminal');
+    document.addEventListener('boot:complete', onBootComplete);
+    return () => document.removeEventListener('boot:complete', onBootComplete);
   }, [openWindow]);
 
   const wallpaperStyle = wallpaper !== 'particle-field'
