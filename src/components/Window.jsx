@@ -143,7 +143,7 @@ export default function Window({ id, children, menubar }) {
           <button
             className="titlebar-btn titlebar-close"
             onClick={() => closeWindow(id)}
-            style={{ ...btnStyle, color: 'var(--text-muted)' }}
+            style={btnStyle}
             onMouseEnter={(e) => { e.currentTarget.style.background = '#cc3333'; e.currentTarget.style.borderColor = '#cc3333'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
           >
@@ -179,6 +179,6 @@ export default function Window({ id, children, menubar }) {
 const btnStyle = {
   width: '14px', height: '14px', fontSize: '0.5rem', lineHeight: '14px',
   textAlign: 'center', padding: 0, border: '1px solid var(--border)',
-  background: 'var(--surface-hover)', color: 'var(--text-muted)',
+  background: 'var(--surface-hover)', color: 'var(--text)',
   borderRadius: '3px', cursor: 'pointer',
 };
