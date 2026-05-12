@@ -1,5 +1,6 @@
 import { useOSStore } from '../stores/osStore';
 import { useState, useEffect } from 'react';
+import Icon from './Icon';
 
 export default function Dock() {
   const activeApp = useOSStore((s) => s.activeApp);
@@ -61,9 +62,9 @@ export default function Dock() {
         }}
         title={allMinimized ? 'Restore windows' : 'Peek desktop'}
       >
-        <img src="/img/icons/window-desktop.svg" style={{ width: '14px', height: '14px', display: 'block' }} alt="" />
+        <Icon name="window-desktop" size={14} />
       </button>
-
+ 
       <span
         style={{
           position: 'absolute', left: '50%', transform: 'translateX(-50%)',
@@ -83,9 +84,9 @@ export default function Dock() {
           }}
           title="Settings"
         >
-          <img src="/img/icons/gear.svg" style={{ width: '14px', height: '14px' }} alt="" />
+          <Icon name="gear" size={14} />
         </button>
-        <img src="/img/icons/wifi.svg" style={{ width: '14px', height: '14px' }} alt="" />
+        <Icon name="wifi" size={14} />
         <button
           onClick={() => setShowGreeting(!showGreeting)}
           style={{

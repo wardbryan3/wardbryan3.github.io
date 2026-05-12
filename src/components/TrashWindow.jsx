@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Icon from './Icon';
 
 const DUMMY_FILES = [
   { name: 'bad_idea.txt', content: '*cough* Comic Sans on a resume *cough*' },
@@ -55,7 +56,7 @@ export default function TrashWindow() {
                 display: 'flex', gap: '6px', alignItems: 'center',
               }}
             >
-              <span>{'\uD83D\uDCC4'}</span>
+              <Icon name="folder" size={14} style={{ verticalAlign: 'middle' }} />
               <span>{file.name}</span>
             </div>
           ))}
@@ -68,13 +69,7 @@ export default function TrashWindow() {
             padding: '20px', textAlign: 'center',
           }}
         >
-          <div
-            style={{
-              fontSize: '2rem', marginBottom: '8px', opacity: 0.5,
-            }}
-          >
-            {'\uD83D\uDDD1'}
-          </div>
+          <Icon name="trash" size={36} style={{ marginBottom: '8px', opacity: 0.5 }} />
           <p
             style={{
               color: 'var(--text-muted)', fontStyle: 'italic',

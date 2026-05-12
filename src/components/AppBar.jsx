@@ -1,12 +1,13 @@
 import { useOSStore } from '../stores/osStore';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import Icon from './Icon';
 
 const APPS = [
-  { id: 'explorer', icon: '/img/icons/folder.svg', label: 'Explorer' },
-  { id: 'resume', icon: '/img/icons/file-earmark-pdf.svg', label: 'Resume' },
-  { id: 'media-player', icon: '/img/icons/music-player.svg', label: 'Media Player' },
-  { id: 'settings', icon: '/img/icons/gear.svg', label: 'Settings' },
-  { id: 'terminal', icon: '/img/icons/terminal.svg', label: 'Terminal' },
+  { id: 'explorer', icon: 'folder', label: 'Explorer' },
+  { id: 'resume', icon: 'file-earmark-pdf', label: 'Resume' },
+  { id: 'media-player', icon: 'music-player', label: 'Media Player' },
+  { id: 'settings', icon: 'gear', label: 'Settings' },
+  { id: 'terminal', icon: 'terminal', label: 'Terminal' },
 ];
 
 export default function AppBar() {
@@ -16,27 +17,30 @@ export default function AppBar() {
   const focusWindow = useOSStore((s) => s.focusWindow);
   const toggleMinimize = useOSStore((s) => s.toggleMinimize);
   const [visible, setVisible] = useState(true);
+  const timersRef = useRef({});
 
   useEffect(() => {
-    const showTimer = setTimeout(() => setVisible(false), 3000);
-    let hideTimer;
+    const t = timersRef.current;
+    t.initialHide = setTimeout(() => setVisible(false), 3000);
+
     const handleMouseMove = (e) => {
       const footer = document.querySelector('footer');
       const footerHeight = footer ? footer.offsetHeight : 50;
       const sectionBottom = window.innerHeight - footerHeight;
       if (e.clientY >= sectionBottom - 30) {
         setVisible(true);
-        clearTimeout(hideTimer);
-        clearTimeout(showTimer);
+        clearTimeout(t.mouseLeave);
+        clearTimeout(t.initialHide);
       } else if (e.clientY < sectionBottom - 80) {
-        hideTimer = setTimeout(() => setVisible(false), 500);
+        clearTimeout(t.mouseLeave);
+        t.mouseLeave = setTimeout(() => setVisible(false), 500);
       }
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      clearTimeout(hideTimer);
-      clearTimeout(showTimer);
+      clearTimeout(t.initialHide);
+      clearTimeout(t.mouseLeave);
     };
   }, []);
 
@@ -66,7 +70,7 @@ export default function AppBar() {
         zIndex: 10000, fontSize: 'calc(0.8rem * var(--os-font-mult))',
       }}
     >
-      {[...APPS, ...(windows['trash']?.open ? [{ id: 'trash', icon: '/img/icons/trash.svg', label: 'Trash' }] : [])].map((app) => {
+      {[...APPS, ...(windows['trash']?.open ? [{ id: 'trash', icon: 'trash', label: 'Trash' }] : [])].map((app) => {
         const w = windows[app.id];
         const isOpen = w?.open && !w.minimized;
         const isActive = activeApp === app.id && isOpen;
@@ -88,7 +92,7 @@ export default function AppBar() {
               fontSize: 'calc(0.8rem * var(--os-font-mult))',
             }}
           >
-            <img src={app.icon} style={{ width: '18px', height: '18px' }} alt={app.label} />
+            <Icon name={app.icon} size={18} />
             {w?.open && (
               <span
                 style={{

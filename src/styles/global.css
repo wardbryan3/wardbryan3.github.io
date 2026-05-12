@@ -691,3 +691,267 @@ pre code {
     overflow-y: auto;
   }
 }
+
+/* Boot overlay */
+.boot-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  font-family: var(--font-mono);
+  transition: opacity 0.5s ease-out;
+}
+
+.boot-overlay.boot-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-post {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #aaa;
+  font-size: 0.8rem;
+  line-height: 1.8;
+}
+
+.boot-post-messages {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.boot-prompt {
+  color: #ccc;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.boot-prompt-key {
+  color: #fff;
+  font-weight: bold;
+}
+
+.boot-cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1em;
+  background: #aaa;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+/* Loading screen */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.25rem;
+}
+
+.loading-tux-img {
+  width: 80px;
+  height: 80px;
+  color: #fff;
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.loading-text {
+  color: #fff;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+}
+
+.loading-sub {
+  color: #666;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* BIOS screen */
+.bios-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #0000aa;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  color: #c0c0c0;
+}
+
+.bios-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #c0c0c0;
+  padding: 8px 12px;
+}
+
+.bios-header-title {
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.75rem;
+}
+
+.bios-header-copyright {
+  color: #c0c0c0;
+  font-size: 0.65rem;
+}
+
+.bios-tabbar {
+  display: flex;
+  gap: 0;
+  padding: 4px 8px;
+}
+
+.bios-tab {
+  padding: 2px 12px;
+  font-size: 0.75rem;
+  color: #c0c0c0;
+  cursor: default;
+  user-select: none;
+}
+
+.bios-tab-selected {
+  background: #000080;
+  color: #fff;
+  font-weight: bold;
+}
+
+.bios-body {
+  flex: 1;
+  display: flex;
+  border-top: 1px solid #0000cc;
+  min-height: 0;
+}
+
+.bios-body-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 12px;
+}
+
+.bios-body-right {
+  width: 180px;
+  border-left: 1px solid #0000cc;
+  padding: 10px 8px;
+  font-size: 0.65rem;
+  color: #c0c0c0;
+}
+
+.bios-help-heading {
+  color: #fff;
+  font-weight: bold;
+  margin-bottom: 6px;
+  font-size: 0.65rem;
+}
+
+.bios-help-separator {
+  border: none;
+  border-top: 1px solid #0000cc;
+  margin: 6px 0;
+}
+
+.bios-help-hints {
+  color: #888;
+  font-size: 0.6rem;
+}
+
+.bios-window {
+  background: #c0c0c0;
+  color: #000;
+  border: 2px solid #fff;
+  min-width: 380px;
+  max-width: 420px;
+}
+
+.bios-window-titlebar {
+  background: #000080;
+  color: #fff;
+  padding: 4px 10px;
+  font-weight: bold;
+  font-size: 0.75rem;
+}
+
+.bios-window-body {
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.bios-window-text {
+  color: #000;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.bios-choices {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.bios-choice {
+  padding: 3px 10px;
+  cursor: pointer;
+  user-select: none;
+  color: #000;
+}
+
+.bios-choice-selected {
+  background: #000080;
+  color: #fff;
+  font-weight: bold;
+}
+
+.bios-choice-label {
+  font-weight: bold;
+}
+
+.bios-dialog-footer {
+  margin-top: 16px;
+  border-top: 1px solid #888;
+  padding-top: 8px;
+  font-size: 0.65rem;
+  color: #000;
+}
+
+.bios-footer {
+  border-top: 2px solid #c0c0c0;
+  padding: 4px 12px;
+  display: flex;
+  gap: 16px;
+  font-size: 0.65rem;
+  color: #c0c0c0;
+}
+
+.bios-footer-key {
+  color: #fff;
+  font-weight: bold;
+}
+
+.icon-img { color: var(--text); }

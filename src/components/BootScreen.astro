@@ -1,0 +1,112 @@
+---
+import BiosWindow from './BiosWindow';
+---
+
+<BiosWindow client:load />
+
+<div class="boot-overlay" id="boot-overlay">
+  <!-- POST screen: Press DEL -->
+  <div class="boot-post" id="boot-post">
+    <div class="boot-post-messages">
+      <div>Portfolio OS v1.0</div>
+      <div>(c) 2025 Bryan Ward. All rights reserved.</div>
+      <div style="margin-top: 1rem;">Checking NVRAM... OK</div>
+      <div>Initializing peripherals... OK</div>
+      <div>Starting USB legacy support... OK</div>
+    </div>
+    <div class="boot-prompt">
+      Press <span class="boot-prompt-key">DEL</span> to enter setup
+    </div>
+    <div class="boot-cursor"></div>
+  </div>
+
+  <!-- Loading screen: Tux + spinner -->
+  <div class="loading-screen" id="loading-screen" style="display: none;">
+    <img src="/img/tux.svg" alt="" class="loading-tux-img" />
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading Portfolio OS...</div>
+    <div class="loading-sub">Initializing desktop environment...</div>
+  </div>
+</div>
+
+<slot />
+
+<script>
+(function() {
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  if (isMobile) { document.dispatchEvent(new CustomEvent('boot:complete')); return; }
+
+  let phase = 'press-del';
+  let alive = true;
+
+  function getOverlay() { return document.getElementById('boot-overlay'); }
+  function getPost() { return document.getElementById('boot-post'); }
+  function getLoading() { return document.getElementById('loading-screen'); }
+
+  let postTimer = 0;
+
+  function showLoading() {
+    if (!alive) return;
+    phase = 'loading';
+    const overlay = getOverlay();
+    const postScreen = getPost();
+    const loadingScreen = getLoading();
+    if (!overlay || !postScreen || !loadingScreen) return;
+    clearTimeout(postTimer);
+    overlay.style.display = 'flex';
+    postScreen.style.display = 'none';
+    loadingScreen.style.display = 'flex';
+
+    const biosEl = document.querySelector('.bios-overlay');
+    if (biosEl) biosEl.remove();
+
+    setTimeout(() => {
+      if (!alive) return;
+      phase = 'done';
+      overlay.classList.add('boot-hidden');
+      setTimeout(() => {
+        if (!alive) return;
+        overlay.style.display = 'none';
+        document.dispatchEvent(new CustomEvent('boot:complete'));
+      }, 500);
+    }, 1500);
+  }
+
+  function startBootSequence() {
+    postTimer = Number(setTimeout(() => {
+      if (phase === 'press-del' && alive) {
+        showLoading();
+      }
+    }, 1000));
+
+    // @ts-ignore
+    const onDel = function onDel(e) {
+      if (e.key === 'Delete') {
+        e.preventDefault();
+        phase = 'bios';
+        clearTimeout(postTimer);
+        const overlay = getOverlay();
+        if (overlay) overlay.style.display = 'none';
+        document.dispatchEvent(new CustomEvent('boot:show-bios'));
+      }
+    };
+
+    const onBiosYes = function onBiosYes() {
+      if (phase !== 'bios') return;
+      showLoading();
+    };
+
+    document.addEventListener('keydown', onDel);
+    document.addEventListener('boot:bios-yes', onBiosYes);
+
+    document.addEventListener('beforeunload', function cleanup() {
+      alive = false;
+      clearTimeout(postTimer);
+      document.removeEventListener('keydown', onDel);
+      document.removeEventListener('boot:bios-yes', onBiosYes);
+    });
+  }
+
+  startBootSequence();
+})();
+</script>

@@ -3,6 +3,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Terminal from '../terminal/Terminal';
 import ErrorBoundary from '../components/ErrorBoundary';
+import BootScreen from '../components/BootScreen.astro';
 import '../styles/themes.css';
 import '../styles/global.css';
 
@@ -59,11 +60,13 @@ const ogImage = image || `${siteUrl}/og-default.png`;
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <Nav />
-    <main>
-      <slot />
-    </main>
-    <Footer />
+    <BootScreen>
+      <Nav />
+      <main>
+        <slot />
+      </main>
+      <Footer />
+    </BootScreen>
     {showTerminal && renderTerminal && (
       <ErrorBoundary>
         <Terminal

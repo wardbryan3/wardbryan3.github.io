@@ -1,13 +1,16 @@
-import { useCallback, useRef, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useOSStore } from '../stores/osStore';
+import useDraggable from '../hooks/useDraggable';
+import useResizable from '../hooks/useResizable';
+import Icon from './Icon';
 
-const ICON_PATHS = {
-  folder: '/img/icons/folder.svg',
-  file: '/img/icons/file-earmark-pdf.svg',
-  music: '/img/icons/music-player.svg',
-  trash: '/img/icons/trash.svg',
-  gear: '/img/icons/gear.svg',
-  terminal: '/img/icons/terminal.svg',
+const ICON_NAMES = {
+  folder: 'folder',
+  file: 'file-earmark-pdf',
+  music: 'music-player',
+  trash: 'trash',
+  gear: 'gear',
+  terminal: 'terminal',
 };
 
 export default function Window({ id, children, menubar }) {
@@ -20,8 +23,7 @@ export default function Window({ id, children, menubar }) {
   const setSize = useOSStore((s) => s.setSize);
   const dockPosition = useOSStore((s) => s.dockPosition);
 
-  const dragStart = useRef(null);
-  const posStart = useRef(null);
+
 
   const [navH, setNavH] = useState(48);
   const [footerH, setFooterH] = useState(50);
@@ -36,65 +38,48 @@ export default function Window({ id, children, menubar }) {
   const dockAtTop = dockPosition === 'top';
   const topOffset = navH + (dockAtTop ? 32 : 0);
 
-  const clampPos = useCallback((x, y, w, h) => {
+  const clampPos = useCallback((x, y) => {
     const nav = document.querySelector('nav');
     const footer = document.querySelector('footer');
     const t = (nav ? nav.offsetHeight : 48) + (dockAtTop ? 32 : 0);
     const fh = footer ? footer.offsetHeight : 50;
     const b = dockAtTop ? fh : fh + 32;
+    const w = win.size.width;
+    const h = win.size.height;
     return {
       x: Math.max(0, Math.min(x, window.innerWidth - w)),
       y: Math.max(t, Math.min(y, window.innerHeight - b - h)),
     };
-  }, [dockAtTop]);
+  }, [win.size, dockAtTop]);
+
+  const { startDrag } = useDraggable({
+    onMove: (x, y) => setPosition(id, x, y),
+    constraints: clampPos,
+  });
+
+  const { startResize } = useResizable({
+    onResize: (w, h) => {
+      const footer = document.querySelector('footer');
+      const footerHeight = footer ? footer.offsetHeight : 50;
+      const maxW = window.innerWidth - win.position.x;
+      const maxH = window.innerHeight - footerHeight - win.position.y;
+      setSize(id, Math.min(w, maxW), Math.min(h, maxH));
+    },
+    minW: 280,
+    minH: 200,
+  });
 
   const handleTitleMouseDown = useCallback((e) => {
     if (e.target.closest('.window-controls') || e.target.closest('.window-menubar')) return;
     focusWindow(id);
-    dragStart.current = { x: e.clientX, y: e.clientY };
-    posStart.current = { x: win.position.x, y: win.position.y };
-    const w = win.size.width;
-    const h = win.size.height;
-    const handleMouseMove = (e) => {
-      const dx = e.clientX - dragStart.current.x;
-      const dy = e.clientY - dragStart.current.y;
-      const clamped = clampPos(posStart.current.x + dx, posStart.current.y + dy, w, h);
-      setPosition(id, clamped.x, clamped.y);
-    };
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }, [id, win.position, win.size, focusWindow, setPosition, clampPos]);
+    startDrag(e, { x: win.position.x, y: win.position.y });
+  }, [id, win.position, focusWindow, startDrag]);
 
   const handleResizeStart = useCallback((e) => {
     e.stopPropagation();
     focusWindow(id);
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const startW = win.size.width;
-    const startH = win.size.height;
-    const startPos = { x: win.position.x, y: win.position.y };
-    const handleMouseMove = (e) => {
-      let newW = Math.max(280, startW + e.clientX - startX);
-      let newH = Math.max(200, startH + e.clientY - startY);
-      const footer = document.querySelector('footer');
-      const footerHeight = footer ? footer.offsetHeight : 50;
-      const maxW = window.innerWidth - startPos.x;
-      const maxH = window.innerHeight - footerHeight - startPos.y;
-      newW = Math.min(newW, maxW);
-      newH = Math.min(newH, maxH);
-      setSize(id, newW, newH);
-    };
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }, [id, win.size, win.position, setSize, focusWindow]);
+    startResize(e, { x: win.position.x, y: win.position.y }, { width: win.size.width, height: win.size.height });
+  }, [id, win.position, win.size, focusWindow, startResize]);
 
   const handleTitleDblClick = useCallback(() => {
     toggleMaximize(id);
@@ -134,7 +119,7 @@ export default function Window({ id, children, menubar }) {
           userSelect: 'none', background: 'var(--surface)', opacity: 0.9,
         }}
       >
-        {ICON_PATHS[win.icon] && <img src={ICON_PATHS[win.icon]} style={{ width: '14px', height: '14px', marginRight: '0.4rem' }} alt="" />}
+        {ICON_NAMES[win.icon] && <Icon name={ICON_NAMES[win.icon]} size={14} style={{ marginRight: '0.4rem' }} />}
         <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 'calc(0.7rem * var(--os-font-mult))', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{win.title}</span>
         <div className="window-controls" style={{ marginLeft: 'auto', display: 'flex', gap: '4px' }}>
           <button
@@ -142,23 +127,27 @@ export default function Window({ id, children, menubar }) {
             onClick={() => toggleMinimize(id)}
             style={btnStyle}
           >
-            <img src="/img/icons/icons8-minimize-window-50.png" style={{ width: '10px', height: '10px', display: 'block' }} alt="" />
+            <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="4.5" width="8" height="1" fill="currentColor"/></svg>
           </button>
           <button
             className="titlebar-btn"
             onClick={() => toggleMaximize(id)}
             style={btnStyle}
           >
-            <img src={isMaximized ? '/img/icons/icons8-restore-window-50.png' : '/img/icons/icons8-maximize-window-50.png'} style={{ width: '10px', height: '10px', display: 'block' }} alt="" />
+            {isMaximized ? (
+              <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="3.5" width="5.5" height="5.5" fill="none" stroke="currentColor" stroke-width="1"/><rect x="3.5" y="1" width="5.5" height="5.5" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+            ) : (
+              <svg viewBox="0 0 10 10" width="10" height="10"><rect x="2" y="2" width="6" height="6" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+            )}
           </button>
           <button
             className="titlebar-btn titlebar-close"
             onClick={() => closeWindow(id)}
-            style={{ ...btnStyle, color: 'var(--text-muted)' }}
+            style={btnStyle}
             onMouseEnter={(e) => { e.currentTarget.style.background = '#cc3333'; e.currentTarget.style.borderColor = '#cc3333'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
           >
-            <img src="/img/icons/icons8-close-window-50.png" style={{ width: '10px', height: '10px', display: 'block' }} alt="" />
+            <svg viewBox="0 0 10 10" width="10" height="10"><line x1="2" y1="2" x2="8" y2="8" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="2" x2="2" y2="8" stroke="currentColor" stroke-width="1.2"/></svg>
           </button>
         </div>
       </div>
@@ -190,6 +179,6 @@ export default function Window({ id, children, menubar }) {
 const btnStyle = {
   width: '14px', height: '14px', fontSize: '0.5rem', lineHeight: '14px',
   textAlign: 'center', padding: 0, border: '1px solid var(--border)',
-  background: 'var(--surface-hover)', color: 'var(--text-muted)',
+  background: 'var(--surface-hover)', color: 'var(--text)',
   borderRadius: '3px', cursor: 'pointer',
 };
