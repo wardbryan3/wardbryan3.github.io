@@ -1,5 +1,7 @@
-import { useCallback, useRef, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useOSStore } from '../stores/osStore';
+import useDraggable from '../hooks/useDraggable';
+import useResizable from '../hooks/useResizable';
 
 const ICON_PATHS = {
   folder: '/img/icons/folder.svg',
@@ -20,8 +22,7 @@ export default function Window({ id, children, menubar }) {
   const setSize = useOSStore((s) => s.setSize);
   const dockPosition = useOSStore((s) => s.dockPosition);
 
-  const dragStart = useRef(null);
-  const posStart = useRef(null);
+
 
   const [navH, setNavH] = useState(48);
   const [footerH, setFooterH] = useState(50);
@@ -36,65 +37,48 @@ export default function Window({ id, children, menubar }) {
   const dockAtTop = dockPosition === 'top';
   const topOffset = navH + (dockAtTop ? 32 : 0);
 
-  const clampPos = useCallback((x, y, w, h) => {
+  const clampPos = useCallback((x, y) => {
     const nav = document.querySelector('nav');
     const footer = document.querySelector('footer');
     const t = (nav ? nav.offsetHeight : 48) + (dockAtTop ? 32 : 0);
     const fh = footer ? footer.offsetHeight : 50;
     const b = dockAtTop ? fh : fh + 32;
+    const w = win.size.width;
+    const h = win.size.height;
     return {
       x: Math.max(0, Math.min(x, window.innerWidth - w)),
       y: Math.max(t, Math.min(y, window.innerHeight - b - h)),
     };
-  }, [dockAtTop]);
+  }, [win.size, dockAtTop]);
+
+  const { startDrag } = useDraggable({
+    onMove: (x, y) => setPosition(id, x, y),
+    constraints: clampPos,
+  });
+
+  const { startResize } = useResizable({
+    onResize: (w, h) => {
+      const footer = document.querySelector('footer');
+      const footerHeight = footer ? footer.offsetHeight : 50;
+      const maxW = window.innerWidth - win.position.x;
+      const maxH = window.innerHeight - footerHeight - win.position.y;
+      setSize(id, Math.min(w, maxW), Math.min(h, maxH));
+    },
+    minW: 280,
+    minH: 200,
+  });
 
   const handleTitleMouseDown = useCallback((e) => {
     if (e.target.closest('.window-controls') || e.target.closest('.window-menubar')) return;
     focusWindow(id);
-    dragStart.current = { x: e.clientX, y: e.clientY };
-    posStart.current = { x: win.position.x, y: win.position.y };
-    const w = win.size.width;
-    const h = win.size.height;
-    const handleMouseMove = (e) => {
-      const dx = e.clientX - dragStart.current.x;
-      const dy = e.clientY - dragStart.current.y;
-      const clamped = clampPos(posStart.current.x + dx, posStart.current.y + dy, w, h);
-      setPosition(id, clamped.x, clamped.y);
-    };
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }, [id, win.position, win.size, focusWindow, setPosition, clampPos]);
+    startDrag(e, { x: win.position.x, y: win.position.y });
+  }, [id, win.position, focusWindow, startDrag]);
 
   const handleResizeStart = useCallback((e) => {
     e.stopPropagation();
     focusWindow(id);
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const startW = win.size.width;
-    const startH = win.size.height;
-    const startPos = { x: win.position.x, y: win.position.y };
-    const handleMouseMove = (e) => {
-      let newW = Math.max(280, startW + e.clientX - startX);
-      let newH = Math.max(200, startH + e.clientY - startY);
-      const footer = document.querySelector('footer');
-      const footerHeight = footer ? footer.offsetHeight : 50;
-      const maxW = window.innerWidth - startPos.x;
-      const maxH = window.innerHeight - footerHeight - startPos.y;
-      newW = Math.min(newW, maxW);
-      newH = Math.min(newH, maxH);
-      setSize(id, newW, newH);
-    };
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }, [id, win.size, win.position, setSize, focusWindow]);
+    startResize(e, { x: win.position.x, y: win.position.y }, { width: win.size.width, height: win.size.height });
+  }, [id, win.position, win.size, focusWindow, startResize]);
 
   const handleTitleDblClick = useCallback(() => {
     toggleMaximize(id);

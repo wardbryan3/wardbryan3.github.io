@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const TRACKS = [
   { num: '01', title: 'Southern New Hampshire University — B.S. Computer Science (Expected 02/2027) — GPA: 4.0', duration: '4:00' },
@@ -21,6 +21,11 @@ export default function MediaPlayerWindow() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [quote, setQuote] = useState(null);
   const [bars, setBars] = useState(INITIAL_BARS);
+  const shuffleTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => clearTimeout(shuffleTimerRef.current);
+  }, []);
 
   const handlePlay = () => {
     if (currentTrack < 0) setCurrentTrack(0);
@@ -49,9 +54,10 @@ export default function MediaPlayerWindow() {
   }, [isPlaying, currentTrack]);
 
   const handleShuffle = () => {
+    clearTimeout(shuffleTimerRef.current);
     const q = SHUFFLE_QUOTES[Math.floor(Math.random() * SHUFFLE_QUOTES.length)];
     setQuote(q);
-    setTimeout(() => setQuote(null), 4000);
+    shuffleTimerRef.current = setTimeout(() => setQuote(null), 4000);
   };
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { useOSStore } from '../stores/osStore';
 import ParticleField from './ParticleField';
 import DigitalRain from './DigitalRain';
@@ -7,12 +7,13 @@ import ErrorBoundary from './ErrorBoundary';
 import Dock from './Dock';
 import AppBar from './AppBar';
 import Window from './Window';
-import ExplorerWindow from './ExplorerWindow';
-import ResumeWindow from './ResumeWindow';
-import MediaPlayerWindow from './MediaPlayerWindow';
-import TrashWindow from './TrashWindow';
-import SettingsWindow from './SettingsWindow';
-import TerminalWindow from './TerminalWindow';
+
+const ExplorerWindow = lazy(() => import('./ExplorerWindow'));
+const ResumeWindow = lazy(() => import('./ResumeWindow'));
+const MediaPlayerWindow = lazy(() => import('./MediaPlayerWindow'));
+const TrashWindow = lazy(() => import('./TrashWindow'));
+const SettingsWindow = lazy(() => import('./SettingsWindow'));
+const TerminalWindow = lazy(() => import('./TerminalWindow'));
 
 const WALLPAPER_CSS = {
   'particle-field': {},
@@ -66,19 +67,27 @@ export default function DesktopOS({ projects, projectCount, postCount, searchDat
           const menubar = id !== 'terminal' ? ['File', 'Edit', 'View'] : null;
           return (
             <Window key={id} id={id} menubar={menubar}>
-              {id === 'explorer' && <ExplorerWindow projects={projects} />}
-              {id === 'resume' && <ResumeWindow />}
-              {id === 'media-player' && <MediaPlayerWindow />}
-              {id === 'trash' && <TrashWindow />}
-              {id === 'settings' && <SettingsWindow />}
-              {id === 'terminal' && (
-                <TerminalWindow
-                  projectCount={projectCount}
-                  postCount={postCount}
-                  searchData={searchData}
-                  dirs={dirs}
-                />
-              )}
+              <ErrorBoundary>
+                <Suspense fallback={
+                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'calc(0.7rem * var(--os-font-mult))' }}>
+                    Loading...
+                  </div>
+                }>
+                  {id === 'explorer' && <ExplorerWindow projects={projects} />}
+                  {id === 'resume' && <ResumeWindow />}
+                  {id === 'media-player' && <MediaPlayerWindow />}
+                  {id === 'trash' && <TrashWindow />}
+                  {id === 'settings' && <SettingsWindow />}
+                  {id === 'terminal' && (
+                    <TerminalWindow
+                      projectCount={projectCount}
+                      postCount={postCount}
+                      searchData={searchData}
+                      dirs={dirs}
+                    />
+                  )}
+                </Suspense>
+              </ErrorBoundary>
             </Window>
           );
         })}

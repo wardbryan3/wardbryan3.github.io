@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { CommandRegistry } from './CommandRegistry';
 import { createCommands, renderFastfetchOutput } from './commands';
+import useDraggable from '../hooks/useDraggable';
+import useResizable from '../hooks/useResizable';
 
 const DEFAULT_W = 760;
 const DEFAULT_H = 520;
@@ -50,8 +52,14 @@ export default function Terminal({
     }
   }, [restored]);
 
-  const dragRef = useRef(null);
-  const resizeRef = useRef(null);
+  // Clear cached terminal output when navigating to a different page
+  useEffect(() => {
+    if (restored) {
+      setOutputLines([]);
+      try { sessionStorage.removeItem('terminal-state-v1'); } catch {}
+    }
+  }, [page]);
+
   const navRef = useRef(48);
   const preMinRef = useRef(null);
   const sizeRef = useRef(size);
@@ -92,40 +100,7 @@ export default function Terminal({
     }
   }, [side]);
 
-  // Global mouse handlers for drag + resize
-  useEffect(() => {
-    if (side) return;
-    const handleMouseMove = (e) => {
-      if (dragRef.current) {
-        const d = dragRef.current;
-        const w = d.sizeW;
-        const h = d.sizeH;
-        const rawX = d.origX + (e.clientX - d.startX);
-        const rawY = d.origY + (e.clientY - d.startY);
-        const clampedX = Math.max(MARGIN, Math.min(rawX, window.innerWidth - w - MARGIN));
-        const clampedY = Math.max(navRef.current + MARGIN, Math.min(rawY, window.innerHeight - h - footerRef.current - MARGIN));
-        setPos({ x: clampedX, y: clampedY });
-      }
-      if (resizeRef.current) {
-        const r = resizeRef.current;
-        const newW = Math.max(480, r.origW + (e.clientX - r.startX));
-        const newH = Math.max(320, r.origH + (e.clientY - r.startY));
-        const maxW = window.innerWidth - r.posX - MARGIN;
-        const maxH = window.innerHeight - r.posY - footerRef.current - MARGIN;
-        setSize({ w: Math.min(newW, maxW), h: Math.min(newH, maxH) });
-      }
-    };
-    const handleMouseUp = () => {
-      dragRef.current = null;
-      resizeRef.current = null;
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [side]);
+
 
   // Reposition and resize when viewport changes
   useEffect(() => {
@@ -185,19 +160,23 @@ export default function Terminal({
     }
   }, [globalFocusKey, collapsed, phase]);
 
-  const startDrag = useCallback((e) => {
-    if (side || !pos || !size) return;
-    if (maximized && window.innerWidth <= MOBILE_BP) return;
-    dragRef.current = { startX: e.clientX, startY: e.clientY, origX: pos.x, origY: pos.y, sizeW: size.w, sizeH: size.h };
-    e.preventDefault();
-  }, [side, pos, size, maximized]);
+  const { startDrag } = useDraggable({
+    onMove: (x, y) => setPos({ x, y }),
+    constraints: (x, y) => ({
+      x: Math.max(MARGIN, Math.min(x, window.innerWidth - (size?.w || DEFAULT_W) - MARGIN)),
+      y: Math.max(navRef.current + MARGIN, Math.min(y, window.innerHeight - (size?.h || DEFAULT_H) - footerRef.current - MARGIN)),
+    }),
+  });
 
-  const startResize = useCallback((e) => {
-    if (side || !pos || !size) return;
-    if (maximized && window.innerWidth <= MOBILE_BP) return;
-    resizeRef.current = { startX: e.clientX, startY: e.clientY, origW: size.w, origH: size.h, posX: pos.x, posY: pos.y };
-    e.preventDefault();
-  }, [side, pos, size, maximized]);
+  const { startResize } = useResizable({
+    onResize: (newW, newH) => {
+      const maxW = window.innerWidth - (pos?.x || 0) - MARGIN;
+      const maxH = window.innerHeight - (pos?.y || 0) - footerRef.current - MARGIN;
+      setSize({ w: Math.min(newW, maxW), h: Math.min(newH, maxH) });
+    },
+    minW: 480,
+    minH: 320,
+  });
 
   // Register commands
   useEffect(() => {
@@ -326,11 +305,16 @@ export default function Terminal({
     }
   }, [outputLines]);
 
-  // Persist terminal state to sessionStorage
+  // Persist terminal state to sessionStorage (debounced)
+  const persistRef = useRef(null);
   useEffect(() => {
-    try {
-      sessionStorage.setItem('terminal-state-v1', JSON.stringify({ outputLines }));
-    } catch {}
+    clearTimeout(persistRef.current);
+    persistRef.current = setTimeout(() => {
+      try {
+        sessionStorage.setItem('terminal-state-v1', JSON.stringify({ outputLines }));
+      } catch {}
+    }, 1000);
+    return () => clearTimeout(persistRef.current);
   }, [outputLines]);
 
   // Animation phases
@@ -465,7 +449,7 @@ export default function Terminal({
       className={windowClasses}
       style={{ position: 'fixed', left: pos?.x ?? 0, top: pos?.y ?? 0, width: size?.w ?? DEFAULT_W, height: effectiveCollapsed ? '34px' : (size?.h ?? DEFAULT_H) + 'px', minHeight: effectiveCollapsed ? '34px' : undefined, zIndex: 10, opacity: ready ? 1 : 0 }}
     >
-      <div className="terminal-titlebar" onMouseDown={startDrag}>
+      <div className="terminal-titlebar" onMouseDown={(e) => { if (pos) startDrag(e, pos); }}>
         <span className="titlebar-title">bryan@ward — fastfetch</span>
         {!isMobile && (
           <div className="titlebar-buttons">
@@ -476,7 +460,7 @@ export default function Terminal({
         )}
       </div>
       {!effectiveCollapsed && terminalBody}
-      {!effectiveCollapsed && <div className="terminal-resize-handle" onMouseDown={startResize} />}
+      {!effectiveCollapsed && <div className="terminal-resize-handle" onMouseDown={(e) => { if (pos && size) startResize(e, pos, size); }} />}
     </div>
   );
 }

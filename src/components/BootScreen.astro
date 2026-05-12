@@ -52,6 +52,8 @@ const { projectCount, postCount, searchData, dirs } = Astro.props;
   function getPost() { return document.getElementById('boot-post'); }
   function getLoading() { return document.getElementById('loading-screen'); }
 
+  let postTimer = 0;
+
   function showLoading() {
     if (!alive) return;
     phase = 'loading';
@@ -78,17 +80,16 @@ const { projectCount, postCount, searchData, dirs } = Astro.props;
     }, 1500);
   }
 
-  let postTimer;
-
   function startBootSequence() {
-    postTimer = setTimeout(() => {
+    postTimer = Number(setTimeout(() => {
       if (phase === 'press-del' && alive) {
         showLoading();
       }
-    }, 1000);
+    }, 1000));
 
+    // @ts-ignore
     const onDel = function onDel(e) {
-      if (phase === 'press-del' && e.key === 'Delete') {
+      if (e.key === 'Delete') {
         e.preventDefault();
         phase = 'bios';
         clearTimeout(postTimer);
