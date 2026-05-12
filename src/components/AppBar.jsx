@@ -1,12 +1,13 @@
 import { useOSStore } from '../stores/osStore';
 import { useState, useEffect, useRef } from 'react';
+import Icon from './Icon';
 
 const APPS = [
-  { id: 'explorer', icon: '/img/icons/folder.svg', label: 'Explorer' },
-  { id: 'resume', icon: '/img/icons/file-earmark-pdf.svg', label: 'Resume' },
-  { id: 'media-player', icon: '/img/icons/music-player.svg', label: 'Media Player' },
-  { id: 'settings', icon: '/img/icons/gear.svg', label: 'Settings' },
-  { id: 'terminal', icon: '/img/icons/terminal.svg', label: 'Terminal' },
+  { id: 'explorer', icon: 'folder', label: 'Explorer' },
+  { id: 'resume', icon: 'file-earmark-pdf', label: 'Resume' },
+  { id: 'media-player', icon: 'music-player', label: 'Media Player' },
+  { id: 'settings', icon: 'gear', label: 'Settings' },
+  { id: 'terminal', icon: 'terminal', label: 'Terminal' },
 ];
 
 export default function AppBar() {
@@ -69,7 +70,7 @@ export default function AppBar() {
         zIndex: 10000, fontSize: 'calc(0.8rem * var(--os-font-mult))',
       }}
     >
-      {[...APPS, ...(windows['trash']?.open ? [{ id: 'trash', icon: '/img/icons/trash.svg', label: 'Trash' }] : [])].map((app) => {
+      {[...APPS, ...(windows['trash']?.open ? [{ id: 'trash', icon: 'trash', label: 'Trash' }] : [])].map((app) => {
         const w = windows[app.id];
         const isOpen = w?.open && !w.minimized;
         const isActive = activeApp === app.id && isOpen;
@@ -91,7 +92,7 @@ export default function AppBar() {
               fontSize: 'calc(0.8rem * var(--os-font-mult))',
             }}
           >
-            <img src={app.icon} className="icon-img" style={{ width: '18px', height: '18px' }} alt={app.label} />
+            <Icon name={app.icon} size={18} />
             {w?.open && (
               <span
                 style={{

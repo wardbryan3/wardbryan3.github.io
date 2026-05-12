@@ -2,14 +2,15 @@ import { useCallback, useState, useEffect } from 'react';
 import { useOSStore } from '../stores/osStore';
 import useDraggable from '../hooks/useDraggable';
 import useResizable from '../hooks/useResizable';
+import Icon from './Icon';
 
-const ICON_PATHS = {
-  folder: '/img/icons/folder.svg',
-  file: '/img/icons/file-earmark-pdf.svg',
-  music: '/img/icons/music-player.svg',
-  trash: '/img/icons/trash.svg',
-  gear: '/img/icons/gear.svg',
-  terminal: '/img/icons/terminal.svg',
+const ICON_NAMES = {
+  folder: 'folder',
+  file: 'file-earmark-pdf',
+  music: 'music-player',
+  trash: 'trash',
+  gear: 'gear',
+  terminal: 'terminal',
 };
 
 export default function Window({ id, children, menubar }) {
@@ -118,7 +119,7 @@ export default function Window({ id, children, menubar }) {
           userSelect: 'none', background: 'var(--surface)', opacity: 0.9,
         }}
       >
-        {ICON_PATHS[win.icon] && <img src={ICON_PATHS[win.icon]} className="icon-img" style={{ width: '14px', height: '14px', marginRight: '0.4rem' }} alt="" />}
+        {ICON_NAMES[win.icon] && <Icon name={ICON_NAMES[win.icon]} size={14} style={{ marginRight: '0.4rem' }} />}
         <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: 'calc(0.7rem * var(--os-font-mult))', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{win.title}</span>
         <div className="window-controls" style={{ marginLeft: 'auto', display: 'flex', gap: '4px' }}>
           <button

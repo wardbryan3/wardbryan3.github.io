@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import Icon from './Icon';
 
 const TRACKS = [
   { num: '01', title: 'Southern New Hampshire University — B.S. Computer Science (Expected 02/2027) — GPA: 4.0', duration: '4:00' },
@@ -13,7 +14,6 @@ const SHUFFLE_QUOTES = [
   '"Technical skills and design sense are a rare combo." \u2014 Client',
 ];
 
-const BAR_COUNT = 8;
 const INITIAL_BARS = [50, 65, 70, 35, 50, 25, 45, 30];
 
 export default function MediaPlayerWindow() {
@@ -144,17 +144,17 @@ export default function MediaPlayerWindow() {
         }}
       >
         <button onClick={handlePrev} style={ctrlBtnStyle}>
-          <img src="/img/icons/rewind.svg" className="icon-img" style={{ width: '14px', height: '14px', display: 'block' }} alt="Previous" />
+          <Icon name="rewind" size={14} />
         </button>
         <button onClick={handlePlay} style={{ ...ctrlBtnStyle }}>
-          <img src={isPlaying ? '/img/icons/pause.svg' : '/img/icons/play.svg'} className="icon-img" style={{ width: '16px', height: '16px', display: 'block' }} alt={isPlaying ? 'Pause' : 'Play'} />
+          <Icon name={isPlaying ? 'pause' : 'play'} size={16} />
         </button>
         <button onClick={handleNext} style={ctrlBtnStyle}>
-          <img src="/img/icons/fast-forward.svg" className="icon-img" style={{ width: '14px', height: '14px', display: 'block' }} alt="Next" />
+          <Icon name="fast-forward" size={14} />
         </button>
         <span style={{ flex: 1 }} />
         <button onClick={handleShuffle} style={ctrlBtnStyle} title="Shuffle">
-          <img src="/img/icons/shuffle.svg" className="icon-img" style={{ width: '14px', height: '14px', display: 'block' }} alt="Shuffle" />
+          <Icon name="shuffle" size={14} />
         </button>
         <span style={{ color: 'var(--text-muted)', fontSize: 'calc(0.6rem * var(--os-font-mult))' }}>
           {currentTrack >= 0 ? TRACKS[currentTrack].duration : '0:00'}

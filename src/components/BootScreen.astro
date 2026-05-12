@@ -1,14 +1,5 @@
 ---
 import BiosWindow from './BiosWindow';
-
-interface Props {
-  projectCount: number;
-  postCount: number;
-  searchData: any[];
-  dirs: { name: string; description: string; count: number }[];
-}
-
-const { projectCount, postCount, searchData, dirs } = Astro.props;
 ---
 
 <BiosWindow client:load />

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Icon from './Icon';
 
 export default function ExplorerWindow({ projects }) {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -49,7 +50,7 @@ export default function ExplorerWindow({ projects }) {
               marginBottom: '4px',
             }}
           >
-            <img src="/img/icons/folder.svg" className="icon-img" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" /> Projects
+            <Icon name="folder" size={14} style={{ verticalAlign: 'middle', marginRight: '2px' }} /> Projects
           </div>
           {projects.map((p) => (
             <div
@@ -59,7 +60,7 @@ export default function ExplorerWindow({ projects }) {
                 color: 'var(--text)',
               }}
             >
-              <img src="/img/icons/folder.svg" className="icon-img" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" /> {p.data.title}
+              <Icon name="folder" size={14} style={{ verticalAlign: 'middle', marginRight: '2px' }} /> {p.data.title}
             </div>
           ))}
         </div>
@@ -143,7 +144,7 @@ export default function ExplorerWindow({ projects }) {
                 }}
               >
                 <div style={{ fontSize: '1.3rem', marginBottom: '4px' }}>
-                  <img src="/img/icons/folder.svg" className="icon-img" style={{ width: '14px', height: '14px', verticalAlign: 'middle', marginRight: '2px' }} alt="" />
+                  <Icon name="folder" size={14} style={{ verticalAlign: 'middle', marginRight: '2px' }} />
                 </div>
                 <div
                   style={{
