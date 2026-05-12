@@ -56,7 +56,7 @@ export default function BiosWindow() {
           <div className="bios-window">
             <div className="bios-window-titlebar">Boot Confirmation</div>
             <div className="bios-window-body">
-              <div className="bios-window-text">
+              <div className="bios-window-text" style={{ color: '#000' }}>
                 My wife made me put this here,<br />would you like to boot?
               </div>
               <div className="bios-choices">

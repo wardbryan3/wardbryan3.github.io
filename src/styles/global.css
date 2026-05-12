@@ -919,7 +919,7 @@ pre code {
   padding: 3px 10px;
   cursor: pointer;
   user-select: none;
-  color: #444;
+  color: #000;
 }
 
 .bios-choice-selected {
@@ -937,7 +937,7 @@ pre code {
   border-top: 1px solid #888;
   padding-top: 8px;
   font-size: 0.65rem;
-  color: #444;
+  color: #000;
 }
 
 .bios-footer {
