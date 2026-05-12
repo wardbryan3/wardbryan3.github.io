@@ -44,8 +44,8 @@ export default function BiosWindow() {
   return (
     <div className="bios-overlay">
       <div className="bios-header">
-        <span className="bios-header-title">Aptio Setup Utility - v1.0</span>
-        <span className="bios-header-copyright">Copyright (C) 2025 American Megatrends</span>
+        <span className="bios-header-title">Optio Setup Utility - v1.0</span>
+        <span className="bios-header-copyright">Copyright (C) 2025 American Megahertz</span>
       </div>
 
       <div className="bios-tabbar">
