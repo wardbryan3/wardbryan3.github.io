@@ -4,6 +4,11 @@ export default function BiosWindow() {
   const [show, setShow] = useState(false);
   const [selected, setSelected] = useState('Y');
 
+  const boot = useCallback(() => {
+    setShow(false);
+    document.dispatchEvent(new CustomEvent('boot:bios-yes'));
+  }, []);
+
   const handleKey = useCallback((e) => {
     if (!show) return;
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
@@ -12,12 +17,13 @@ export default function BiosWindow() {
     }
     if (e.key === 'Enter') {
       e.preventDefault();
-      if (selected === 'Y') {
-        setShow(false);
-        document.dispatchEvent(new CustomEvent('boot:bios-yes'));
-      }
+      boot();
     }
-  }, [show, selected]);
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      boot();
+    }
+  }, [show, boot]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKey);
@@ -62,13 +68,13 @@ export default function BiosWindow() {
               <div className="bios-choices">
                 <div
                   className={`bios-choice ${selected === 'Y' ? 'bios-choice-selected' : ''}`}
-                  onClick={() => setSelected('Y')}
+                  onClick={() => { setSelected('Y'); boot(); }}
                 >
                   <span className="bios-choice-label">[Y]</span> Yes
                 </div>
                 <div
                   className={`bios-choice ${selected === 'N' ? 'bios-choice-selected' : ''}`}
-                  onClick={() => setSelected('N')}
+                  onClick={() => { setSelected('N'); boot(); }}
                 >
                   <span className="bios-choice-label">[N]</span> No
                 </div>
