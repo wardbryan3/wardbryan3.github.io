@@ -1,5 +1,5 @@
 import { useOSStore } from '../stores/osStore';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const APPS = [
   { id: 'explorer', icon: '/img/icons/folder.svg', label: 'Explorer' },
@@ -16,27 +16,30 @@ export default function AppBar() {
   const focusWindow = useOSStore((s) => s.focusWindow);
   const toggleMinimize = useOSStore((s) => s.toggleMinimize);
   const [visible, setVisible] = useState(true);
+  const timersRef = useRef({});
 
   useEffect(() => {
-    const showTimer = setTimeout(() => setVisible(false), 3000);
-    let hideTimer;
+    const t = timersRef.current;
+    t.initialHide = setTimeout(() => setVisible(false), 3000);
+
     const handleMouseMove = (e) => {
       const footer = document.querySelector('footer');
       const footerHeight = footer ? footer.offsetHeight : 50;
       const sectionBottom = window.innerHeight - footerHeight;
       if (e.clientY >= sectionBottom - 30) {
         setVisible(true);
-        clearTimeout(hideTimer);
-        clearTimeout(showTimer);
+        clearTimeout(t.mouseLeave);
+        clearTimeout(t.initialHide);
       } else if (e.clientY < sectionBottom - 80) {
-        hideTimer = setTimeout(() => setVisible(false), 500);
+        clearTimeout(t.mouseLeave);
+        t.mouseLeave = setTimeout(() => setVisible(false), 500);
       }
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      clearTimeout(hideTimer);
-      clearTimeout(showTimer);
+      clearTimeout(t.initialHide);
+      clearTimeout(t.mouseLeave);
     };
   }, []);
 
