@@ -1,5 +1,8 @@
 import MobileHeader from './MobileHeader';
 
+/**
+ * @param {{ projects?: any[] }} props
+ */
 export default function WorkTab({ projects = [] }) {
   const sorted = [...projects].sort((a, b) => {
     if (a.data.featured && !b.data.featured) return -1;

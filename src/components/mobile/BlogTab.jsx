@@ -1,5 +1,8 @@
 import MobileHeader from './MobileHeader';
 
+/**
+ * @param {{ posts?: any[] }} props
+ */
 export default function BlogTab({ posts = [] }) {
   const sorted = [...posts].sort(
     (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()

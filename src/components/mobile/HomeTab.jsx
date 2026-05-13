@@ -1,10 +1,10 @@
 import { useOSStore } from '../../stores/osStore';
 import MobileHeader from './MobileHeader';
 
-const FALLBACK_POSTS = [];
-const FALLBACK_PROJECTS = [];
-
-export default function HomeTab({ posts = FALLBACK_POSTS, projects = FALLBACK_PROJECTS }) {
+/**
+ * @param {{ posts?: any[], projects?: any[] }} props
+ */
+export default function HomeTab({ posts = [], projects = [] }) {
   const openMoreSheet = useOSStore((s) => s.openMoreSheet);
   const sortedPosts = [...posts]
     .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())

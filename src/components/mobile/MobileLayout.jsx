@@ -6,6 +6,9 @@ import WorkTab from './WorkTab';
 import MoreSheet from './MoreSheet';
 import MobileTerminalView from './MobileTerminalView';
 
+/**
+ * @param {{ projects?: any[], posts?: any[], postCount?: number, projectCount?: number, searchData?: any[], dirs?: { name: string; description: string; count: number }[] }} props
+ */
 export default function MobileLayout({
   projects = [],
   posts = [],

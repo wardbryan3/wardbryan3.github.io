@@ -1,6 +1,9 @@
 import { useOSStore } from '../../stores/osStore';
 import Terminal from '../../terminal/Terminal';
 
+/**
+ * @param {{ projectCount?: number, postCount?: number, searchData?: any[], dirs?: { name: string; description: string; count: number }[] }} props
+ */
 export default function MobileTerminalView({
   projectCount = 0,
   postCount = 0,
