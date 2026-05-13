@@ -252,4 +252,20 @@ export const useOSStore = create((set, get) => ({
     saveSettings({ ...get(), fontSize });
     set({ fontSize });
   },
+
+  // Mobile state
+  mobileActiveTab: 'home',
+  moreSheetOpen: false,
+  terminalOpen: false,
+  mobileViewStack: [],
+
+  setMobileTab: (tab) => set({ mobileActiveTab: tab, mobileViewStack: [] }),
+  openMoreSheet: () => set({ moreSheetOpen: true }),
+  closeMoreSheet: () => set({ moreSheetOpen: false }),
+  openMobileTerminal: () => set({ terminalOpen: true, moreSheetOpen: false }),
+  closeMobileTerminal: () => set({ terminalOpen: false }),
+  pushMobileView: (view) =>
+    set((s) => ({ mobileViewStack: [...s.mobileViewStack, view] })),
+  popMobileView: () =>
+    set((s) => ({ mobileViewStack: s.mobileViewStack.slice(0, -1) })),
 }));
