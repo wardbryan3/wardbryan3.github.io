@@ -918,6 +918,10 @@ pre code {
   .hamburger-btn {
     display: flex;
   }
+
+  .nav-actions {
+    margin-left: auto;
+  }
 }
 
 .nav-backdrop {

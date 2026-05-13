@@ -1,0 +1,42 @@
+---
+title: "Building a Desktop OS in the Browser: My Portfolio Site"
+date: 2026-05-12
+description: "I built my personal website as a simulated desktop operating system with draggable windows, a terminal, and 3D wallpapers. Here's how it works and what I learned along the way."
+tags: ["astro", "react", "threejs", "portfolio"]
+---
+
+Most developer portfolios are straightforward: a hero section, some project cards, a contact form. Mine boots into a fake operating system.
+
+When I started my CS degree at SNHU, I wanted a portfolio that reflected how I actually work: multiple windows open, a terminal always running, and a desktop environment I can tweak endlessly. So I built [wardbryan3.github.io](https://wardbryan3.github.io) as a browser-based OS simulation.
+
+## The Core Idea
+
+The site uses [Astro](https://astro.build) as the static site framework with React handling the interactive components. On desktop (769px+), visitors see a full desktop environment with draggable, resizable windows managed by a [Zustand](https://github.com/pmndrs/zustand) store. On mobile, it falls back to a simpler dashboard.
+
+The window manager tracks six apps (so far) a file explorer for my projects, a terminal, a music player, a settings panel, a resume viewer, and a trash can. Each window stores its position, size, and z-index in the Zustand store, which is persisted to localStorage under `portfolio-os-settings`. This means if you close and reopen a window, it remembers where it was.
+
+## The Terminal
+
+The most fun part was the terminal. It opens automatically on boot and supports a handful of custom commands: `help`, `cd`, `ls`, `whoami`, `fastfetch`, `clear`, and a few easter eggs. Running `fastfetch` shows a fastfetch-style system info display with fields like name, status, tools, and project count. The terminal is a real React component that reads from the same data sources as the rest of the site — project and blog collections — so counts stay accurate. You can also use `grep` to search through the whole site by a single word. `find` Also works, and searches by titles.
+
+## 3D Wallpapers
+
+I wanted more visual interest than a static background, so I added three real-time wallpapers using Three.js via react-three-fiber: a particle field, a digital rain (Matrix-style), and a hex grid that responds to mouse movement. Users can switch between them in Settings. Each wallpaper is lazy-loaded, so you only pay for the one you're using.
+
+## What I Learned
+
+This project reinforced a few concepts from my coursework:
+
+**State management at scale.** Managing multiple windows with position, focus, minimize, maximize, and z-index taught me why global state stores exist. My first attempt used React state and callbacks passed through props, it became unmanageable at about four windows. Zustand's `set`/`get` API with selectors made it trivial.
+
+**Astro's island architecture.** Astro ships zero JavaScript by default and only hydrates interactive components marked with client directives. The desktop OS renders with `client:media="(min-width: 769px)"`, it never even loads on mobile. This keeps the bundle small and the Lighthouse score high.
+
+**Content collections beat hardcoding.** Defining my projects and blog posts as typed MDX collections with Zod schemas means the data is validated, queryable, and reusable across pages and the terminal. Updating a project description in one MDX file propagates everywhere.
+
+## A Setup That Helps
+
+Working on a project like this with multiple windows open (editor, dev server, browser dev tools) made me appreciate screen real estate. After a semester of wrestling with window tabs on a laptop screen, I picked up a [Dell S2722QC 27-inch 4K Monitor](https://www.amazon.com/dp/B09TQJ7TSZ). Being able to keep reference docs on one screen and code on the other is probably the single biggest productivity boost I've found as a student developer.
+
+If you're building something similar — or any substantial side project — I'd recommend giving yourself the desk space to see it all at once. Your future self will thank you when you're not alt-tabbing between eight windows.
+
+The full source is on [GitHub](https://github.com/wardbryan3/wardbryan3.github.io) if you want to poke around or steal ideas for your own portfolio.

@@ -10,6 +10,7 @@ interface Props {
   description: string;
   date: Date;
   tags?: string[];
+  readTime?: number;
   showTerminal?: boolean;
   terminalPage?: string;
   postCount?: number;
@@ -25,6 +26,7 @@ const {
   description,
   date,
   tags,
+  readTime,
   showTerminal = false,
   terminalPage = '',
   postCount = 0,
@@ -52,13 +54,18 @@ const {
     <article class="blog-content">
       <header class="post-header">
         <h1>{title}</h1>
-        <time class="post-date" datetime={date.toISOString()}>
-          {date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </time>
+        <div class="post-header-meta">
+          <time class="post-date" datetime={date.toISOString()}>
+            {date.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </time>
+          {readTime && (
+            <span class="post-read-time">{readTime} min read</span>
+          )}
+        </div>
         {tags && tags.length > 0 && (
           <div class="tags">
             {tags.map((tag) => <Tag label={tag} />)}
@@ -97,17 +104,30 @@ const {
       searchData={searchData}
       dirs={dirs}
       flow={true}
-      defaultOpen={true}
+      defaultOpen={false}
       client:load
     />
   </div>
+  <div id="reading-progress" class="reading-progress" />
 </BaseLayout>
+
+<script>
+  const bar = document.getElementById('reading-progress');
+  if (bar) {
+    document.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+      bar.style.transform = `scaleX(${pct})`;
+    }, { passive: true });
+  }
+</script>
 
 <style>
   .blog-docs-layout {
     display: grid;
     grid-template-columns: 200px 1fr auto auto;
-    min-height: calc(100vh - 48px - 60px);
+    min-height: calc(100vh - 48px - 58px);
     max-width: 100%;
   }
 
@@ -129,12 +149,24 @@ const {
     margin-bottom: 0.5rem;
   }
 
+  .post-header-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
   .post-date {
     font-family: var(--font-mono);
     font-size: 0.8rem;
     color: var(--text-muted);
-    display: block;
-    margin-bottom: 0.75rem;
+  }
+
+  .post-read-time {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.7;
   }
 
   .tags {
@@ -144,7 +176,80 @@ const {
   }
 
   .prose {
-    line-height: 1.8;
+    line-height: 1.9;
+    font-size: 1rem;
+  }
+
+  .prose p {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose h2 {
+    font-size: 1.35rem;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .prose h3 {
+    font-size: 1.1rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose ul, .prose ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+  }
+
+  .prose li {
+    margin-bottom: 0.35rem;
+  }
+
+  .prose strong {
+    color: var(--text);
+  }
+
+  .prose a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--accent-glow);
+  }
+
+  .prose a:hover {
+    text-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  .prose blockquote {
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .prose code {
+    font-size: 0.85em;
+  }
+
+  .prose pre {
+    margin: 1.5rem 0;
+  }
+
+  .prose img {
+    max-width: 100%;
+    border-radius: 6px;
+    margin: 1.5rem 0;
+    border: 1px solid var(--border);
+  }
+
+  .prose hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
   }
 
   .toc-column {
@@ -227,5 +332,17 @@ const {
 
   .post-nav-link:hover .post-nav-title {
     text-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--accent);
+    transform-origin: left center;
+    transform: scaleX(0);
+    z-index: 10001;
+    box-shadow: 0 0 6px var(--accent-glow);
   }
 </style>

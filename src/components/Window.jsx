@@ -135,9 +135,9 @@ export default function Window({ id, children, menubar }) {
             style={btnStyle}
           >
             {isMaximized ? (
-              <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="3.5" width="5.5" height="5.5" fill="none" stroke="currentColor" stroke-width="1"/><rect x="3.5" y="1" width="5.5" height="5.5" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+              <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="3.5" width="5.5" height="5.5" fill="none" stroke="currentColor" strokeWidth="1"/><rect x="3.5" y="1" width="5.5" height="5.5" fill="none" stroke="currentColor" strokeWidth="1"/></svg>
             ) : (
-              <svg viewBox="0 0 10 10" width="10" height="10"><rect x="2" y="2" width="6" height="6" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+              <svg viewBox="0 0 10 10" width="10" height="10"><rect x="2" y="2" width="6" height="6" fill="none" stroke="currentColor" strokeWidth="1"/></svg>
             )}
           </button>
           <button
@@ -147,7 +147,7 @@ export default function Window({ id, children, menubar }) {
             onMouseEnter={(e) => { e.currentTarget.style.background = '#cc3333'; e.currentTarget.style.borderColor = '#cc3333'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
           >
-            <svg viewBox="0 0 10 10" width="10" height="10"><line x1="2" y1="2" x2="8" y2="8" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="2" x2="2" y2="8" stroke="currentColor" stroke-width="1.2"/></svg>
+            <svg viewBox="0 0 10 10" width="10" height="10"><line x1="2" y1="2" x2="8" y2="8" stroke="currentColor" strokeWidth="1.2"/><line x1="8" y1="2" x2="2" y2="8" stroke="currentColor" strokeWidth="1.2"/></svg>
           </button>
         </div>
       </div>
