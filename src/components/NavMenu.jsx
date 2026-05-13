@@ -22,8 +22,13 @@ const THEME_LABELS = {
 
 export default function NavMenu({ currentPath }) {
   const [open, setOpen] = useState(false);
-  const theme = useOSStore((s) => s.theme);
+  const [activeTheme, setActiveTheme] = useState('system');
   const setTheme = useOSStore((s) => s.setTheme);
+
+  useEffect(() => {
+    const t = document.documentElement.getAttribute('data-theme');
+    if (t) setActiveTheme(t);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -92,8 +97,11 @@ export default function NavMenu({ currentPath }) {
             {THEMES.map((t) => (
               <button
                 key={t}
-                class={`theme-btn ${theme === t ? 'theme-btn--active' : ''}`}
-                onClick={() => setTheme(t)}
+                class={`theme-btn ${activeTheme === t ? 'theme-btn--active' : ''}`}
+                onClick={() => {
+                  setActiveTheme(t);
+                  setTheme(t);
+                }}
               >
                 {THEME_LABELS[t] || t}
               </button>

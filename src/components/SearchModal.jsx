@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Icon from './Icon';
 
 export default function SearchModal() {
   const [open, setOpen] = useState(false);
@@ -76,7 +77,7 @@ export default function SearchModal() {
         aria-label={open ? 'Close search' : 'Open search'}
         onClick={() => setOpen((v) => !v)}
       >
-        <span class="search-icon">&#128269;</span>
+        <Icon name="search" style={{ color: 'inherit' }} />
       </button>
       {open && <div class="search-backdrop" onClick={() => setOpen(false)} />}
       <div
@@ -86,7 +87,7 @@ export default function SearchModal() {
         aria-label="Search"
       >
         <div class="search-input-wrap">
-          <span class="search-input-icon">&#128269;</span>
+          <span class="search-input-icon"><Icon name="search" /></span>
           <input
             ref={inputRef}
             class="search-input"

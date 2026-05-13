@@ -476,6 +476,7 @@ pre code {
 
 .toc-item.active > .toc-link {
   color: var(--accent);
+  text-shadow: 0 0 6px var(--accent-glow);
 }
 
 .toc-link {
@@ -905,13 +906,13 @@ pre code {
   display: block;
   width: 20px;
   height: 2px;
-  background: var(--text);
+  background: var(--accent);
   border-radius: 1px;
-  transition: background 0.2s;
+  transition: opacity 0.2s;
 }
 
 .hamburger-btn:hover .hamburger-bar {
-  background: var(--accent);
+  opacity: 0.7;
 }
 
 @media (min-width: 769px) {
@@ -926,7 +927,10 @@ pre code {
 
 .nav-backdrop {
   position: fixed;
-  inset: 0;
+  top: 52px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 105;
 }
@@ -1041,14 +1045,14 @@ pre code {
   cursor: pointer;
   padding: 6px;
   z-index: 110;
-  color: var(--text);
+  color: var(--accent);
   font-size: 1rem;
   line-height: 1;
-  transition: color 0.2s;
+  transition: opacity 0.2s;
 }
 
 .search-btn:hover {
-  color: var(--accent);
+  opacity: 0.7;
 }
 
 @media (min-width: 769px) {
@@ -1059,7 +1063,10 @@ pre code {
 
 .search-backdrop {
   position: fixed;
-  inset: 0;
+  top: 52px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 200;
 }
