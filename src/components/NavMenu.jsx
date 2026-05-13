@@ -20,7 +20,7 @@ const THEME_LABELS = {
   'one-dark': '1dark',
 };
 
-export default function NavMenu() {
+export default function NavMenu({ currentPath }) {
   const [open, setOpen] = useState(false);
   const theme = useOSStore((s) => s.theme);
   const setTheme = useOSStore((s) => s.setTheme);
@@ -35,15 +35,17 @@ export default function NavMenu() {
   }, [open]);
 
   const isActive = (path) => {
-    const p = window.location.pathname;
+    const p = currentPath;
     return p === path || (path !== '/' && p.startsWith(path + '/'));
   };
+
+  const label = open ? 'Close navigation menu' : 'Open navigation menu';
 
   return (
     <>
       <button
         class="hamburger-btn"
-        aria-label="Open navigation menu"
+        aria-label={label}
         onClick={() => setOpen((v) => !v)}
       >
         <span class="hamburger-bar"></span>
@@ -51,10 +53,15 @@ export default function NavMenu() {
         <span class="hamburger-bar"></span>
       </button>
       {open && <div class="nav-backdrop" onClick={() => setOpen(false)} />}
-      <div class={`nav-panel ${open ? 'nav-panel--open' : ''}`}>
+      <div
+        class={`nav-panel ${open ? 'nav-panel--open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
+      >
         <div class="nav-panel-section">
           <span class="nav-panel-heading">Navigation</span>
-          <div class="nav-panel-links">
+          <nav class="nav-panel-links">
             <a
               href="/"
               class={`nav-panel-link ${isActive('/') ? 'nav-panel-link--active' : ''}`}
@@ -76,7 +83,7 @@ export default function NavMenu() {
             >
               Projects
             </a>
-          </div>
+          </nav>
         </div>
         <div class="nav-panel-divider"></div>
         <div class="nav-panel-section">
