@@ -26,6 +26,7 @@ export default function MobileLayout({
         flexDirection: 'column',
         height: '100%',
         width: '100%',
+        minHeight: 0,
         position: 'relative',
       }}
     >
