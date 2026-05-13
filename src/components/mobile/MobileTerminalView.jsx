@@ -10,10 +10,10 @@ export default function MobileTerminalView({
   searchData = [],
   dirs = [],
 }) {
-  const terminalOpen = useOSStore((s) => s.terminalOpen);
-  const closeMobileTerminal = useOSStore((s) => s.closeMobileTerminal);
+  const activeTab = useOSStore((s) => s.mobileActiveTab);
+  const setMobileTab = useOSStore((s) => s.setMobileTab);
 
-  if (!terminalOpen) return null;
+  if (activeTab !== 'terminal') return null;
 
   return (
     <div
@@ -36,7 +36,7 @@ export default function MobileTerminalView({
         }}
       >
         <span
-          onClick={closeMobileTerminal}
+          onClick={() => setMobileTab('home')}
           style={{
             fontSize: '16px',
             color: 'var(--accent)',

@@ -1,9 +1,7 @@
 import { useOSStore } from '../../stores/osStore';
-import MobileTabBar from './MobileTabBar';
 import HomeTab from './HomeTab';
 import BlogTab from './BlogTab';
 import WorkTab from './WorkTab';
-import MoreSheet from './MoreSheet';
 import MobileTerminalView from './MobileTerminalView';
 
 /**
@@ -24,7 +22,7 @@ export default function MobileLayout({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        flex: 1,
         width: '100%',
         minHeight: 0,
         position: 'relative',
@@ -36,11 +34,6 @@ export default function MobileLayout({
         {activeTab === 'work' && <WorkTab projects={projects} />}
       </div>
 
-      <div style={{ padding: '8px 0 16px' }}>
-        <MobileTabBar />
-      </div>
-
-      <MoreSheet />
       <MobileTerminalView
         projectCount={projectCount}
         postCount={postCount}
