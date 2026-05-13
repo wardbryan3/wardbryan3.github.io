@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import NavMenu from './NavMenu.jsx';
 
 const currentPath = Astro.url.pathname;
 const links = [
@@ -63,6 +64,7 @@ if (isBlogPage) {
         <span class="nav-toggle-bar"></span>
         <span class="nav-toggle-bar"></span>
       </button>
+      <NavMenu client:load />
     </div>
   </div>
 </nav>
@@ -230,5 +232,11 @@ if (isBlogPage) {
       background: var(--surface);
     }
 
+  }
+
+  @media (min-width: 769px) {
+    .nav-links {
+      display: none;
+    }
   }
 </style>
