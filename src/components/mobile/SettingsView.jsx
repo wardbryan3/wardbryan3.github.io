@@ -65,6 +65,7 @@ export default function SettingsView() {
           background: 'var(--surface)',
           borderRadius: '16px 16px 0 0',
           padding: '0 0 8px',
+          marginBottom: 'calc(72px + env(safe-area-inset-bottom, 0px))',
           maxHeight: '70vh',
           overflow: 'hidden',
           display: 'flex',
@@ -74,17 +75,15 @@ export default function SettingsView() {
         }}
       >
         <div
-          onClick={handleClose}
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '14px 20px 10px',
             borderBottom: '1px solid var(--border)',
-            cursor: 'pointer',
           }}
         >
-          <span style={{ fontSize: '16px', color: 'var(--accent)' }}>{'\u2190'} Back</span>
+          <span onClick={handleClose} style={{ fontSize: '16px', color: 'var(--accent)', cursor: 'pointer' }}>{'\u2190'} Back</span>
           <span style={{ fontSize: '17px', fontWeight: 600, color: 'var(--text)' }}>Settings</span>
           <span style={{ width: '42px' }} />
         </div>
