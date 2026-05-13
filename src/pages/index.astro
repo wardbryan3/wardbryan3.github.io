@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HeroDashboard from '../components/HeroDashboard';
+import MobileLayout from '../components/mobile/MobileLayout';
 import DesktopOS from '../components/DesktopOS';
 
 const projects = await getCollection('projects');
@@ -28,7 +28,9 @@ const dirs = [{ name: 'blog', description: 'blog posts', count: postCount }, { n
     />
   </div>
   <div class="os-mobile">
-    <HeroDashboard
+    <MobileLayout
+      projects={projects}
+      posts={posts}
       projectCount={projectCount}
       postCount={postCount}
       searchData={searchData}
