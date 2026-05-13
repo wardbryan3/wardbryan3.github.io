@@ -596,10 +596,7 @@ pre code {
     min-height: 0;
   }
 
-  .project-page,
-  .projects-page {
-    display: none;
-  }
+
 
   .terminal-column {
     width: 100%;
