@@ -21,7 +21,7 @@ export default function Terminal({
   embedded = false,
   terminalFont = 'mono',
 }) {
-  const [phase, setPhase] = useState(side ? 'interactive' : 'growing');
+  const [phase, setPhase] = useState(side || flow ? 'interactive' : 'growing');
   const [commandText, setCommandText] = useState('');
   const [input, setInput] = useState('');
   const [outputLines, setOutputLines] = useState([]);
@@ -288,7 +288,7 @@ export default function Terminal({
   }, [side, collapsed, pos, size]);
 
   useEffect(() => {
-    if (!collapsed && phase === 'interactive' && inputRef.current) inputRef.current.focus();
+    if (!collapsed && phase === 'interactive' && inputRef.current) inputRef.current.focus({ preventScroll: true });
   }, [collapsed, phase]);
 
   // Auto-scroll to keep prompt visible when window resizes
@@ -350,7 +350,7 @@ export default function Terminal({
   }, [phase]);
 
   useEffect(() => {
-    if (phase === 'interactive' && !collapsed && inputRef.current) inputRef.current.focus();
+    if (phase === 'interactive' && !collapsed && inputRef.current) inputRef.current.focus({ preventScroll: true });
   }, [phase, collapsed]);
 
   const showCursor = phase === 'prompt' || phase === 'command';
@@ -363,7 +363,7 @@ export default function Terminal({
       onClick={() => isInteractive && inputRef.current?.focus()}
       style={{ fontFamily: terminalFont === 'sans-serif' ? 'var(--font-sans)' : 'var(--font-mono)' }}
     >
-      {(phase !== 'growing' || side) && (
+      {(phase !== 'growing' || side) && !flow && (
         <div className="ff-line">
           <span className="ff-prompt">bryan@ward:~$ </span>
           {phase !== 'prompt' && commandText && <span className="ff-command">{commandText}</span>}
@@ -371,7 +371,7 @@ export default function Terminal({
         </div>
       )}
 
-      {!side && phase !== 'growing' && phase !== 'prompt' && phase !== 'command' && renderFastfetchOutput(projectCount, postCount)}
+      {!side && !flow && phase !== 'growing' && phase !== 'prompt' && phase !== 'command' && renderFastfetchOutput(projectCount, postCount)}
 
       {isInteractive && outputLines.length === 0 && (
         <div className="term-muted" style={{ marginTop: '0.5rem', fontSize: 'calc(0.75rem * var(--os-font-mult, 1))' }}>
@@ -411,35 +411,48 @@ export default function Terminal({
 
   if (flow) {
     return (
-      <div className={`terminal-window terminal-flow${effectiveCollapsed ? ' terminal-collapsed' : ''}`}>
+      <div className={`terminal-column${effectiveCollapsed ? ' terminal-column-collapsed' : ''}`}>
         {!isMobile && (
           <button
-            className="terminal-minimize terminal-flow-minimize"
+            className="terminal-flow-toggle"
             onClick={() => setCollapsed(prev => !prev)}
             aria-label={collapsed ? 'Open terminal' : 'Close terminal'}
             title={collapsed ? 'Open terminal (Ctrl+K)' : 'Close terminal (Ctrl+K)'}
           >
-            {collapsed ? '>' : '<'}
+            {collapsed ? '<' : '>'}
           </button>
         )}
-        {!effectiveCollapsed && (
-          <div className="terminal-flow-body">
-            {terminalBody}
-          </div>
-        )}
+        <div className={`terminal-window terminal-flow${effectiveCollapsed ? ' terminal-collapsed' : ''}`}>
+          {!effectiveCollapsed && (
+            <div className="terminal-flow-body">
+              {terminalBody}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 
   if (side) {
     return (
-      <div className={windowClasses}>
+      <div className={`terminal-column${effectiveCollapsed ? ' terminal-column-collapsed' : ''}`}>
         {!isMobile && (
-          <button className="terminal-minimize" onClick={() => setCollapsed(prev => !prev)} aria-label={collapsed ? 'Open terminal' : 'Close terminal'} title={collapsed ? 'Open terminal (Ctrl+K)' : 'Close terminal (Ctrl+K)'}>
-            {collapsed ? '▶' : '▼'}
+          <button
+            className="terminal-flow-toggle"
+            onClick={() => setCollapsed(prev => !prev)}
+            aria-label={collapsed ? 'Open terminal' : 'Close terminal'}
+            title={collapsed ? 'Open terminal (Ctrl+K)' : 'Close terminal (Ctrl+K)'}
+          >
+            {collapsed ? '<' : '>'}
           </button>
         )}
-        {!effectiveCollapsed && terminalBody}
+        <div className={`terminal-window terminal-flow${effectiveCollapsed ? ' terminal-collapsed' : ''}`}>
+          {!effectiveCollapsed && (
+            <div className="terminal-flow-body">
+              {terminalBody}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
@@ -454,8 +467,8 @@ export default function Terminal({
         {!isMobile && (
           <div className="titlebar-buttons">
             <span className="titlebar-btn titlebar-minimize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Minimize"><svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="4.5" width="8" height="1" fill="currentColor"/></svg></span>
-            <span className="titlebar-btn titlebar-maximize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); toggleMaximize(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMaximize(); } }} title={maximized ? 'Restore' : 'Maximize'}>{maximized ? <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="3.5" width="5.5" height="5.5" fill="none" stroke="currentColor" stroke-width="1"/><rect x="3.5" y="1" width="5.5" height="5.5" fill="none" stroke="currentColor" stroke-width="1"/></svg> : <svg viewBox="0 0 10 10" width="10" height="10"><rect x="2" y="2" width="6" height="6" fill="none" stroke="currentColor" stroke-width="1"/></svg>}</span>
-            <span className="titlebar-btn titlebar-close" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Close"><svg viewBox="0 0 10 10" width="10" height="10"><line x1="2" y1="2" x2="8" y2="8" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="2" x2="2" y2="8" stroke="currentColor" stroke-width="1.2"/></svg></span>
+            <span className="titlebar-btn titlebar-maximize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); toggleMaximize(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMaximize(); } }} title={maximized ? 'Restore' : 'Maximize'}>{maximized ? <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="3.5" width="5.5" height="5.5" fill="none" stroke="currentColor" strokeWidth="1"/><rect x="3.5" y="1" width="5.5" height="5.5" fill="none" stroke="currentColor" strokeWidth="1"/></svg> : <svg viewBox="0 0 10 10" width="10" height="10"><rect x="2" y="2" width="6" height="6" fill="none" stroke="currentColor" strokeWidth="1"/></svg>}</span>
+            <span className="titlebar-btn titlebar-close" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Close"><svg viewBox="0 0 10 10" width="10" height="10"><line x1="2" y1="2" x2="8" y2="8" stroke="currentColor" strokeWidth="1.2"/><line x1="8" y1="2" x2="2" y2="8" stroke="currentColor" strokeWidth="1.2"/></svg></span>
           </div>
         )}
       </div>

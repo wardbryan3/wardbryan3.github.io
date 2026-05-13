@@ -13,6 +13,9 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content, headings } = await post.render();
 
+const wordCount = post.body ? post.body.split(/\s+/).length : 0;
+const readTime = Math.max(1, Math.round(wordCount / 200));
+
 const allPosts = await getCollection('blog');
 const allProjects = await getCollection('projects');
 const searchData = [
@@ -37,6 +40,7 @@ const nextPost = currentIndex > 0
   description={post.data.description}
   date={post.data.date}
   tags={post.data.tags}
+  readTime={readTime}
   showTerminal={true}
   terminalPage={`/blog/${post.slug}`}
   postCount={allPosts.length}

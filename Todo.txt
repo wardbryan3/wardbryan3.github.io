@@ -10,3 +10,6 @@ A new window (launchable from Dock or command palette) that displays a live syst
 Add @astrojs/image or use Astro's built-in <Image /> component to optimize tux.svg and all desktop icons. Currently, SVGs and PNG icons are served raw. Benefits: reduced page weight, automatic responsive image variants, lazy loading. Risk: requires configuration and testing with current build process.
 7. Blog post reading progress + estimated read time
 Add a thin progress bar at the top of blog posts showing how far the user has scrolled, and display estimated read time in the post header. Implementation: IntersectionObserver + a fixed-position progress bar in BlogPost.astro. Low risk, common UX pattern that improves the blog reading experience significantly.
+8. Theming: Wobbly windows and Open, Close, and Minimize animations.
+9. Some little games included. (Flash Games and Old Atari clone(ideas include Joust, super simple idle game, and Motherlode))
+10. Allow users to upload their own wallpapers ?

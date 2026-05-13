@@ -1,14 +1,13 @@
 ---
 import { getCollection } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
-
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogSidebar from '../../components/BlogSidebar.astro';
+import Tag from '../../components/Tag.astro';
+import Terminal from '../../terminal/Terminal';
 const posts = await getCollection('blog');
 const sortedPosts = posts.sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime()
 );
-
-const latestPost = sortedPosts[0];
-const { Content } = await latestPost.render();
 
 const allProjects = await getCollection('projects');
 const searchData = [
@@ -16,28 +15,179 @@ const searchData = [
   ...allProjects.map(p => ({ title: p.data.title, slug: p.slug, path: `/projects/${p.slug}`, type: 'projects', tags: p.data.tags, date: p.data.date })),
 ];
 const dirs = [{ name: 'blog', description: 'blog posts', count: sortedPosts.length }, { name: 'projects', description: 'projects', count: allProjects.length }];
-
-const currentIndex = sortedPosts.findIndex((p) => p.slug === latestPost.slug);
-const prevPost = currentIndex < sortedPosts.length - 1
-  ? { title: sortedPosts[currentIndex + 1].data.title, slug: sortedPosts[currentIndex + 1].slug }
-  : null;
-const nextPost = currentIndex > 0
-  ? { title: sortedPosts[currentIndex - 1].data.title, slug: sortedPosts[currentIndex - 1].slug }
-  : null;
 ---
 
-<BlogPost
-  title={latestPost.data.title}
-  description={latestPost.data.description}
-  date={latestPost.data.date}
-  tags={latestPost.data.tags}
-  showTerminal={true}
-  terminalPage="/blog"
-  postCount={sortedPosts.length}
-  searchData={searchData}
-  dirs={dirs}
-  prevPost={prevPost}
-  nextPost={nextPost}
+<BaseLayout
+  title="Blog"
+  description="Blog posts by Bryan Ward"
 >
-  <Content />
-</BlogPost>
+  <div class="blog-docs-layout">
+    <div class="blog-sidebar-column">
+      <BlogSidebar />
+    </div>
+    <div class="blog-content">
+      <header class="blog-index-header">
+        <h1>Blog</h1>
+        <p class="blog-index-subtitle">{sortedPosts.length} {sortedPosts.length === 1 ? 'post' : 'posts'}</p>
+      </header>
+      <div class="post-list">
+        {
+          sortedPosts.map((post) => {
+            const wordCount = post.body ? post.body.split(/\s+/).length : 0;
+            const readTime = Math.max(1, Math.round(wordCount / 200));
+            return (
+              <article class="post-entry">
+                <div class="post-entry-meta">
+                  <time class="post-entry-date" datetime={post.data.date.toISOString()}>
+                    {post.data.date.toLocaleDateString('en-US', {
+                      year: 'numeric', month: 'long', day: 'numeric',
+                    })}
+                  </time>
+                  <span class="post-entry-read-time">{readTime} min read</span>
+                </div>
+                <h2 class="post-entry-title">
+                  <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+                </h2>
+                <p class="post-entry-desc">{post.data.description}</p>
+                {post.data.tags && post.data.tags.length > 0 && (
+                  <div class="post-entry-tags">
+                    {post.data.tags.map((tag) => <Tag label={tag} />)}
+                  </div>
+                )}
+              </article>
+            );
+          })
+        }
+      </div>
+    </div>
+      <Terminal
+        page="/blog"
+        projectCount={0}
+        postCount={sortedPosts.length}
+        searchData={searchData}
+        dirs={dirs}
+        flow={true}
+        defaultOpen={false}
+        client:load
+      />
+  </div>
+</BaseLayout>
+
+<style>
+  .blog-docs-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr 320px;
+    min-height: calc(100vh - 48px - 58px);
+    max-width: 100%;
+  }
+
+  .blog-content {
+    padding: 2rem 2.5rem;
+    max-width: 720px;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .blog-index-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .blog-index-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .blog-index-subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .post-entry {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-entry:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .post-entry-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .post-entry-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .post-entry-read-time {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  .post-entry-title {
+    margin-bottom: 0.5rem;
+  }
+
+  .post-entry-title a {
+    font-size: 1.25rem;
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.2s, text-shadow 0.2s;
+  }
+
+  .post-entry-title a:hover {
+    color: var(--accent);
+    text-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  .post-entry-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .post-entry-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 1024px) {
+    .blog-docs-layout {
+      grid-template-columns: 200px 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .blog-docs-layout {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1;
+    }
+    .blog-sidebar-column {
+      display: none;
+    }
+    .blog-content {
+      display: none;
+    }
+  }
+</style>
