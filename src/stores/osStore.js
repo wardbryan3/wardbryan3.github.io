@@ -1,5 +1,16 @@
 import { create } from 'zustand';
 
+function extractJsxText(element) {
+  if (typeof element === 'string' || typeof element === 'number') return String(element);
+  if (!element || typeof element !== 'object') return '';
+  if (Array.isArray(element)) return element.map(extractJsxText).join('\n');
+  const children = element.props?.children;
+  if (children === undefined || children === null) return '';
+  if (typeof children === 'string' || typeof children === 'number') return String(children);
+  if (Array.isArray(children)) return children.map(extractJsxText).join('');
+  return extractJsxText(children);
+}
+
 function computePositions() {
   const w = 640,
     h = 480;
@@ -112,6 +123,7 @@ function loadSettings() {
     clockFormat: '12h',
     dockPosition: 'top',
     fontSize: 'small',
+    terminalOutputLines: [],
     terminalHistory: [],
   };
 }
@@ -127,6 +139,10 @@ function saveSettings(s) {
         clockFormat: s.clockFormat,
         dockPosition: s.dockPosition,
         fontSize: s.fontSize,
+        terminalOutputLines: (s.terminalOutputLines || []).map((line) => ({
+          type: line.type,
+          text: line.text,
+        })),
         terminalHistory: s.terminalHistory,
       }),
     );
@@ -337,20 +353,27 @@ export const useOSStore = create((set, get) => ({
     set({ fontSize });
   },
 
-  // Persistent terminal state (history persists, output is runtime-only)
-  terminalOutputLines: [],
+  // Persistent terminal state (output persisted as text, history as strings)
+  terminalOutputLines: settings.terminalOutputLines || [],
   terminalHistory: settings.terminalHistory || [],
 
   addTerminalOutput: (input, output) =>
-    set((s) => ({
-      terminalOutputLines: [
-        ...s.terminalOutputLines,
-        { type: 'input', text: input },
-        { type: 'output', content: output },
-      ],
-    })),
+    set((s) => {
+      const next = {
+        terminalOutputLines: [
+          ...s.terminalOutputLines,
+          { type: 'input', text: input },
+          { type: 'output', text: extractJsxText(output), content: output },
+        ],
+      };
+      saveSettings({ ...get(), ...next });
+      return next;
+    }),
 
-  clearTerminalOutput: () => set({ terminalOutputLines: [] }),
+  clearTerminalOutput: () => {
+    set({ terminalOutputLines: [] });
+    saveSettings({ ...get(), terminalOutputLines: [] });
+  },
 
   pushTerminalHistory: (cmd) =>
     set((s) => {

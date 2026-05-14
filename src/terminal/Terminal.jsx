@@ -408,7 +408,9 @@ export default function Terminal({
               <span className="term-input-text">{line.text}</span>
             </div>
           ) : (
-            <div className="term-output-wrapper">{line.content}</div>
+            <div className="term-output-wrapper">
+              {line.content || <pre className="term-text">{line.text}</pre>}
+            </div>
           )}
         </div>
       ))}
