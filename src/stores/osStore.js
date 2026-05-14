@@ -159,6 +159,7 @@ function loadSettings() {
     fontSize: 'small',
     terminalOutputLines: [],
     terminalHistory: [],
+    terminalBooted: false,
   };
 }
 
@@ -179,6 +180,7 @@ function saveSettings(s) {
           html: line.html,
         })),
         terminalHistory: s.terminalHistory,
+        terminalBooted: s.terminalBooted,
       }),
     );
   } catch (e) {
@@ -391,6 +393,7 @@ export const useOSStore = create((set, get) => ({
   // Persistent terminal state (output persisted as HTML, history as strings)
   terminalOutputLines: settings.terminalOutputLines || [],
   terminalHistory: settings.terminalHistory || [],
+  terminalBooted: settings.terminalBooted || false,
 
   addTerminalOutput: (input, output) =>
     set((s) => {
@@ -406,8 +409,13 @@ export const useOSStore = create((set, get) => ({
     }),
 
   clearTerminalOutput: () => {
-    set({ terminalOutputLines: [] });
-    saveSettings({ ...get(), terminalOutputLines: [] });
+    set({ terminalOutputLines: [], terminalBooted: true });
+    saveSettings({ ...get(), terminalOutputLines: [], terminalBooted: true });
+  },
+
+  markTerminalBooted: () => {
+    set({ terminalBooted: true });
+    saveSettings({ ...get(), terminalBooted: true });
   },
 
   pushTerminalHistory: (cmd) =>

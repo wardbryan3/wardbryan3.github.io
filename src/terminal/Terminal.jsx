@@ -38,6 +38,8 @@ export default function Terminal({
   const addTerminalOutput = useOSStore((s) => s.addTerminalOutput);
   const clearTerminalOutput = useOSStore((s) => s.clearTerminalOutput);
   const pushTerminalHistory = useOSStore((s) => s.pushTerminalHistory);
+  const terminalBooted = useOSStore((s) => s.terminalBooted);
+  const markTerminalBooted = useOSStore((s) => s.markTerminalBooted);
 
   const navRef = useRef(48);
   const preMinRef = useRef(null);
@@ -359,6 +361,15 @@ export default function Terminal({
     return () => clearTimeout(timer);
   }, [phase]);
 
+  // On first boot, add fastfetch output to persistent history
+  const didInitialBoot = useRef(false);
+  useEffect(() => {
+    if (phase !== 'interactive' || terminalBooted || didInitialBoot.current) return;
+    didInitialBoot.current = true;
+    addTerminalOutput('fastfetch', renderFastfetchOutput(projectCount, postCount));
+    markTerminalBooted();
+  }, [phase, terminalBooted, addTerminalOutput, markTerminalBooted, projectCount, postCount]);
+
   useEffect(() => {
     if (phase === 'interactive' && !collapsed && inputRef.current)
       inputRef.current.focus({ preventScroll: true });
@@ -384,14 +395,15 @@ export default function Terminal({
         </div>
       )}
 
-      {!side &&
+      {!terminalBooted &&
+        !side &&
         !flow &&
         phase !== 'growing' &&
         phase !== 'prompt' &&
         phase !== 'command' &&
         renderFastfetchOutput(projectCount, postCount)}
 
-      {isInteractive && outputLines.length === 0 && (
+      {isInteractive && !terminalBooted && outputLines.length === 0 && (
         <div
           className="term-muted"
           style={{ marginTop: '0.5rem', fontSize: 'calc(0.75rem * var(--os-font-mult, 1))' }}

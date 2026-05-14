@@ -398,6 +398,10 @@ pre code {
 .term-input-line {
   display: flex;
   align-items: center;
+  position: sticky;
+  bottom: 0;
+  background: var(--bg);
+  padding: 0.15rem 0;
 }
 
 .term-input {
