@@ -92,7 +92,7 @@ const {
     </article>
     {headings.length > 0 && (
       <div class="toc-column">
-        <TableOfContents headings={headings} client:load />
+        <TableOfContents headings={headings} client:only="react" />
       </div>
     )}
     <Terminal

@@ -96,7 +96,7 @@ const ogImage = image || `${siteUrl}/og-default.png`;
         <Footer />
       </>
     )}
-    {showMobileShell && <MobileShell currentPath={Astro.url.pathname} projectCount={projectCount} postCount={postCount} searchData={searchData} dirs={dirs} client:load />}
+    {showMobileShell && <MobileShell currentPath={Astro.url.pathname} projectCount={projectCount} postCount={postCount} searchData={searchData} dirs={dirs} client:only="react" />}
     {showTerminal && renderTerminal && (
       <ErrorBoundary>
         <Terminal

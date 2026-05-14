@@ -11,8 +11,8 @@ const currentPath = Astro.url.pathname;
       <span class="prompt">bryan@ward</span>
     </a>
     <div class="nav-actions">
-      <SearchModal client:load />
-      <NavMenu currentPath={currentPath} client:load />
+      <SearchModal client:only="react" />
+      <NavMenu currentPath={currentPath} client:only="react" />
     </div>
   </div>
 </nav>
