@@ -39,7 +39,7 @@ function buildFastfetchFields(projectCount, postCount) {
     { key: 'projects', pad: 'projects'.padEnd(padLen),  value: `${projectCount} active`,                              cls: 'white' },
     { key: 'posts',    pad: 'posts'.padEnd(padLen),    value: `${postCount} published`,                              cls: 'white' },
     { key: 'github',   pad: 'github'.padEnd(padLen),   value: 'github.com/wardbryan3',                               cls: 'link', href: 'https://github.com/wardbryan3' },
-    { key: 'linkedin', pad: 'linkedin'.padEnd(padLen), value: 'linkedin.com/in/bryanward',                cls: 'link', href: 'https://linkedin.com/in/bryanward' },
+    { key: 'linkedin', pad: 'linkedin'.padEnd(padLen), value: 'linkedin.com/in/bryan-ward-298292196',                cls: 'link', href: 'https://www.linkedin.com/in/bryan-ward-298292196/' },
   ];
 }
 

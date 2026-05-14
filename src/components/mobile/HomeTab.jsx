@@ -252,7 +252,7 @@ export default function HomeTab({ posts = [], projects = [] }) {
               GitHub
             </a>
             <a
-              href="https://linkedin.com/in/bryanward"
+              href="https://www.linkedin.com/in/bryan-ward-298292196/"
               target="_blank"
               rel="noopener noreferrer"
               style={{
