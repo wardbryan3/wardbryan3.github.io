@@ -1,14 +1,48 @@
 import { create } from 'zustand';
 
-function extractJsxText(element) {
-  if (typeof element === 'string' || typeof element === 'number') return String(element);
-  if (!element || typeof element !== 'object') return '';
-  if (Array.isArray(element)) return element.map(extractJsxText).join('\n');
-  const children = element.props?.children;
-  if (children === undefined || children === null) return '';
-  if (typeof children === 'string' || typeof children === 'number') return String(children);
-  if (Array.isArray(children)) return children.map(extractJsxText).join('');
-  return extractJsxText(children);
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function escapeAttr(str) {
+  return String(str).replace(/"/g, '&quot;').replace(/&/g, '&amp;');
+}
+
+function styleObjToCss(style) {
+  if (typeof style === 'string') return style;
+  return Object.entries(style)
+    .map(([k, v]) => `${k.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())}:${v}`)
+    .join(';');
+}
+
+function jsxToHtml(element) {
+  if (element == null || element === false || element === true) return '';
+  if (typeof element === 'string') return escapeHtml(element);
+  if (typeof element === 'number') return String(element);
+  if (Array.isArray(element)) return element.map(jsxToHtml).join('');
+
+  const type = element.type;
+  if (!type) return '';
+  if (typeof type !== 'string') return jsxToHtml(element.props?.children);
+
+  const props = element.props || {};
+  let attrs = '';
+  if (props.className) attrs += ` class="${escapeAttr(props.className)}"`;
+  if (props.href) attrs += ` href="${escapeAttr(props.href)}"`;
+  if (props.target) attrs += ` target="${escapeAttr(props.target)}"`;
+  if (props.rel) attrs += ` rel="${escapeAttr(props.rel)}"`;
+  if (props.style && typeof props.style === 'object')
+    attrs += ` style="${escapeAttr(styleObjToCss(props.style))}"`;
+
+  if (type === 'br' || type === 'hr' || type === 'img')
+    return `<${type}${attrs} />`;
+
+  const children = jsxToHtml(props.children);
+  return `<${type}${attrs}>${children}</${type}>`;
 }
 
 function computePositions() {
@@ -142,6 +176,7 @@ function saveSettings(s) {
         terminalOutputLines: (s.terminalOutputLines || []).map((line) => ({
           type: line.type,
           text: line.text,
+          html: line.html,
         })),
         terminalHistory: s.terminalHistory,
       }),
@@ -353,7 +388,7 @@ export const useOSStore = create((set, get) => ({
     set({ fontSize });
   },
 
-  // Persistent terminal state (output persisted as text, history as strings)
+  // Persistent terminal state (output persisted as HTML, history as strings)
   terminalOutputLines: settings.terminalOutputLines || [],
   terminalHistory: settings.terminalHistory || [],
 
@@ -363,7 +398,7 @@ export const useOSStore = create((set, get) => ({
         terminalOutputLines: [
           ...s.terminalOutputLines,
           { type: 'input', text: input },
-          { type: 'output', text: extractJsxText(output), content: output },
+          { type: 'output', html: jsxToHtml(output), content: output },
         ],
       };
       saveSettings({ ...get(), ...next });

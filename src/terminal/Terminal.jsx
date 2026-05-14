@@ -409,7 +409,12 @@ export default function Terminal({
             </div>
           ) : (
             <div className="term-output-wrapper">
-              {line.content || <pre className="term-text">{line.text}</pre>}
+              {line.content || (
+                <div
+                  className="term-output-restored"
+                  dangerouslySetInnerHTML={{ __html: line.html || '' }}
+                />
+              )}
             </div>
           )}
         </div>
