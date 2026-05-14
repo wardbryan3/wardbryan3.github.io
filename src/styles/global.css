@@ -639,9 +639,7 @@ pre code {
   }
 
   .terminal-column {
-    width: 100%;
-    min-width: 0;
-    transition: none;
+    display: none;
   }
 
   .terminal-flow {
