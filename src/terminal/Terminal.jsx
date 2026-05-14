@@ -22,7 +22,10 @@ export default function Terminal({
   embedded = false,
   terminalFont = 'mono',
 }) {
-  const [phase, setPhase] = useState(side || flow ? 'interactive' : 'growing');
+  const [phase, setPhase] = useState(() => {
+    if (side || flow) return 'interactive';
+    return useOSStore.getState().terminalBooted ? 'interactive' : 'growing';
+  });
   const [commandText, setCommandText] = useState('');
   const [input, setInput] = useState('');
   const [collapsed, setCollapsed] = useState(!defaultOpen);
@@ -40,15 +43,6 @@ export default function Terminal({
   const pushTerminalHistory = useOSStore((s) => s.pushTerminalHistory);
   const terminalBooted = useOSStore((s) => s.terminalBooted);
   const markTerminalBooted = useOSStore((s) => s.markTerminalBooted);
-
-  // Skip animation on subsequent terminal opens (client-only, no SSR flash)
-  const phaseSetRef = useRef(false);
-  useEffect(() => {
-    if (!side && !flow && terminalBooted && !phaseSetRef.current) {
-      phaseSetRef.current = true;
-      setPhase('interactive');
-    }
-  }, [terminalBooted, side, flow]);
 
   const navRef = useRef(48);
   const preMinRef = useRef(null);
