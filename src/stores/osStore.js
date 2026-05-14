@@ -112,6 +112,8 @@ function loadSettings() {
     clockFormat: '12h',
     dockPosition: 'top',
     fontSize: 'small',
+    terminalOutputLines: [],
+    terminalHistory: [],
   };
 }
 
@@ -126,6 +128,8 @@ function saveSettings(s) {
         clockFormat: s.clockFormat,
         dockPosition: s.dockPosition,
         fontSize: s.fontSize,
+        terminalOutputLines: s.terminalOutputLines,
+        terminalHistory: s.terminalHistory,
       }),
     );
   } catch (e) {
@@ -334,6 +338,33 @@ export const useOSStore = create((set, get) => ({
     saveSettings({ ...get(), fontSize });
     set({ fontSize });
   },
+
+  // Persistent terminal state
+  terminalOutputLines: settings.terminalOutputLines || [],
+  terminalHistory: settings.terminalHistory || [],
+
+  addTerminalOutput: (input, output) =>
+    set((s) => {
+      const next = {
+        terminalOutputLines: [...s.terminalOutputLines, { type: 'input', text: input }, { type: 'output', content: output }],
+      };
+      saveSettings({ ...get(), ...next });
+      return next;
+    }),
+
+  clearTerminalOutput: () => {
+    set({ terminalOutputLines: [] });
+    saveSettings({ ...get(), terminalOutputLines: [] });
+  },
+
+  pushTerminalHistory: (cmd) =>
+    set((s) => {
+      const next = {
+        terminalHistory: [...s.terminalHistory.slice(-99), cmd],
+      };
+      saveSettings({ ...get(), ...next });
+      return next;
+    }),
 
   // Mobile state
   mobileActiveTab: 'home',

@@ -210,8 +210,8 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
 
   commands.history = {
     description: 'recent commands',
-    handler: (_args, ctx) => {
-      const hist = ctx.registry.getHistory();
+    handler: (_args, _ctx) => {
+      const hist = useOSStore.getState().terminalHistory;
       if (hist.length === 0)
         return { output: <div className="term-text term-muted">no history</div> };
       return {

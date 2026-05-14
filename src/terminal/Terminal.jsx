@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { CommandRegistry } from './CommandRegistry';
 import { createCommands, renderFastfetchOutput } from './commands';
+import { useOSStore } from '../stores/osStore';
 import useDraggable from '../hooks/useDraggable';
 import useResizable from '../hooks/useResizable';
 
@@ -24,7 +25,6 @@ export default function Terminal({
   const [phase, setPhase] = useState(side || flow ? 'interactive' : 'growing');
   const [commandText, setCommandText] = useState('');
   const [input, setInput] = useState('');
-  const [outputLines, setOutputLines] = useState([]);
   const [collapsed, setCollapsed] = useState(!defaultOpen);
   const [maximized, setMaximized] = useState(false);
   const [pos, setPos] = useState(side ? null : { x: 0, y: 0 });
@@ -34,37 +34,10 @@ export default function Terminal({
   const [historyIndex, setHistoryIndex] = useState(-1);
   const savedInputRef = useRef('');
 
-  // Restore terminal state from sessionStorage
-  const [restored] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem('terminal-state-v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return parsed;
-      }
-    } catch (e) {
-      console.warn('[Terminal] Failed to restore state:', e);
-    }
-    return null;
-  });
-
-  useEffect(() => {
-    if (restored && restored.outputLines) {
-      setOutputLines(restored.outputLines);
-    }
-  }, [restored]);
-
-  // Clear cached terminal output when navigating to a different page
-  useEffect(() => {
-    if (restored) {
-      setOutputLines([]);
-      try {
-        sessionStorage.removeItem('terminal-state-v1');
-      } catch (e) {
-        console.warn('[Terminal] Failed to clear state:', e);
-      }
-    }
-  }, [page]);
+  const outputLines = useOSStore((s) => s.terminalOutputLines);
+  const addTerminalOutput = useOSStore((s) => s.addTerminalOutput);
+  const clearTerminalOutput = useOSStore((s) => s.clearTerminalOutput);
+  const pushTerminalHistory = useOSStore((s) => s.pushTerminalHistory);
 
   const navRef = useRef(48);
   const preMinRef = useRef(null);
@@ -211,43 +184,37 @@ export default function Terminal({
   }, [page, projectCount, postCount, searchData, dirs]);
 
   // Execute command
-  const executeCommand = useCallback((raw) => {
-    const trimmed = raw.trim();
-    if (!trimmed) return;
-    const parts = trimmed.split(/\s+/);
-    const cmdName = parts[0];
-    const args = parts.slice(1);
-    const result = registryRef.current.execute(cmdName, args, { registry: registryRef.current });
+  const executeCommand = useCallback(
+    (raw) => {
+      const trimmed = raw.trim();
+      if (!trimmed) return;
+      const parts = trimmed.split(/\s+/);
+      const cmdName = parts[0];
+      const args = parts.slice(1);
+      const result = registryRef.current.execute(cmdName, args, {
+        registry: registryRef.current,
+      });
 
-    if (result.action === 'clear') {
-      setOutputLines([]);
-      setInput('');
-      try {
-        sessionStorage.removeItem('terminal-state-v1');
-      } catch (e) {
-        console.warn('[Terminal] Failed to clear state:', e);
+      pushTerminalHistory(trimmed);
+
+      if (result.action === 'clear') {
+        clearTerminalOutput();
+        setInput('');
+        return;
       }
-      return;
-    }
 
-    if (result.action === 'navigate') {
-      setOutputLines((prev) => [
-        ...prev,
-        { type: 'input', text: trimmed },
-        { type: 'output', content: result.output },
-      ]);
+      if (result.action === 'navigate') {
+        addTerminalOutput(trimmed, result.output);
+        setInput('');
+        window.location.href = result.url;
+        return;
+      }
+
+      addTerminalOutput(trimmed, result.output);
       setInput('');
-      window.location.href = result.url;
-      return;
-    }
-
-    setOutputLines((prev) => [
-      ...prev,
-      { type: 'input', text: trimmed },
-      { type: 'output', content: result.output },
-    ]);
-    setInput('');
-  }, []);
+    },
+    [addTerminalOutput, clearTerminalOutput, pushTerminalHistory],
+  );
 
   const handleKeyDown = useCallback(
     (e) => {
@@ -257,7 +224,7 @@ export default function Terminal({
         savedInputRef.current = '';
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        const hist = registryRef.current.getHistory();
+        const hist = useOSStore.getState().terminalHistory;
         if (hist.length === 0) return;
         if (historyIndex === -1) savedInputRef.current = input;
         const newIdx = Math.min(historyIndex + 1, hist.length - 1);
@@ -271,7 +238,7 @@ export default function Terminal({
           setHistoryIndex(-1);
           setInput(savedInputRef.current);
         } else {
-          const hist = registryRef.current.getHistory();
+          const hist = useOSStore.getState().terminalHistory;
           setHistoryIndex(newIdx);
           setInput(hist[hist.length - 1 - newIdx]);
         }
@@ -280,10 +247,10 @@ export default function Terminal({
         setCollapsed((prev) => !prev);
       } else if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
         e.preventDefault();
-        setOutputLines([]);
+        clearTerminalOutput();
       }
     },
-    [input, executeCommand, historyIndex],
+    [input, executeCommand, historyIndex, clearTerminalOutput],
   );
 
   const toggleMaximize = useCallback(() => {
@@ -352,20 +319,6 @@ export default function Terminal({
     if (bodyRef.current) {
       bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
     }
-  }, [outputLines]);
-
-  // Persist terminal state to sessionStorage (debounced)
-  const persistRef = useRef(null);
-  useEffect(() => {
-    clearTimeout(persistRef.current);
-    persistRef.current = setTimeout(() => {
-      try {
-        sessionStorage.setItem('terminal-state-v1', JSON.stringify({ outputLines }));
-      } catch (e) {
-        console.warn('[Terminal] Failed to persist state:', e);
-      }
-    }, 1000);
-    return () => clearTimeout(persistRef.current);
   }, [outputLines]);
 
   // Animation phases
