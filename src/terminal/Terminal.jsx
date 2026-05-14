@@ -65,7 +65,11 @@ export default function Terminal({
 
   // Center on mount (client-side)
   useEffect(() => {
-    if (!side && !embedded && typeof window !== 'undefined') {
+    if (embedded) {
+      setReady(true);
+      return;
+    }
+    if (!side && typeof window !== 'undefined') {
       const navH = navRef.current;
       const footerH = footerRef.current;
       if (window.innerWidth <= MOBILE_BP) {
