@@ -1,23 +1,8 @@
 ---
-import { getCollection } from 'astro:content';
 import NavMenu from './NavMenu.jsx';
 import SearchModal from './SearchModal.jsx';
 
 const currentPath = Astro.url.pathname;
-const links = [
-  { href: '/', label: 'Home' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/projects', label: 'Projects' },
-];
-
-const isBlogPage = currentPath.startsWith('/blog/');
-let blogPosts: { slug: string; title: string }[] = [];
-if (isBlogPage) {
-  const allPosts = await getCollection('blog');
-  blogPosts = allPosts
-    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-    .map((p) => ({ slug: p.slug, title: p.data.title }));
-}
 ---
 
 <nav>
@@ -25,63 +10,12 @@ if (isBlogPage) {
     <a href="/" class="logo">
       <span class="prompt">bryan@ward</span>
     </a>
-    <ul class="nav-links" data-nav>
-      {links.map(({ href, label }) => (
-        <li>
-          <a
-            href={href}
-            class:list={[
-              'nav-link',
-              {
-                active: currentPath === href || (href !== '/' && currentPath.startsWith(href + '/')),
-              },
-            ]}
-          >
-            {label}
-          </a>
-        </li>
-      ))}
-      {isBlogPage && blogPosts.length > 0 && (
-        <li class="nav-blog-section">
-          <span class="nav-blog-heading">Posts</span>
-          <ul class="nav-blog-list">
-            {blogPosts.map((p) => (
-              <li>
-                <a
-                  href={`/blog/${p.slug}`}
-                  class:list={['nav-link nav-blog-link', { active: currentPath === `/blog/${p.slug}` }]}
-                >
-                  {p.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </li>
-      )}
-    </ul>
     <div class="nav-actions">
-      <button class="nav-toggle" aria-label="Toggle navigation menu" data-toggle>
-        <span class="nav-toggle-bar"></span>
-        <span class="nav-toggle-bar"></span>
-        <span class="nav-toggle-bar"></span>
-      </button>
       <SearchModal client:load />
       <NavMenu currentPath={currentPath} client:load />
     </div>
   </div>
 </nav>
-
-<script>
-  const toggle = document.querySelector('[data-toggle]');
-  const nav = document.querySelector('[data-nav]');
-  if (toggle && nav) {
-    toggle.addEventListener('click', () => {
-      nav.classList.toggle('nav-open');
-      toggle.classList.toggle('nav-toggle-active');
-    });
-  }
-
-</script>
 
 <style>
   nav {
@@ -111,134 +45,10 @@ if (isBlogPage) {
     text-shadow: 0 0 8px var(--accent-glow);
   }
 
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1.5rem;
-    margin-left: auto;
-  }
-
-  .nav-link {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    color: var(--text);
-    text-decoration: none;
-    padding-bottom: 0.25rem;
-    border-bottom: 2px solid transparent;
-    transition: color 0.2s, border-color 0.2s, text-shadow 0.2s;
-  }
-
-  .nav-link:hover {
-    color: var(--text);
-  }
-
-  .nav-link.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-    text-shadow: 0 0 6px var(--accent-glow);
-  }
-
   .nav-actions {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
-
-  .nav-toggle {
-    display: none;
-    flex-direction: column;
-    gap: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-  }
-
-  .nav-toggle-bar {
-    display: block;
-    width: 20px;
-    height: 2px;
-    background: var(--text);
-    border-radius: 1px;
-    transition: background 0.2s;
-  }
-
-  .nav-toggle:hover .nav-toggle-bar {
-    background: var(--text);
-  }
-
-  .nav-blog-section {
-    display: none;
-  }
-
-  .nav-blog-heading {
-    display: block;
-    padding: 0.5rem 2rem 0.25rem;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text);
-    opacity: 0.6;
-  }
-
-  .nav-blog-list {
-    list-style: none;
-  }
-
-  .nav-blog-link {
-    padding-left: 2.5rem !important;
-    font-size: 0.8rem !important;
-  }
-
-  @media (max-width: 640px) {
-    .nav-blog-section {
-      display: block;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .nav-toggle {
-      display: none;
-    }
-
-    .nav-links {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      flex-direction: column;
-      gap: 0;
-      background: color-mix(in srgb, var(--bg) 95%, transparent);
-      border-bottom: 1px solid var(--border);
-      padding: 0.5rem 0;
-    }
-
-    .nav-links.nav-open {
-      display: flex;
-    }
-
-    .nav-links li {
-      width: 100%;
-    }
-
-    .nav-link {
-      display: block;
-      padding: 0.75rem 2rem;
-      border-bottom: none;
-    }
-
-    .nav-link.active {
-      border-bottom: none;
-      background: var(--surface);
-    }
-
-  }
-
-  @media (min-width: 769px) {
-    .nav-links {
-      display: none;
-    }
+    margin-left: auto;
   }
 </style>

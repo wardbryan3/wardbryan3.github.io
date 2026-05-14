@@ -1,0 +1,60 @@
+{
+  "summary": {
+    "bugs_found": 2,
+    "bugs_by_severity": {
+      "medium": 2,
+      "low": 0,
+      "critical": 0,
+      "high": 0
+    },
+    "dead_code_lines_removed": 153,
+    "files_modified": 5,
+    "files_deleted": 1
+  },
+  "bugs": [
+    {
+      "file": "src/terminal/commands.jsx",
+      "line": 42,
+      "severity": "medium",
+      "type": "data inconsistency",
+      "description": "LinkedIn URL linkedin.com/in/bryan-ward-298292196 did not match other files which use linkedin.com/in/bryanward. The URL in the terminal fastfetch command was also a full URL with www prefix.",
+      "fix": "Standardized to linkedin.com/in/bryanward consistent with Footer.astro and HomeTab.jsx"
+    },
+    {
+      "file": "src/layouts/BlogPost.astro",
+      "line": 14,
+      "severity": "medium",
+      "type": "unused variable",
+      "description": "showTerminal prop declared in Props interface and destructured but never used. BlogPost always passes showTerminal={false} to BaseLayout, rendering the prop meaningless.",
+      "fix": "Removed from Props interface, destructuring, and caller in pages/blog/[...slug].astro"
+    }
+  ],
+  "dead_code": [
+    {
+      "file": "src/components/TableOfContents.astro",
+      "line_count": 67,
+      "reason": "Never imported anywhere. Superseded by TableOfContents.jsx which is the actively used component.",
+      "action": "deleted"
+    },
+    {
+      "file": "src/components/Nav.astro",
+      "line_count": 86,
+      "reason": "Removed dead toggle button, nav-links HTML, blog post section fetching, and inline JS toggle handler. The nav toggle was display:none at all breakpoints; navigation is handled by NavMenu.jsx (desktop) and MobileShell.jsx (mobile). Also removed getCollection('blog') fetch for nav-blog-section which was never visible.",
+      "action": "cleaned (86 lines removed, file rewritten to 44 lines)"
+    },
+    {
+      "file": "src/hooks/useResizable.js",
+      "line_count": 2,
+      "reason": "posX and posY fields in resizeRef.current object were stored but never read in the mousemove handler. currentPos parameter is now prefixed with underscore.",
+      "action": "removed 2 unused fields"
+    }
+  ],
+  "recommendations": [
+    "Consider adding ESLint and Prettier for consistent code style",
+    "Add unit tests (no test framework currently configured)",
+    "The ErrorBoundary chunk at 897KB is unusually large - investigate why React is being bundled into it",
+    "Silent catch blocks in osStore.js (lines 41, 50) could benefit from console.warn for debugging",
+    "ExplorerWindow back/forward/up buttons (lines 25-27) are decorative with no onClick handlers"
+  ],
+  "generated_at": "2026-05-14T15:29:00Z"
+}
