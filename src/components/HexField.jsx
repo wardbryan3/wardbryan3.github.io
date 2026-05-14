@@ -21,13 +21,16 @@ const GRID_COLS = 15;
 const GRID_ROWS = 10;
 
 function getHexCenter(row, col) {
-  const x = (col - GRID_COLS / 2) * HEX_SPACING + (row % 2) * HEX_SPACING / 2;
+  const x = (col - GRID_COLS / 2) * HEX_SPACING + ((row % 2) * HEX_SPACING) / 2;
   const z = (row - GRID_ROWS / 2) * HEX_SPACING * 0.85;
   return { x, z };
 }
 
 function getGridCell(worldX, worldZ) {
-  const colApprox = Math.round((worldX + (worldZ / (HEX_SPACING * 0.85) % 2) * HEX_SPACING / 2) / HEX_SPACING + GRID_COLS / 2);
+  const colApprox = Math.round(
+    (worldX + (((worldZ / (HEX_SPACING * 0.85)) % 2) * HEX_SPACING) / 2) / HEX_SPACING +
+      GRID_COLS / 2,
+  );
   const rowApprox = Math.round(worldZ / (HEX_SPACING * 0.85) + GRID_ROWS / 2);
   if (rowApprox < 0 || rowApprox >= GRID_ROWS || colApprox < 0 || colApprox >= GRID_COLS) return -1;
   const c = getHexCenter(rowApprox, colApprox);
@@ -41,15 +44,17 @@ function getGridCell(worldX, worldZ) {
 
 function HexGrid() {
   const meshRef = useRef(null);
-  const planeRef = useRef((() => {
-    const p = new THREE.Mesh(
-      new THREE.PlaneGeometry(50, 50),
-      new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide })
-    );
-    p.rotation.x = -Math.PI / 2;
-    p.updateMatrixWorld(true);
-    return p;
-  })());
+  const planeRef = useRef(
+    (() => {
+      const p = new THREE.Mesh(
+        new THREE.PlaneGeometry(50, 50),
+        new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide }),
+      );
+      p.rotation.x = -Math.PI / 2;
+      p.updateMatrixWorld(true);
+      return p;
+    })(),
+  );
   const theme = useOSStore((s) => s.theme);
   const hoveredIdxRef = useRef(null);
   const mouseNDC = useRef(new THREE.Vector2(-999, -999));
@@ -90,7 +95,7 @@ function HexGrid() {
           const p = new THREE.Vector3(
             geo.attributes.position.getX(v),
             geo.attributes.position.getY(v),
-            geo.attributes.position.getZ(v)
+            geo.attributes.position.getZ(v),
           ).applyMatrix4(matrix);
           pos.push(p.x, p.y, p.z);
           col.push(color.r, color.g, color.b);
@@ -157,7 +162,8 @@ function HexGrid() {
       const col = i % GRID_COLS;
       const c = getHexCenter(row, col);
 
-      const wave = Math.sin(c.x * 1.5 + time * 0.5) * 0.15 + Math.cos(c.z * 1.5 + time * 0.4) * 0.15;
+      const wave =
+        Math.sin(c.x * 1.5 + time * 0.5) * 0.15 + Math.cos(c.z * 1.5 + time * 0.4) * 0.15;
       let scale = 1 + wave * 0.08;
       const centerY = wave * 0.05;
 
@@ -191,7 +197,8 @@ function HexGrid() {
         const pulse = Math.sin(time * 3) * 0.5 + 0.5;
         brightness = 0.6 + pulse * 0.4;
       } else {
-        const wave = Math.sin(c.x * 1.5 + time * 0.5) * 0.15 + Math.cos(c.z * 1.5 + time * 0.4) * 0.15;
+        const wave =
+          Math.sin(c.x * 1.5 + time * 0.5) * 0.15 + Math.cos(c.z * 1.5 + time * 0.4) * 0.15;
         brightness = 0.2 + (wave + 0.3) * 0.3;
       }
 

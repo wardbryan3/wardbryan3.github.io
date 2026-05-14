@@ -2,8 +2,17 @@ import { useState, useEffect } from 'react';
 import { useOSStore } from '../stores/osStore';
 
 const THEMES = [
-  'system', 'tokyonight', 'everforest', 'ayu', 'catppuccin',
-  'catppuccin-macchiato', 'gruvbox', 'kanagawa', 'nord', 'matrix', 'one-dark',
+  'system',
+  'tokyonight',
+  'everforest',
+  'ayu',
+  'catppuccin',
+  'catppuccin-macchiato',
+  'gruvbox',
+  'kanagawa',
+  'nord',
+  'matrix',
+  'one-dark',
 ];
 
 const THEME_LABELS = {
@@ -48,11 +57,7 @@ export default function NavMenu({ currentPath }) {
 
   return (
     <>
-      <button
-        class="hamburger-btn"
-        aria-label={label}
-        onClick={() => setOpen((v) => !v)}
-      >
+      <button class="hamburger-btn" aria-label={label} onClick={() => setOpen((v) => !v)}>
         <span class="hamburger-bar"></span>
         <span class="hamburger-bar"></span>
         <span class="hamburger-bar"></span>

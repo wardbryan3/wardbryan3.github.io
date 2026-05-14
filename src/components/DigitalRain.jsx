@@ -27,7 +27,10 @@ function createColumn(colIndex, canvasHeight) {
     x,
     y: Math.random() * canvasHeight * -1,
     speed,
-    chars: Array.from({ length: TRAIL_LENGTH }, () => CHARS[Math.floor(Math.random() * CHARS.length)]),
+    chars: Array.from(
+      { length: TRAIL_LENGTH },
+      () => CHARS[Math.floor(Math.random() * CHARS.length)],
+    ),
   };
 }
 
@@ -41,9 +44,10 @@ function drawColumn(ctx, column, accentColor, primaryColor, fontSize) {
     const color = distance === 0 ? accentColor : primaryColor;
     ctx.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${alpha})`;
     ctx.shadowBlur = distance === 0 ? 8 : 3;
-    ctx.shadowColor = distance === 0
-      ? `rgba(${accentColor.r * 255}, ${accentColor.g * 255}, ${accentColor.b * 255}, 0.5)`
-      : `rgba(${primaryColor.r * 255}, ${primaryColor.g * 255}, ${primaryColor.b * 255}, 0.2)`;
+    ctx.shadowColor =
+      distance === 0
+        ? `rgba(${accentColor.r * 255}, ${accentColor.g * 255}, ${accentColor.b * 255}, 0.5)`
+        : `rgba(${primaryColor.r * 255}, ${primaryColor.g * 255}, ${primaryColor.b * 255}, 0.2)`;
     ctx.fillText(chars[i], x, charY);
   }
 }
@@ -104,10 +108,7 @@ export default function DigitalRain() {
           col.chars.pop();
         }
         if (col.y - TRAIL_LENGTH * FONT_SIZE > window.innerHeight) {
-          Object.assign(col, createColumn(
-            Math.floor(col.x / COLUMN_WIDTH),
-            window.innerHeight
-          ));
+          Object.assign(col, createColumn(Math.floor(col.x / COLUMN_WIDTH), window.innerHeight));
         }
         drawColumn(ctx, col, accentRef.current, primaryRef.current, FONT_SIZE);
       }

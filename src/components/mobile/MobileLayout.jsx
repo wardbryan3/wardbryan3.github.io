@@ -10,17 +10,21 @@ const DigitalRain = lazy(() => import('../DigitalRain'));
 const HexField = lazy(() => import('../HexField'));
 
 const WALLPAPER_CSS = {
-  dots: { backgroundImage: 'radial-gradient(var(--border) 1px, transparent 1px)', backgroundSize: '24px 24px' },
-  grid: { backgroundImage: 'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)', backgroundSize: '40px 40px' },
+  dots: {
+    backgroundImage: 'radial-gradient(var(--border) 1px, transparent 1px)',
+    backgroundSize: '24px 24px',
+  },
+  grid: {
+    backgroundImage:
+      'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
+    backgroundSize: '40px 40px',
+  },
 };
 
 /**
  * @param {{ projects?: any[], posts?: any[] }} props
  */
-export default function MobileLayout({
-  projects = [],
-  posts = [],
-}) {
+export default function MobileLayout({ projects = [], posts = [] }) {
   const activeTab = useOSStore((s) => s.mobileActiveTab);
   const theme = useOSStore((s) => s.theme);
   const wallpaper = useOSStore((s) => s.wallpaper);
@@ -59,7 +63,16 @@ export default function MobileLayout({
         </Suspense>
       </ErrorBoundary>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative', zIndex: 1 }}>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: 0,
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
         {activeTab === 'home' && <HomeTab posts={posts} projects={projects} />}
         {activeTab === 'blog' && <BlogTab posts={posts} />}
         {activeTab === 'work' && <WorkTab projects={projects} />}

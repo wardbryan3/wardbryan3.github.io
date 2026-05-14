@@ -67,7 +67,7 @@ export default function SearchModal() {
         }
       }
     },
-    [blogResults, projectResults, selectedIdx, totalResults]
+    [blogResults, projectResults, selectedIdx, totalResults],
   );
 
   return (
@@ -87,7 +87,9 @@ export default function SearchModal() {
         aria-label="Search"
       >
         <div class="search-input-wrap">
-          <span class="search-input-icon"><Icon name="search" /></span>
+          <span class="search-input-icon">
+            <Icon name="search" />
+          </span>
           <input
             ref={inputRef}
             class="search-input"
@@ -102,9 +104,7 @@ export default function SearchModal() {
           />
           <span class="search-esc-hint">ESC</span>
         </div>
-        {query && totalResults === 0 && (
-          <div class="search-empty">No results found</div>
-        )}
+        {query && totalResults === 0 && <div class="search-empty">No results found</div>}
         {blogResults.length > 0 && (
           <div class="search-group">
             <div class="search-group-heading">Blog Posts</div>

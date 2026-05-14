@@ -20,8 +20,15 @@ const WALLPAPER_CSS = {
   'particle-field': {},
   'digital-rain': {},
   'hex-field': {},
-  dots: { backgroundImage: 'radial-gradient(var(--border) 1px, transparent 1px)', backgroundSize: '24px 24px' },
-  grid: { backgroundImage: 'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)', backgroundSize: '40px 40px' },
+  dots: {
+    backgroundImage: 'radial-gradient(var(--border) 1px, transparent 1px)',
+    backgroundSize: '24px 24px',
+  },
+  grid: {
+    backgroundImage:
+      'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
+    backgroundSize: '40px 40px',
+  },
   none: {},
 };
 
@@ -45,17 +52,20 @@ export default function DesktopOS({ projects, projectCount, postCount, searchDat
     return () => document.removeEventListener('boot:complete', onBootComplete);
   }, [openWindow]);
 
-  const wallpaperStyle = wallpaper !== 'particle-field'
-    ? { background: 'var(--bg)', ...WALLPAPER_CSS[wallpaper] }
-    : {};
+  const wallpaperStyle =
+    wallpaper !== 'particle-field' ? { background: 'var(--bg)', ...WALLPAPER_CSS[wallpaper] } : {};
 
   const dockAtTop = dockPosition === 'top';
 
   return (
     <section
       style={{
-        position: 'relative', flex: 1, overflow: 'hidden',
-        isolation: 'isolate', display: 'flex', flexDirection: 'column',
+        position: 'relative',
+        flex: 1,
+        overflow: 'hidden',
+        isolation: 'isolate',
+        display: 'flex',
+        flexDirection: 'column',
         '--os-font-mult': fontSize === 'medium' ? 1.2 : fontSize === 'large' ? 1.4 : 1,
         ...wallpaperStyle,
       }}
@@ -75,11 +85,20 @@ export default function DesktopOS({ projects, projectCount, postCount, searchDat
           return (
             <Window key={id} id={id} menubar={menubar}>
               <ErrorBoundary>
-                <Suspense fallback={
-                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'calc(0.7rem * var(--os-font-mult))' }}>
-                    Loading...
-                  </div>
-                }>
+                <Suspense
+                  fallback={
+                    <div
+                      style={{
+                        padding: '2rem',
+                        textAlign: 'center',
+                        color: 'var(--text-muted)',
+                        fontSize: 'calc(0.7rem * var(--os-font-mult))',
+                      }}
+                    >
+                      Loading...
+                    </div>
+                  }
+                >
                   {id === 'explorer' && <ExplorerWindow projects={projects} />}
                   {id === 'resume' && <ResumeWindow />}
                   {id === 'media-player' && <MediaPlayerWindow />}
@@ -103,14 +122,25 @@ export default function DesktopOS({ projects, projectCount, postCount, searchDat
       <div
         onDoubleClick={() => openWindow('trash')}
         style={{
-          position: 'absolute', bottom: '16px', right: '16px',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: '4px', cursor: 'pointer', padding: '8px',
-          borderRadius: '6px', userSelect: 'none',
+          position: 'absolute',
+          bottom: '16px',
+          right: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '4px',
+          cursor: 'pointer',
+          padding: '8px',
+          borderRadius: '6px',
+          userSelect: 'none',
         }}
       >
         <Icon name="trash" size={36} />
-        <span style={{ fontSize: 'calc(0.65rem * var(--os-font-mult))', color: 'var(--text-muted)' }}>Trash</span>
+        <span
+          style={{ fontSize: 'calc(0.65rem * var(--os-font-mult))', color: 'var(--text-muted)' }}
+        >
+          Trash
+        </span>
       </div>
 
       {!dockAtTop && <Dock />}

@@ -2,8 +2,17 @@ import { useState, useEffect } from 'react';
 import { useOSStore } from '../../stores/osStore';
 
 const THEMES = [
-  'system', 'tokyonight', 'everforest', 'ayu', 'catppuccin',
-  'catppuccin-macchiato', 'gruvbox', 'kanagawa', 'nord', 'matrix', 'one-dark',
+  'system',
+  'tokyonight',
+  'everforest',
+  'ayu',
+  'catppuccin',
+  'catppuccin-macchiato',
+  'gruvbox',
+  'kanagawa',
+  'nord',
+  'matrix',
+  'one-dark',
 ];
 
 const WALLPAPERS = ['particle-field', 'digital-rain', 'hex-field', 'dots', 'grid', 'none'];
@@ -83,8 +92,25 @@ export default function SettingsView() {
             borderBottom: '1px solid var(--border)',
           }}
         >
-          <span onClick={handleClose} style={{ fontSize: 'calc(16px * var(--os-font-mult, 1))', color: 'var(--accent)', cursor: 'pointer' }}>{'\u2190'} Back</span>
-          <span style={{ fontSize: 'calc(17px * var(--os-font-mult, 1))', fontWeight: 600, color: 'var(--text)' }}>Settings</span>
+          <span
+            onClick={handleClose}
+            style={{
+              fontSize: 'calc(16px * var(--os-font-mult, 1))',
+              color: 'var(--accent)',
+              cursor: 'pointer',
+            }}
+          >
+            {'\u2190'} Back
+          </span>
+          <span
+            style={{
+              fontSize: 'calc(17px * var(--os-font-mult, 1))',
+              fontWeight: 600,
+              color: 'var(--text)',
+            }}
+          >
+            Settings
+          </span>
           <span style={{ width: '42px' }} />
         </div>
 
@@ -92,28 +118,49 @@ export default function SettingsView() {
           <SettingRow label="Theme">
             <select value={theme} onChange={(e) => setTheme(e.target.value)} style={selectStyle}>
               {THEMES.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>
+                  {t}
+                </option>
               ))}
             </select>
           </SettingRow>
 
           <SettingRow label="Font Size">
-            <select value={fontSize} onChange={(e) => setFontSize(e.target.value)} style={selectStyle}>
+            <select
+              value={fontSize}
+              onChange={(e) => setFontSize(e.target.value)}
+              style={selectStyle}
+            >
               {FONT_SIZES.map((f) => (
-                <option key={f} value={f}>{f}</option>
+                <option key={f} value={f}>
+                  {f}
+                </option>
               ))}
             </select>
           </SettingRow>
 
           <SettingRow label="Wallpaper">
-            <select value={wallpaper} onChange={(e) => setWallpaper(e.target.value)} style={selectStyle}>
+            <select
+              value={wallpaper}
+              onChange={(e) => setWallpaper(e.target.value)}
+              style={selectStyle}
+            >
               {WALLPAPERS.map((w) => (
-                <option key={w} value={w}>{w}</option>
+                <option key={w} value={w}>
+                  {w}
+                </option>
               ))}
             </select>
           </SettingRow>
 
-          <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'calc(12px * var(--os-font-mult, 1))' }}>
+          <div
+            style={{
+              padding: '16px 0',
+              textAlign: 'center',
+              color: 'var(--text-muted)',
+              fontSize: 'calc(12px * var(--os-font-mult, 1))',
+            }}
+          >
             Portfolio OS v1.0
           </div>
         </div>
@@ -133,7 +180,9 @@ function SettingRow({ label, children }) {
         borderBottom: '1px solid var(--border)',
       }}
     >
-      <span style={{ fontSize: 'calc(16px * var(--os-font-mult, 1))', color: 'var(--text)' }}>{label}</span>
+      <span style={{ fontSize: 'calc(16px * var(--os-font-mult, 1))', color: 'var(--text)' }}>
+        {label}
+      </span>
       {children}
     </div>
   );
