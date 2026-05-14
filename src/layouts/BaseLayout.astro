@@ -67,8 +67,12 @@ const ogImage = image || `${siteUrl}/og-default.png`;
       (function () {
         try {
           var saved = JSON.parse(localStorage.getItem('portfolio-os-settings'));
-          if (saved && saved.theme) {
-            document.documentElement.setAttribute('data-theme', saved.theme);
+          if (saved) {
+            if (saved.theme) document.documentElement.setAttribute('data-theme', saved.theme);
+            if (saved.fontSize) {
+              var mult = saved.fontSize === 'medium' ? 1.2 : saved.fontSize === 'large' ? 1.4 : 1;
+              document.documentElement.style.setProperty('--os-font-mult', String(mult));
+            }
           }
         } catch (e) {}
       })();
@@ -92,7 +96,7 @@ const ogImage = image || `${siteUrl}/og-default.png`;
         <Footer />
       </>
     )}
-    {showMobileShell && <MobileShell currentPath={Astro.url.pathname} client:load />}
+    {showMobileShell && <MobileShell currentPath={Astro.url.pathname} projectCount={projectCount} postCount={postCount} searchData={searchData} dirs={dirs} client:load />}
     {showTerminal && renderTerminal && (
       <ErrorBoundary>
         <Terminal

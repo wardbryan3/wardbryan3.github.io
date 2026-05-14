@@ -1,6 +1,7 @@
 import { useOSStore } from '../../stores/osStore';
 import MoreSheet from './MoreSheet';
 import SettingsView from './SettingsView';
+import MobileTerminalView from './MobileTerminalView';
 
 const TABS = [
   { id: 'home', label: 'Home' },
@@ -65,11 +66,20 @@ const ICONS = {
 };
 
 /**
- * @param {{ currentPath?: string }} props
+ * @param {{ currentPath?: string, projectCount?: number, postCount?: number, searchData?: any[], dirs?: { name: string; description: string; count: number }[] }} props
  */
-export default function MobileShell({ currentPath = '/' }) {
+export default function MobileShell({
+  currentPath = '/',
+  projectCount = 0,
+  postCount = 0,
+  searchData = [],
+  dirs = [],
+}) {
   const storeActiveTab = useOSStore((s) => s.mobileActiveTab);
   const setMobileTab = useOSStore((s) => s.setMobileTab);
+  const terminalOpen = useOSStore((s) => s.terminalOpen);
+  const openMobileTerminal = useOSStore((s) => s.openMobileTerminal);
+  const closeMobileTerminal = useOSStore((s) => s.closeMobileTerminal);
   const moreSheetOpen = useOSStore((s) => s.moreSheetOpen);
   const openMoreSheet = useOSStore((s) => s.openMoreSheet);
   const closeMoreSheet = useOSStore((s) => s.closeMoreSheet);
@@ -77,7 +87,9 @@ export default function MobileShell({ currentPath = '/' }) {
   const isHomepage = currentPath === '/';
 
   let computedActiveTab;
-  if (isHomepage) {
+  if (terminalOpen) {
+    computedActiveTab = 'terminal';
+  } else if (isHomepage) {
     computedActiveTab = storeActiveTab;
   } else if (currentPath.startsWith('/blog')) {
     computedActiveTab = 'blog';
@@ -88,30 +100,39 @@ export default function MobileShell({ currentPath = '/' }) {
   }
 
   const handleTabClick = (id) => {
+    if (id === 'terminal') {
+      if (terminalOpen) {
+        closeMobileTerminal();
+      } else {
+        openMobileTerminal();
+      }
+      return;
+    }
+
+    if (terminalOpen) {
+      closeMobileTerminal();
+    }
+
     if (isHomepage) {
       setMobileTab(id);
     } else {
-      if (id === 'terminal' || id === 'home') window.location.href = '/';
+      if (id === 'home') window.location.href = '/';
       else if (id === 'blog') window.location.href = '/blog';
       else if (id === 'work') window.location.href = '/projects';
     }
   };
 
   const handleMoreClick = () => {
-    if (isHomepage) {
-      if (moreSheetOpen) {
-        closeMoreSheet();
-      } else {
-        openMoreSheet();
-      }
+    if (moreSheetOpen) {
+      closeMoreSheet();
     } else {
-      window.location.href = '/';
+      openMoreSheet();
     }
   };
 
   return (
     <>
-      <div
+      <div className="mobile-shell"
         style={{
           position: 'fixed',
           bottom: 0,
@@ -161,7 +182,7 @@ export default function MobileShell({ currentPath = '/' }) {
                 {isActive ? ICONS[tab.id].active : ICONS[tab.id].inactive}
                 <span
                   style={{
-                    fontSize: '9px',
+                    fontSize: 'calc(9px * var(--os-font-mult, 1))',
                     fontWeight: isActive ? 600 : 400,
                     color: isActive ? 'var(--accent)' : 'rgba(200,200,210,0.7)',
                   }}
@@ -199,8 +220,23 @@ export default function MobileShell({ currentPath = '/' }) {
         </div>
       </div>
 
+      <MobileTerminalView
+        projectCount={projectCount}
+        postCount={postCount}
+        searchData={searchData}
+        dirs={dirs}
+      />
+
       <MoreSheet />
       <SettingsView />
+
+      <style>{`
+        @media (min-width: 769px) {
+          .mobile-shell {
+            display: none !important;
+          }
+        }
+      `}</style>
     </>
   );
 }

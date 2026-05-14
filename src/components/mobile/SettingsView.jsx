@@ -50,7 +50,7 @@ export default function SettingsView() {
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 100,
+        zIndex: 300,
         background: 'rgba(0,0,0,0.4)',
         display: 'flex',
         flexDirection: 'column',
@@ -83,8 +83,8 @@ export default function SettingsView() {
             borderBottom: '1px solid var(--border)',
           }}
         >
-          <span onClick={handleClose} style={{ fontSize: '16px', color: 'var(--accent)', cursor: 'pointer' }}>{'\u2190'} Back</span>
-          <span style={{ fontSize: '17px', fontWeight: 600, color: 'var(--text)' }}>Settings</span>
+          <span onClick={handleClose} style={{ fontSize: 'calc(16px * var(--os-font-mult, 1))', color: 'var(--accent)', cursor: 'pointer' }}>{'\u2190'} Back</span>
+          <span style={{ fontSize: 'calc(17px * var(--os-font-mult, 1))', fontWeight: 600, color: 'var(--text)' }}>Settings</span>
           <span style={{ width: '42px' }} />
         </div>
 
@@ -113,7 +113,7 @@ export default function SettingsView() {
             </select>
           </SettingRow>
 
-          <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>
+          <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'calc(12px * var(--os-font-mult, 1))' }}>
             Portfolio OS v1.0
           </div>
         </div>
@@ -133,7 +133,7 @@ function SettingRow({ label, children }) {
         borderBottom: '1px solid var(--border)',
       }}
     >
-      <span style={{ fontSize: '16px', color: 'var(--text)' }}>{label}</span>
+      <span style={{ fontSize: 'calc(16px * var(--os-font-mult, 1))', color: 'var(--text)' }}>{label}</span>
       {children}
     </div>
   );
@@ -145,6 +145,6 @@ const selectStyle = {
   border: '1px solid var(--border)',
   borderRadius: '6px',
   padding: '6px 10px',
-  fontSize: '14px',
+  fontSize: 'calc(14px * var(--os-font-mult, 1))',
   cursor: 'pointer',
 };

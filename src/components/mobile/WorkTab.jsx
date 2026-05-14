@@ -26,10 +26,10 @@ export default function WorkTab({ projects = [] }) {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '2px' }}>
+                <div style={{ fontSize: 'calc(16px * var(--os-font-mult, 1))', fontWeight: 600, color: 'var(--text)', marginBottom: '2px' }}>
                   {project.data.title}
                 </div>
-                <div style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5, marginBottom: '8px' }}>
+                <div style={{ fontSize: 'calc(13px * var(--os-font-mult, 1))', color: 'var(--muted)', lineHeight: 1.5, marginBottom: '8px' }}>
                   {project.data.description}
                 </div>
               </div>
@@ -40,7 +40,7 @@ export default function WorkTab({ projects = [] }) {
                   <span
                     key={tag}
                     style={{
-                      fontSize: '10px',
+                      fontSize: 'calc(10px * var(--os-font-mult, 1))',
                       padding: '2px 8px',
                       borderRadius: '6px',
                       background: 'var(--bg)',
@@ -58,7 +58,7 @@ export default function WorkTab({ projects = [] }) {
                   href={project.data.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ fontSize: '12px', color: 'var(--accent)', textDecoration: 'none' }}
+                  style={{ fontSize: 'calc(12px * var(--os-font-mult, 1))', color: 'var(--accent)', textDecoration: 'none' }}
                 >
                   Live Demo
                 </a>
@@ -68,7 +68,7 @@ export default function WorkTab({ projects = [] }) {
                   href={project.data.repo}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ fontSize: '12px', color: 'var(--muted)', textDecoration: 'none' }}
+                  style={{ fontSize: 'calc(12px * var(--os-font-mult, 1))', color: 'var(--muted)', textDecoration: 'none' }}
                 >
                   Source
                 </a>

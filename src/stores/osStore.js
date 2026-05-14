@@ -249,6 +249,8 @@ export const useOSStore = create((set, get) => ({
   },
 
   setFontSize: (fontSize) => {
+    const mult = fontSize === 'medium' ? 1.2 : fontSize === 'large' ? 1.4 : 1;
+    document.documentElement.style.setProperty('--os-font-mult', String(mult));
     saveSettings({ ...get(), fontSize });
     set({ fontSize });
   },
@@ -258,8 +260,13 @@ export const useOSStore = create((set, get) => ({
   moreSheetOpen: false,
   terminalOpen: false,
   mobileViewStack: [],
+  mobilePreviousTab: 'home',
 
-  setMobileTab: (tab) => set({ mobileActiveTab: tab, mobileViewStack: [] }),
+  setMobileTab: (tab) => set((s) => ({
+    mobileActiveTab: tab,
+    mobileViewStack: [],
+    mobilePreviousTab: tab === 'terminal' ? s.mobileActiveTab : s.mobilePreviousTab,
+  })),
   openMoreSheet: () => set({ moreSheetOpen: true }),
   closeMoreSheet: () => set({ moreSheetOpen: false }),
   openMobileTerminal: () => set({ terminalOpen: true, moreSheetOpen: false }),

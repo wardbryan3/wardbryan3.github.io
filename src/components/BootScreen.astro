@@ -34,7 +34,14 @@ import BiosWindow from './BiosWindow';
 <script>
 (function() {
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
-  if (isMobile) { document.dispatchEvent(new CustomEvent('boot:complete')); return; }
+  if (isMobile) {
+    const overlay = document.getElementById('boot-overlay');
+    if (overlay) overlay.style.display = 'none';
+    // @ts-ignore
+    window.__bootComplete = true;
+    document.dispatchEvent(new CustomEvent('boot:complete'));
+    return;
+  }
 
   let phase = 'press-del';
   let alive = true;
@@ -67,6 +74,8 @@ import BiosWindow from './BiosWindow';
       setTimeout(() => {
         if (!alive) return;
         overlay.style.display = 'none';
+        // @ts-ignore
+        window.__bootComplete = true;
         document.dispatchEvent(new CustomEvent('boot:complete'));
       }, 500);
     }, 1500);

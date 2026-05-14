@@ -77,7 +77,7 @@ export default function MoreSheet() {
         style={{
           position: 'fixed',
           inset: 0,
-          zIndex: 100,
+          zIndex: 300,
           background: 'rgba(0,0,0,0.4)',
           display: 'flex',
           flexDirection: 'column',
@@ -117,7 +117,7 @@ export default function MoreSheet() {
                 gap: '14px',
                 padding: '12px 20px',
                 cursor: 'pointer',
-                fontSize: '16px',
+                fontSize: 'calc(16px * var(--os-font-mult, 1))',
               }}
             >
               <span

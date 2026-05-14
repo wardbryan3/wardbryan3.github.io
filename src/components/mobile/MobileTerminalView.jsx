@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useOSStore } from '../../stores/osStore';
 import Terminal from '../../terminal/Terminal';
 
@@ -10,64 +11,103 @@ export default function MobileTerminalView({
   searchData = [],
   dirs = [],
 }) {
-  const activeTab = useOSStore((s) => s.mobileActiveTab);
-  const setMobileTab = useOSStore((s) => s.setMobileTab);
+  const terminalOpen = useOSStore((s) => s.terminalOpen);
+  const closeMobileTerminal = useOSStore((s) => s.closeMobileTerminal);
 
-  if (activeTab !== 'terminal') return null;
+  const [alive, setAlive] = useState(false);
+  const [slideIn, setSlideIn] = useState(false);
+
+  useEffect(() => {
+    if (terminalOpen) {
+      setAlive(true);
+      const timer = setTimeout(() => setSlideIn(true), 20);
+      return () => clearTimeout(timer);
+    } else if (alive) {
+      setSlideIn(false);
+      const timer = setTimeout(() => setAlive(false), 280);
+      return () => clearTimeout(timer);
+    }
+  }, [terminalOpen, alive]);
+
+  const handleClose = () => {
+    setSlideIn(false);
+    setTimeout(() => closeMobileTerminal(), 280);
+  };
+
+  if (!alive) return null;
 
   return (
     <div
+      onClick={handleClose}
       style={{
         position: 'fixed',
         inset: 0,
         zIndex: 200,
-        background: 'var(--bg)',
+        background: 'rgba(0,0,0,0.4)',
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'flex-end',
+        opacity: slideIn ? 1 : 0,
+        transition: 'opacity 0.25s ease-out',
       }}
     >
       <div
+        onClick={(e) => e.stopPropagation()}
         style={{
+          background: 'var(--bg)',
+          height: '100%',
           display: 'flex',
-          alignItems: 'center',
-          padding: '12px 16px',
-          borderBottom: '1px solid var(--border)',
-          background: 'var(--surface)',
+          flexDirection: 'column',
+          transform: slideIn ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.28s ease-out',
         }}
       >
-        <span
-          onClick={() => setMobileTab('home')}
+        <div
           style={{
-            fontSize: '16px',
-            color: 'var(--accent)',
-            cursor: 'pointer',
-            userSelect: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            padding: '12px 16px',
+            borderBottom: '1px solid var(--border)',
+            background: 'var(--surface)',
+            position: 'relative',
           }}
         >
-          &larr; Back
-        </span>
-        <span
-          style={{
-            flex: 1,
-            textAlign: 'center',
-            fontSize: '14px',
-            fontWeight: 600,
-            color: 'var(--text)',
-          }}
-        >
-          Terminal
-        </span>
-        <span style={{ width: '50px' }} />
-      </div>
-      <div style={{ flex: 1, overflow: 'hidden' }}>
-        <Terminal
-          page="/home"
-          projectCount={projectCount}
-          postCount={postCount}
-          searchData={searchData}
-          dirs={dirs}
-          side={false}
-        />
+          <span
+            onClick={handleClose}
+            style={{
+              fontSize: 'calc(16px * var(--os-font-mult, 1))',
+              color: 'var(--accent)',
+              cursor: 'pointer',
+              userSelect: 'none',
+            }}
+          >
+            {'\u2190'} Back
+          </span>
+          <span
+            style={{
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              fontSize: 'calc(14px * var(--os-font-mult, 1))',
+              fontWeight: 600,
+              color: 'var(--text)',
+            }}
+          >
+            Terminal
+          </span>
+        </div>
+
+        <div className="mobile-terminal-body" style={{ flex: 1, minHeight: 0 }}>
+          <Terminal
+            page="/home"
+            projectCount={projectCount}
+            postCount={postCount}
+            searchData={searchData}
+            dirs={dirs}
+            side={false}
+            embedded
+          />
+        </div>
       </div>
     </div>
   );

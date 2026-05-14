@@ -619,39 +619,13 @@ pre code {
     min-height: 0;
     overflow-y: auto;
   }
-}
 
-  /* Blog: terminal in flow mode fills main */
-  .blog-docs-layout {
-    flex: 1;
-    min-height: 0;
-  }
-
-
-
-  .terminal-column {
-    width: 100%;
-    min-width: 0;
-    transition: none;
-  }
-
-  .terminal-flow {
-    position: relative;
-    width: 100%;
-    border-left: none;
-    flex: 1;
-    min-height: 0;
-    height: auto;
-    transform: none;
-  }
-
-  .terminal-flow-body {
+  .mobile-terminal-body .terminal-window-body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
   }
-
-
 }
 
 /* Boot overlay */

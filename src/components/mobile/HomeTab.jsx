@@ -27,7 +27,7 @@ export default function HomeTab({ posts = [], projects = [] }) {
         >
           <div
             style={{
-              fontSize: '13px',
+              fontSize: 'calc(13px * var(--os-font-mult, 1))',
               color: 'var(--text-muted)',
               marginBottom: '2px',
               textTransform: 'uppercase',
@@ -36,10 +36,10 @@ export default function HomeTab({ posts = [], projects = [] }) {
           >
             Full-Stack Developer
           </div>
-          <div style={{ fontSize: '22px', fontWeight: 700, lineHeight: 1.15 }}>
+          <div style={{ fontSize: 'calc(22px * var(--os-font-mult, 1))', fontWeight: 700, lineHeight: 1.15 }}>
             Bryan Ward
           </div>
-          <div style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>
+          <div style={{ fontSize: 'calc(14px * var(--os-font-mult, 1))', color: 'var(--text-muted)', marginTop: '4px' }}>
             I build fast, reliable web things.
           </div>
         </div>
@@ -53,33 +53,33 @@ export default function HomeTab({ posts = [], projects = [] }) {
             border: '1px solid var(--border)',
           }}
         >
-          <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div style={{ fontSize: 'calc(13px * var(--os-font-mult, 1))', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Tools
           </div>
 
           <div style={{ marginBottom: '8px' }}>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '5px' }}>Languages</div>
+            <div style={{ fontSize: 'calc(11px * var(--os-font-mult, 1))', color: 'var(--text-muted)', marginBottom: '5px' }}>Languages</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
               {['TypeScript', 'JavaScript', 'Python', 'Java', 'C++'].map((t) => (
-                <span key={t} style={{ background: 'var(--accent)', color: 'var(--bg)', padding: '2px 9px', borderRadius: '20px', fontSize: '11px', fontWeight: 600 }}>{t}</span>
+                <span key={t} style={{ background: 'var(--accent)', color: 'var(--bg)', padding: '2px 9px', borderRadius: '20px', fontSize: 'calc(11px * var(--os-font-mult, 1))', fontWeight: 600 }}>{t}</span>
               ))}
             </div>
           </div>
 
           <div style={{ marginBottom: '8px' }}>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '5px' }}>Frontend</div>
+            <div style={{ fontSize: 'calc(11px * var(--os-font-mult, 1))', color: 'var(--text-muted)', marginBottom: '5px' }}>Frontend</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
               {['React', 'Astro', 'HTML / CSS'].map((t) => (
-                <span key={t} style={{ background: 'var(--accent)', color: 'var(--bg)', padding: '2px 9px', borderRadius: '20px', fontSize: '11px', fontWeight: 600 }}>{t}</span>
+                <span key={t} style={{ background: 'var(--accent)', color: 'var(--bg)', padding: '2px 9px', borderRadius: '20px', fontSize: 'calc(11px * var(--os-font-mult, 1))', fontWeight: 600 }}>{t}</span>
               ))}
             </div>
           </div>
 
           <div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '5px' }}>Backend / Tools</div>
+            <div style={{ fontSize: 'calc(11px * var(--os-font-mult, 1))', color: 'var(--text-muted)', marginBottom: '5px' }}>Backend / Tools</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
               {['Node.js', 'Git', 'SQL'].map((t) => (
-                <span key={t} style={{ background: 'var(--accent)', color: 'var(--bg)', padding: '2px 9px', borderRadius: '20px', fontSize: '11px', fontWeight: 600 }}>{t}</span>
+                <span key={t} style={{ background: 'var(--accent)', color: 'var(--bg)', padding: '2px 9px', borderRadius: '20px', fontSize: 'calc(11px * var(--os-font-mult, 1))', fontWeight: 600 }}>{t}</span>
               ))}
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function HomeTab({ posts = [], projects = [] }) {
                 marginBottom: '8px',
               }}
             >
-              <span style={{ fontSize: '17px', fontWeight: 600 }}>Featured Work</span>
+              <span style={{ fontSize: 'calc(17px * var(--os-font-mult, 1))', fontWeight: 600 }}>Featured Work</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {featuredProjects.map((p) => (
@@ -120,12 +120,12 @@ export default function HomeTab({ posts = [], projects = [] }) {
                     }}
                   >
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text)' }}>
+                      <div style={{ fontSize: 'calc(15px * var(--os-font-mult, 1))', fontWeight: 600, color: 'var(--text)' }}>
                         {p.data.title}
                       </div>
                       <div
                         style={{
-                          fontSize: '12px',
+                          fontSize: 'calc(12px * var(--os-font-mult, 1))',
                           color: 'var(--muted)',
                           marginTop: '1px',
                         }}
@@ -151,7 +151,7 @@ export default function HomeTab({ posts = [], projects = [] }) {
                 marginBottom: '8px',
               }}
             >
-              <span style={{ fontSize: '17px', fontWeight: 600 }}>Latest Writing</span>
+              <span style={{ fontSize: 'calc(17px * var(--os-font-mult, 1))', fontWeight: 600 }}>Latest Writing</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {sortedPosts.map((post) => {
@@ -170,12 +170,12 @@ export default function HomeTab({ posts = [], projects = [] }) {
                       display: 'block',
                     }}
                   >
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)' }}>
+                    <div style={{ fontSize: 'calc(14px * var(--os-font-mult, 1))', fontWeight: 600, color: 'var(--text)' }}>
                       {post.data.title}
                     </div>
                     <div
                       style={{
-                        fontSize: '11px',
+                        fontSize: 'calc(11px * var(--os-font-mult, 1))',
                         color: 'var(--muted)',
                         marginTop: '2px',
                       }}
@@ -204,7 +204,7 @@ export default function HomeTab({ posts = [], projects = [] }) {
               marginBottom: '8px',
             }}
           >
-            <span style={{ fontSize: '17px', fontWeight: 600 }}>Contact</span>
+            <span style={{ fontSize: 'calc(17px * var(--os-font-mult, 1))', fontWeight: 600 }}>Contact</span>
           </div>
           <div
             style={{
@@ -225,7 +225,7 @@ export default function HomeTab({ posts = [], projects = [] }) {
                 gap: '10px',
                 color: 'var(--text)',
                 textDecoration: 'none',
-                fontSize: '14px',
+                fontSize: 'calc(14px * var(--os-font-mult, 1))',
               }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -243,7 +243,7 @@ export default function HomeTab({ posts = [], projects = [] }) {
                 gap: '10px',
                 color: 'var(--text)',
                 textDecoration: 'none',
-                fontSize: '14px',
+                fontSize: 'calc(14px * var(--os-font-mult, 1))',
               }}
             >
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
@@ -261,7 +261,7 @@ export default function HomeTab({ posts = [], projects = [] }) {
                 gap: '10px',
                 color: 'var(--text)',
                 textDecoration: 'none',
-                fontSize: '14px',
+                fontSize: 'calc(14px * var(--os-font-mult, 1))',
               }}
             >
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none">

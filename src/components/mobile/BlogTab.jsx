@@ -28,13 +28,13 @@ export default function BlogTab({ posts = [] }) {
                 display: 'block',
               }}
             >
-              <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)', marginBottom: '4px' }}>
+              <div style={{ fontSize: 'calc(16px * var(--os-font-mult, 1))', fontWeight: 600, color: 'var(--text)', marginBottom: '4px' }}>
                 {post.data.title}
               </div>
-              <div style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5, marginBottom: '8px' }}>
+              <div style={{ fontSize: 'calc(13px * var(--os-font-mult, 1))', color: 'var(--muted)', lineHeight: 1.5, marginBottom: '8px' }}>
                 {post.data.description}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: 'var(--muted)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'calc(11px * var(--os-font-mult, 1))', color: 'var(--muted)' }}>
                 <span>
                   {new Date(post.data.date).toLocaleDateString('en-US', {
                     month: 'short',
@@ -51,7 +51,7 @@ export default function BlogTab({ posts = [] }) {
                     <span
                       key={tag}
                       style={{
-                        fontSize: '10px',
+                        fontSize: 'calc(10px * var(--os-font-mult, 1))',
                         padding: '2px 8px',
                         borderRadius: '6px',
                         background: 'var(--bg)',

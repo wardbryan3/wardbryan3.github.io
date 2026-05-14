@@ -40,6 +40,8 @@ export default function DesktopOS({ projects, projectCount, postCount, searchDat
   useEffect(() => {
     const onBootComplete = () => openWindow('terminal');
     document.addEventListener('boot:complete', onBootComplete);
+    // @ts-ignore
+    if (window.__bootComplete) openWindow('terminal');
     return () => document.removeEventListener('boot:complete', onBootComplete);
   }, [openWindow]);
 

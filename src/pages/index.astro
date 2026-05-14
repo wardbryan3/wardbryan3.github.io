@@ -16,7 +16,7 @@ const searchData = [
 const dirs = [{ name: 'blog', description: 'blog posts', count: postCount }, { name: 'projects', description: 'projects', count: projectCount }];
 ---
 
-<BaseLayout title="Home" description="Bryan Ward - CS student and developer" showBootScreen={true}>
+<BaseLayout title="Home" description="Bryan Ward - CS student and developer" showBootScreen={true} projectCount={projectCount} postCount={postCount} searchData={searchData} dirs={dirs}>
   <div class="os-desktop">
     <DesktopOS
       projects={projects}
@@ -31,10 +31,6 @@ const dirs = [{ name: 'blog', description: 'blog posts', count: postCount }, { n
     <MobileLayout
       projects={projects}
       posts={posts}
-      projectCount={projectCount}
-      postCount={postCount}
-      searchData={searchData}
-      dirs={dirs}
       client:media="(max-width: 768px)"
     />
   </div>
