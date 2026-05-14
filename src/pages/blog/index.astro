@@ -180,14 +180,30 @@ const dirs = [{ name: 'blog', description: 'blog posts', count: sortedPosts.leng
     .blog-docs-layout {
       display: flex;
       flex-direction: column;
-      min-height: 0;
-      flex: 1;
     }
     .blog-sidebar-column {
       display: none;
     }
-    .blog-content {
+    .terminal-column {
       display: none;
+    }
+    .blog-content {
+      padding: 1.5rem 1rem;
+      max-width: 100%;
+    }
+  }
+</style>
+
+<style is:global>
+  @media (max-width: 768px) {
+    body {
+      height: auto !important;
+      overflow: visible !important;
+    }
+    main {
+      flex: none !important;
+      overflow: visible !important;
+      min-height: 0 !important;
     }
   }
 </style>

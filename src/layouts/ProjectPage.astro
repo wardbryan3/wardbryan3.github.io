@@ -112,3 +112,17 @@ const { title, description, date, tags, url, repo, showTerminal = false, termina
     line-height: 1.8;
   }
 </style>
+
+<style is:global>
+  @media (max-width: 768px) {
+    body {
+      height: auto !important;
+      overflow: visible !important;
+    }
+    main {
+      flex: none !important;
+      overflow: visible !important;
+      min-height: 0 !important;
+    }
+  }
+</style>

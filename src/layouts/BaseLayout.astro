@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import Terminal from '../terminal/Terminal';
 import ErrorBoundary from '../components/ErrorBoundary';
 import BootScreen from '../components/BootScreen.astro';
+import MobileShell from '../components/mobile/MobileShell.jsx';
 import '../styles/themes.css';
 import '../styles/global.css';
 
@@ -14,6 +15,7 @@ interface Props {
   showTerminal?: boolean;
   renderTerminal?: boolean;
   showBootScreen?: boolean;
+  showMobileShell?: boolean;
   terminalPage?: string;
   projectCount?: number;
   postCount?: number;
@@ -28,6 +30,7 @@ const {
   showTerminal = false,
   renderTerminal = true,
   showBootScreen = false,
+  showMobileShell = true,
   terminalPage = '/home',
   projectCount = 0,
   postCount = 0,
@@ -64,8 +67,12 @@ const ogImage = image || `${siteUrl}/og-default.png`;
       (function () {
         try {
           var saved = JSON.parse(localStorage.getItem('portfolio-os-settings'));
-          if (saved && saved.theme) {
-            document.documentElement.setAttribute('data-theme', saved.theme);
+          if (saved) {
+            if (saved.theme) document.documentElement.setAttribute('data-theme', saved.theme);
+            if (saved.fontSize) {
+              var mult = saved.fontSize === 'medium' ? 1.2 : saved.fontSize === 'large' ? 1.4 : 1;
+              document.documentElement.style.setProperty('--os-font-mult', String(mult));
+            }
           }
         } catch (e) {}
       })();
@@ -75,7 +82,7 @@ const ogImage = image || `${siteUrl}/og-default.png`;
     {showBootScreen ? (
       <BootScreen>
         <Nav />
-        <main>
+        <main class:list={{ 'has-mobile-shell': showMobileShell }}>
           <slot />
         </main>
         <Footer />
@@ -83,12 +90,13 @@ const ogImage = image || `${siteUrl}/og-default.png`;
     ) : (
       <>
         <Nav />
-        <main>
+        <main class:list={{ 'has-mobile-shell': showMobileShell }}>
           <slot />
         </main>
         <Footer />
       </>
     )}
+    {showMobileShell && <MobileShell currentPath={Astro.url.pathname} projectCount={projectCount} postCount={postCount} searchData={searchData} dirs={dirs} client:load />}
     {showTerminal && renderTerminal && (
       <ErrorBoundary>
         <Terminal
@@ -117,5 +125,11 @@ const ogImage = image || `${siteUrl}/og-default.png`;
     flex: 1;
     display: flex;
     flex-direction: column;
+  }
+
+  @media (max-width: 768px) {
+    main.has-mobile-shell {
+      padding-bottom: 72px;
+    }
   }
 </style>

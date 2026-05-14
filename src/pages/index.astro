@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HeroDashboard from '../components/HeroDashboard';
+import MobileLayout from '../components/mobile/MobileLayout';
 import DesktopOS from '../components/DesktopOS';
 
 const projects = await getCollection('projects');
@@ -16,7 +16,7 @@ const searchData = [
 const dirs = [{ name: 'blog', description: 'blog posts', count: postCount }, { name: 'projects', description: 'projects', count: projectCount }];
 ---
 
-<BaseLayout title="Home" description="Bryan Ward - CS student and developer" showBootScreen={true}>
+<BaseLayout title="Home" description="Bryan Ward - CS student and developer" showBootScreen={true} projectCount={projectCount} postCount={postCount} searchData={searchData} dirs={dirs}>
   <div class="os-desktop">
     <DesktopOS
       projects={projects}
@@ -28,11 +28,9 @@ const dirs = [{ name: 'blog', description: 'blog posts', count: postCount }, { n
     />
   </div>
   <div class="os-mobile">
-    <HeroDashboard
-      projectCount={projectCount}
-      postCount={postCount}
-      searchData={searchData}
-      dirs={dirs}
+    <MobileLayout
+      projects={projects}
+      posts={posts}
       client:media="(max-width: 768px)"
     />
   </div>
@@ -40,7 +38,7 @@ const dirs = [{ name: 'blog', description: 'blog posts', count: postCount }, { n
 
 <style>
   .os-desktop { flex: 1; display: flex; flex-direction: column; }
-  .os-mobile { display: contents; }
+  .os-mobile { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 
   @media (max-width: 768px) {
     .os-desktop { display: none; }

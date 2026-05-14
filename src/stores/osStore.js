@@ -249,7 +249,30 @@ export const useOSStore = create((set, get) => ({
   },
 
   setFontSize: (fontSize) => {
+    const mult = fontSize === 'medium' ? 1.2 : fontSize === 'large' ? 1.4 : 1;
+    document.documentElement.style.setProperty('--os-font-mult', String(mult));
     saveSettings({ ...get(), fontSize });
     set({ fontSize });
   },
+
+  // Mobile state
+  mobileActiveTab: 'home',
+  moreSheetOpen: false,
+  terminalOpen: false,
+  mobileViewStack: [],
+  mobilePreviousTab: 'home',
+
+  setMobileTab: (tab) => set((s) => ({
+    mobileActiveTab: tab,
+    mobileViewStack: [],
+    mobilePreviousTab: tab === 'terminal' ? s.mobileActiveTab : s.mobilePreviousTab,
+  })),
+  openMoreSheet: () => set({ moreSheetOpen: true }),
+  closeMoreSheet: () => set({ moreSheetOpen: false }),
+  openMobileTerminal: () => set({ terminalOpen: true, moreSheetOpen: false }),
+  closeMobileTerminal: () => set({ terminalOpen: false }),
+  pushMobileView: (view) =>
+    set((s) => ({ mobileViewStack: [...s.mobileViewStack, view] })),
+  popMobileView: () =>
+    set((s) => ({ mobileViewStack: s.mobileViewStack.slice(0, -1) })),
 }));

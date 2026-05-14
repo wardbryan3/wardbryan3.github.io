@@ -575,30 +575,27 @@ pre code {
   width: 100%;
 }
 
-/* Mobile: terminal fills space between nav and footer, body doesn't scroll */
+/* Mobile */
 @media (max-width: 768px) {
   body {
-    overflow: hidden;
-    height: 100vh;
+    min-height: 100vh;
   }
 
   main {
     flex: 1;
-    min-height: 0;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+  }
+
+  .boot-overlay,
+  .bios-overlay {
+    display: none !important;
   }
 
   /* Blog: terminal in flow mode fills main */
   .blog-docs-layout {
     flex: 1;
     min-height: 0;
-  }
-
-  .project-page,
-  .projects-page {
-    display: none;
   }
 
   .terminal-column {
@@ -623,7 +620,12 @@ pre code {
     overflow-y: auto;
   }
 
-
+  .mobile-terminal-body .terminal-window-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* Boot overlay */
