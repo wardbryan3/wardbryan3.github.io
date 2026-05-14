@@ -73,26 +73,26 @@ export default function SearchModal() {
   return (
     <>
       <button
-        class="search-btn"
+        className="search-btn"
         aria-label={open ? 'Close search' : 'Open search'}
         onClick={() => setOpen((v) => !v)}
       >
         <Icon name="search" style={{ color: 'inherit' }} />
       </button>
-      {open && <div class="search-backdrop" onClick={() => setOpen(false)} />}
+      {open && <div className="search-backdrop" onClick={() => setOpen(false)} />}
       <div
-        class={`search-modal ${open ? 'search-modal--open' : ''}`}
+        className={`search-modal ${open ? 'search-modal--open' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-label="Search"
       >
-        <div class="search-input-wrap">
-          <span class="search-input-icon">
+        <div className="search-input-wrap">
+          <span className="search-input-icon">
             <Icon name="search" />
           </span>
           <input
             ref={inputRef}
-            class="search-input"
+            className="search-input"
             type="text"
             placeholder="Search posts and projects..."
             value={query}
@@ -102,24 +102,24 @@ export default function SearchModal() {
             }}
             onKeyDown={handleKeyDown}
           />
-          <span class="search-esc-hint">ESC</span>
+          <span className="search-esc-hint">ESC</span>
         </div>
-        {query && totalResults === 0 && <div class="search-empty">No results found</div>}
+        {query && totalResults === 0 && <div className="search-empty">No results found</div>}
         {blogResults.length > 0 && (
-          <div class="search-group">
-            <div class="search-group-heading">Blog Posts</div>
+          <div className="search-group">
+            <div className="search-group-heading">Blog Posts</div>
             {blogResults.map((item, i) => (
               <a
                 key={item.path}
                 href={item.path}
-                class={`search-result ${selectedIdx === i ? 'search-result--active' : ''}`}
+                className={`search-result ${selectedIdx === i ? 'search-result--active' : ''}`}
                 onMouseEnter={() => setSelectedIdx(i)}
               >
-                <span class="search-result-dot search-result-dot--blog"></span>
-                <div class="search-result-body">
-                  <div class="search-result-title">{item.title}</div>
+                <span className="search-result-dot search-result-dot--blog"></span>
+                <div className="search-result-body">
+                  <div className="search-result-title">{item.title}</div>
                   {item.tags.length > 0 && (
-                    <div class="search-result-tags">{item.tags.join(', ')}</div>
+                    <div className="search-result-tags">{item.tags.join(', ')}</div>
                   )}
                 </div>
               </a>
@@ -127,20 +127,20 @@ export default function SearchModal() {
           </div>
         )}
         {projectResults.length > 0 && (
-          <div class="search-group">
-            <div class="search-group-heading">Projects</div>
+          <div className="search-group">
+            <div className="search-group-heading">Projects</div>
             {projectResults.map((item, i) => (
               <a
                 key={item.path}
                 href={item.path}
-                class={`search-result ${selectedIdx === blogResults.length + i ? 'search-result--active' : ''}`}
+                className={`search-result ${selectedIdx === blogResults.length + i ? 'search-result--active' : ''}`}
                 onMouseEnter={() => setSelectedIdx(blogResults.length + i)}
               >
-                <span class="search-result-dot search-result-dot--project"></span>
-                <div class="search-result-body">
-                  <div class="search-result-title">{item.title}</div>
+                <span className="search-result-dot search-result-dot--project"></span>
+                <div className="search-result-body">
+                  <div className="search-result-title">{item.title}</div>
                   {item.tags.length > 0 && (
-                    <div class="search-result-tags">{item.tags.join(', ')}</div>
+                    <div className="search-result-tags">{item.tags.join(', ')}</div>
                   )}
                 </div>
               </a>

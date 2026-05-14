@@ -144,6 +144,19 @@ const DEFAULT_WINDOWS = {
 };
 
 function loadSettings() {
+  if (typeof localStorage === 'undefined') {
+    return {
+      theme: 'system',
+      wallpaper: 'particle-field',
+      terminalFont: 'mono',
+      clockFormat: '12h',
+      dockPosition: 'top',
+      fontSize: 'small',
+      terminalOutputLines: [],
+      terminalHistory: [],
+      terminalBooted: false,
+    };
+  }
   try {
     const saved = localStorage.getItem('portfolio-os-settings');
     if (saved) return JSON.parse(saved);
@@ -164,6 +177,7 @@ function loadSettings() {
 }
 
 function saveSettings(s) {
+  if (typeof localStorage === 'undefined') return;
   try {
     localStorage.setItem(
       'portfolio-os-settings',

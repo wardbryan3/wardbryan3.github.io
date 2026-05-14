@@ -25,7 +25,7 @@ const ICONS = {
         <path
           d="M4 10L12 3L20 10V20C20 20.55 19.55 21 19 21H14V15H10V21H5C4.45 21 4 20.55 4 20V10Z"
           stroke="rgba(200,200,210,0.7)"
-          stroke-width="1.5"
+          strokeWidth="1.5"
           fill="none"
         />
       </svg>
@@ -38,7 +38,7 @@ const ICONS = {
           d="M4 2H16L20 6V20C20 20.55 19.55 21 19 21H4C3.45 21 3 20.55 3 20V3C3 2.45 3.45 2 4 2Z"
           fill="var(--accent)"
         />
-        <path d="M12 2V8H18" stroke="var(--bg)" stroke-width="1.5" stroke-linejoin="round" />
+        <path d="M12 2V8H18" stroke="var(--bg)" strokeWidth="1.5" strokeLinejoin="round" />
       </svg>
     ),
     inactive: (
@@ -46,15 +46,15 @@ const ICONS = {
         <path
           d="M4 2H16L20 6V20C20 20.55 19.55 21 19 21H4C3.45 21 3 20.55 3 20V3C3 2.45 3.45 2 4 2Z"
           stroke="rgba(200,200,210,0.7)"
-          stroke-width="1.5"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
           fill="none"
         />
         <path
           d="M12 2V8H18"
           stroke="rgba(200,200,210,0.7)"
-          stroke-width="1.5"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
           fill="none"
         />
       </svg>
@@ -74,8 +74,8 @@ const ICONS = {
         <path
           d="M12 2L14.09 8.26L21 8.26L15.45 12.24L17.53 18.5L12 14.52L6.47 18.5L8.55 12.24L3 8.26L9.91 8.26L12 2Z"
           stroke="rgba(200,200,210,0.7)"
-          stroke-width="1.5"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
           fill="none"
         />
       </svg>
@@ -88,9 +88,9 @@ const ICONS = {
         <path
           d="M6 10L9 13L6 16M11 16H18"
           stroke="var(--accent)"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
     ),
@@ -103,15 +103,15 @@ const ICONS = {
           height="14"
           rx="2"
           stroke="rgba(200,200,210,0.7)"
-          stroke-width="1.5"
+          strokeWidth="1.5"
           fill="none"
         />
         <path
           d="M6 10L9 13L6 16M11 16H18"
           stroke="rgba(200,200,210,0.7)"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
     ),
