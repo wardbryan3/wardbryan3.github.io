@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { useOSStore } from '../../stores/osStore';
 import ErrorBoundary from '../ErrorBoundary';
-import ParticleField from '../ParticleField';
-import DigitalRain from '../DigitalRain';
-import HexField from '../HexField';
 import HomeTab from './HomeTab';
 import BlogTab from './BlogTab';
 import WorkTab from './WorkTab';
+
+const ParticleField = lazy(() => import('../ParticleField'));
+const DigitalRain = lazy(() => import('../DigitalRain'));
+const HexField = lazy(() => import('../HexField'));
 
 const WALLPAPER_CSS = {
   dots: { backgroundImage: 'radial-gradient(var(--border) 1px, transparent 1px)', backgroundSize: '24px 24px' },
@@ -51,9 +52,11 @@ export default function MobileLayout({
       }}
     >
       <ErrorBoundary>
-        {wallpaper === 'particle-field' && <ParticleField />}
-        {wallpaper === 'digital-rain' && <DigitalRain />}
-        {wallpaper === 'hex-field' && <HexField />}
+        <Suspense fallback={null}>
+          {wallpaper === 'particle-field' && <ParticleField />}
+          {wallpaper === 'digital-rain' && <DigitalRain />}
+          {wallpaper === 'hex-field' && <HexField />}
+        </Suspense>
       </ErrorBoundary>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative', zIndex: 1 }}>

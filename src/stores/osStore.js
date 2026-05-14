@@ -38,7 +38,9 @@ function loadSettings() {
   try {
     const saved = localStorage.getItem('portfolio-os-settings');
     if (saved) return JSON.parse(saved);
-  } catch {}
+  } catch (e) {
+    console.warn('[osStore] Failed to load settings:', e);
+  }
   return { theme: 'system', wallpaper: 'particle-field', terminalFont: 'mono', clockFormat: '12h', dockPosition: 'top', fontSize: 'small' };
 }
 
@@ -47,7 +49,9 @@ function saveSettings(s) {
     localStorage.setItem('portfolio-os-settings', JSON.stringify({
       theme: s.theme, wallpaper: s.wallpaper, terminalFont: s.terminalFont, clockFormat: s.clockFormat, dockPosition: s.dockPosition, fontSize: s.fontSize,
     }));
-  } catch {}
+  } catch (e) {
+    console.warn('[osStore] Failed to save settings:', e);
+  }
 }
 
 function getDefaultPositions() {

@@ -1,14 +1,14 @@
 import { useEffect, lazy, Suspense } from 'react';
 import { useOSStore } from '../stores/osStore';
 import Icon from './Icon';
-import ParticleField from './ParticleField';
-import DigitalRain from './DigitalRain';
-import HexField from './HexField';
 import ErrorBoundary from './ErrorBoundary';
 import Dock from './Dock';
 import AppBar from './AppBar';
 import Window from './Window';
 
+const ParticleField = lazy(() => import('./ParticleField'));
+const DigitalRain = lazy(() => import('./DigitalRain'));
+const HexField = lazy(() => import('./HexField'));
 const ExplorerWindow = lazy(() => import('./ExplorerWindow'));
 const ResumeWindow = lazy(() => import('./ResumeWindow'));
 const MediaPlayerWindow = lazy(() => import('./MediaPlayerWindow'));
@@ -61,9 +61,11 @@ export default function DesktopOS({ projects, projectCount, postCount, searchDat
       }}
     >
       <ErrorBoundary>
-        {wallpaper === 'particle-field' && <ParticleField />}
-        {wallpaper === 'digital-rain' && <DigitalRain />}
-        {wallpaper === 'hex-field' && <HexField />}
+        <Suspense fallback={null}>
+          {wallpaper === 'particle-field' && <ParticleField />}
+          {wallpaper === 'digital-rain' && <DigitalRain />}
+          {wallpaper === 'hex-field' && <HexField />}
+        </Suspense>
       </ErrorBoundary>
       {dockAtTop && <Dock />}
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>

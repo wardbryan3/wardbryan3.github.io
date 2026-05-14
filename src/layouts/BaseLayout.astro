@@ -74,7 +74,7 @@ const ogImage = image || `${siteUrl}/og-default.png`;
               document.documentElement.style.setProperty('--os-font-mult', String(mult));
             }
           }
-        } catch (e) {}
+        } catch (e) { console.warn('[BaseLayout] Failed to apply saved settings:', e); }
       })();
     </script>
   </head>

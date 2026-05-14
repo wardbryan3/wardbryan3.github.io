@@ -42,7 +42,9 @@ export default function Terminal({
         const parsed = JSON.parse(saved);
         return parsed;
       }
-    } catch {}
+    } catch (e) {
+      console.warn('[Terminal] Failed to restore state:', e);
+    }
     return null;
   });
 
@@ -56,7 +58,7 @@ export default function Terminal({
   useEffect(() => {
     if (restored) {
       setOutputLines([]);
-      try { sessionStorage.removeItem('terminal-state-v1'); } catch {}
+      try { sessionStorage.removeItem('terminal-state-v1'); } catch (e) { console.warn('[Terminal] Failed to clear state:', e); }
     }
   }, [page]);
 
@@ -200,7 +202,7 @@ export default function Terminal({
     if (result.action === 'clear') {
       setOutputLines([]);
       setInput('');
-      try { sessionStorage.removeItem('terminal-state-v1'); } catch {}
+      try { sessionStorage.removeItem('terminal-state-v1'); } catch (e) { console.warn('[Terminal] Failed to clear state:', e); }
       return;
     }
 
@@ -312,7 +314,7 @@ export default function Terminal({
     persistRef.current = setTimeout(() => {
       try {
         sessionStorage.setItem('terminal-state-v1', JSON.stringify({ outputLines }));
-      } catch {}
+      } catch (e) { console.warn('[Terminal] Failed to persist state:', e); }
     }, 1000);
     return () => clearTimeout(persistRef.current);
   }, [outputLines]);
