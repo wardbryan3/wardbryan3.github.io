@@ -22,7 +22,10 @@ export default function Terminal({
   embedded = false,
   terminalFont = 'mono',
 }) {
-  const [phase, setPhase] = useState(side || flow ? 'interactive' : 'growing');
+  const [phase, setPhase] = useState(() => {
+    if (side || flow) return 'interactive';
+    return useOSStore.getState().terminalBooted ? 'interactive' : 'growing';
+  });
   const [commandText, setCommandText] = useState('');
   const [input, setInput] = useState('');
   const [collapsed, setCollapsed] = useState(!defaultOpen);
@@ -387,7 +390,7 @@ export default function Terminal({
         fontFamily: terminalFont === 'sans-serif' ? 'var(--font-sans)' : 'var(--font-mono)',
       }}
     >
-      {(phase !== 'growing' || side) && !flow && (
+      {!terminalBooted && (phase !== 'growing' || side) && !flow && (
         <div className="ff-line">
           <span className="ff-prompt">bryan@ward:~$ </span>
           {phase !== 'prompt' && commandText && <span className="ff-command">{commandText}</span>}
