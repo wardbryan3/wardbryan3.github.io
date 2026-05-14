@@ -112,7 +112,6 @@ function loadSettings() {
     clockFormat: '12h',
     dockPosition: 'top',
     fontSize: 'small',
-    terminalOutputLines: [],
     terminalHistory: [],
   };
 }
@@ -128,7 +127,6 @@ function saveSettings(s) {
         clockFormat: s.clockFormat,
         dockPosition: s.dockPosition,
         fontSize: s.fontSize,
-        terminalOutputLines: s.terminalOutputLines,
         terminalHistory: s.terminalHistory,
       }),
     );
@@ -339,23 +337,20 @@ export const useOSStore = create((set, get) => ({
     set({ fontSize });
   },
 
-  // Persistent terminal state
-  terminalOutputLines: settings.terminalOutputLines || [],
+  // Persistent terminal state (history persists, output is runtime-only)
+  terminalOutputLines: [],
   terminalHistory: settings.terminalHistory || [],
 
   addTerminalOutput: (input, output) =>
-    set((s) => {
-      const next = {
-        terminalOutputLines: [...s.terminalOutputLines, { type: 'input', text: input }, { type: 'output', content: output }],
-      };
-      saveSettings({ ...get(), ...next });
-      return next;
-    }),
+    set((s) => ({
+      terminalOutputLines: [
+        ...s.terminalOutputLines,
+        { type: 'input', text: input },
+        { type: 'output', content: output },
+      ],
+    })),
 
-  clearTerminalOutput: () => {
-    set({ terminalOutputLines: [] });
-    saveSettings({ ...get(), terminalOutputLines: [] });
-  },
+  clearTerminalOutput: () => set({ terminalOutputLines: [] }),
 
   pushTerminalHistory: (cmd) =>
     set((s) => {
