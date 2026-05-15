@@ -16,7 +16,7 @@ export default function TableOfContents({ headings = [] }) {
           }
         });
       },
-      { rootMargin: '-48px 0px -80% 0px' }
+      { rootMargin: '-48px 0px -80% 0px' },
     );
 
     headings.forEach((h) => {
@@ -38,7 +38,9 @@ export default function TableOfContents({ headings = [] }) {
             key={h.slug}
             className={`toc-item toc-depth-${h.depth}${activeId === h.slug ? ' active' : ''}`}
           >
-            <a href={`#${h.slug}`} className="toc-link">{h.text}</a>
+            <a href={`#${h.slug}`} className="toc-link">
+              {h.text}
+            </a>
           </li>
         ))}
       </ul>

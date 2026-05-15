@@ -1,5 +1,5 @@
 :root,
-[data-theme="system"] {
+[data-theme='system'] {
   --bg: #05000a;
   --surface: #12001a;
   --surface-hover: #1a0028;
@@ -12,7 +12,7 @@
   --border: #2a1040;
 }
 
-[data-theme="tokyonight"] {
+[data-theme='tokyonight'] {
   --bg: #1a1b26;
   --surface: #24283b;
   --surface-hover: #2f354a;
@@ -25,7 +25,7 @@
   --border: #3b4261;
 }
 
-[data-theme="everforest"] {
+[data-theme='everforest'] {
   --bg: #2b3339;
   --surface: #3a454a;
   --surface-hover: #47545a;
@@ -38,7 +38,7 @@
   --border: #4f5b58;
 }
 
-[data-theme="ayu"] {
+[data-theme='ayu'] {
   --bg: #0b0e14;
   --surface: #1a1f29;
   --surface-hover: #262d3a;
@@ -51,7 +51,7 @@
   --border: #2d3640;
 }
 
-[data-theme="catppuccin"] {
+[data-theme='catppuccin'] {
   --bg: #1e1e2e;
   --surface: #313244;
   --surface-hover: #3f4057;
@@ -64,7 +64,7 @@
   --border: #45475a;
 }
 
-[data-theme="catppuccin-macchiato"] {
+[data-theme='catppuccin-macchiato'] {
   --bg: #24273a;
   --surface: #363a4f;
   --surface-hover: #44485f;
@@ -77,7 +77,7 @@
   --border: #494d64;
 }
 
-[data-theme="gruvbox"] {
+[data-theme='gruvbox'] {
   --bg: #282828;
   --surface: #3c3836;
   --surface-hover: #504945;
@@ -90,7 +90,7 @@
   --border: #504945;
 }
 
-[data-theme="kanagawa"] {
+[data-theme='kanagawa'] {
   --bg: #1f1f28;
   --surface: #2a2a37;
   --surface-hover: #363646;
@@ -103,7 +103,7 @@
   --border: #363646;
 }
 
-[data-theme="nord"] {
+[data-theme='nord'] {
   --bg: #2e3440;
   --surface: #3b4252;
   --surface-hover: #434c5e;
@@ -116,7 +116,7 @@
   --border: #4c566a;
 }
 
-[data-theme="matrix"] {
+[data-theme='matrix'] {
   --bg: #000000;
   --surface: #0a0a0a;
   --surface-hover: #141414;
@@ -129,7 +129,7 @@
   --border: #003b00;
 }
 
-[data-theme="one-dark"] {
+[data-theme='one-dark'] {
   --bg: #282c34;
   --surface: #353b45;
   --surface-hover: #3f4655;

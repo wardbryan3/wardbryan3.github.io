@@ -2,8 +2,17 @@ import { useState, useEffect } from 'react';
 import { useOSStore } from '../stores/osStore';
 
 const THEMES = [
-  'system', 'tokyonight', 'everforest', 'ayu', 'catppuccin',
-  'catppuccin-macchiato', 'gruvbox', 'kanagawa', 'nord', 'matrix', 'one-dark',
+  'system',
+  'tokyonight',
+  'everforest',
+  'ayu',
+  'catppuccin',
+  'catppuccin-macchiato',
+  'gruvbox',
+  'kanagawa',
+  'nord',
+  'matrix',
+  'one-dark',
 ];
 
 const THEME_LABELS = {
@@ -48,56 +57,52 @@ export default function NavMenu({ currentPath }) {
 
   return (
     <>
-      <button
-        class="hamburger-btn"
-        aria-label={label}
-        onClick={() => setOpen((v) => !v)}
-      >
-        <span class="hamburger-bar"></span>
-        <span class="hamburger-bar"></span>
-        <span class="hamburger-bar"></span>
+      <button className="hamburger-btn" aria-label={label} onClick={() => setOpen((v) => !v)}>
+        <span className="hamburger-bar"></span>
+        <span className="hamburger-bar"></span>
+        <span className="hamburger-bar"></span>
       </button>
-      {open && <div class="nav-backdrop" onClick={() => setOpen(false)} />}
+      {open && <div className="nav-backdrop" onClick={() => setOpen(false)} />}
       <div
-        class={`nav-panel ${open ? 'nav-panel--open' : ''}`}
+        className={`nav-panel ${open ? 'nav-panel--open' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
       >
-        <div class="nav-panel-section">
-          <span class="nav-panel-heading">Navigation</span>
-          <nav class="nav-panel-links">
+        <div className="nav-panel-section">
+          <span className="nav-panel-heading">Navigation</span>
+          <nav className="nav-panel-links">
             <a
               href="/"
-              class={`nav-panel-link ${isActive('/') ? 'nav-panel-link--active' : ''}`}
+              className={`nav-panel-link ${isActive('/') ? 'nav-panel-link--active' : ''}`}
               onClick={() => setOpen(false)}
             >
               Home
             </a>
             <a
               href="/blog"
-              class={`nav-panel-link ${isActive('/blog') ? 'nav-panel-link--active' : ''}`}
+              className={`nav-panel-link ${isActive('/blog') ? 'nav-panel-link--active' : ''}`}
               onClick={() => setOpen(false)}
             >
               Blog
             </a>
             <a
               href="/projects"
-              class={`nav-panel-link ${isActive('/projects') ? 'nav-panel-link--active' : ''}`}
+              className={`nav-panel-link ${isActive('/projects') ? 'nav-panel-link--active' : ''}`}
               onClick={() => setOpen(false)}
             >
               Projects
             </a>
           </nav>
         </div>
-        <div class="nav-panel-divider"></div>
-        <div class="nav-panel-section">
-          <span class="nav-panel-heading">Theme</span>
-          <div class="theme-grid">
+        <div className="nav-panel-divider"></div>
+        <div className="nav-panel-section">
+          <span className="nav-panel-heading">Theme</span>
+          <div className="theme-grid">
             {THEMES.map((t) => (
               <button
                 key={t}
-                class={`theme-btn ${activeTheme === t ? 'theme-btn--active' : ''}`}
+                className={`theme-btn ${activeTheme === t ? 'theme-btn--active' : ''}`}
                 onClick={() => {
                   setActiveTheme(t);
                   setTheme(t);

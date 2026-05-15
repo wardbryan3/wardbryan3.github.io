@@ -31,15 +31,43 @@ function buildFastfetchFields(projectCount, postCount) {
   const maxKeyLen = 8;
   const padLen = maxKeyLen + 5;
   return [
-    { key: 'name',     pad: 'name'.padEnd(padLen),     value: 'Bryan Ward',                                         cls: 'green' },
-    { key: 'status',   pad: 'status'.padEnd(padLen),   value: 'learning and building',                               cls: 'green' },
-    { key: 'level',    pad: 'level'.padEnd(padLen),    value: 'CS student / developer',                              cls: 'purple' },
-    { key: 'focus',    pad: 'focus'.padEnd(padLen),    value: 'full-stack web, Linux, FOSS',                         cls: 'white' },
-    { key: 'tools',    pad: 'tools'.padEnd(padLen),    value: 'Python, Java, JavaScript, HTML, CSS, Bash, Node.js, React, Spring Boot, Git, Linux, Astro', cls: 'white' },
-    { key: 'projects', pad: 'projects'.padEnd(padLen),  value: `${projectCount} active`,                              cls: 'white' },
-    { key: 'posts',    pad: 'posts'.padEnd(padLen),    value: `${postCount} published`,                              cls: 'white' },
-    { key: 'github',   pad: 'github'.padEnd(padLen),   value: 'github.com/wardbryan3',                               cls: 'link', href: 'https://github.com/wardbryan3' },
-    { key: 'linkedin', pad: 'linkedin'.padEnd(padLen), value: 'linkedin.com/in/bryan-ward-298292196',                cls: 'link', href: 'https://www.linkedin.com/in/bryan-ward-298292196/' },
+    { key: 'name', pad: 'name'.padEnd(padLen), value: 'Bryan Ward', cls: 'green' },
+    { key: 'status', pad: 'status'.padEnd(padLen), value: 'learning and building', cls: 'green' },
+    { key: 'level', pad: 'level'.padEnd(padLen), value: 'CS student / developer', cls: 'purple' },
+    {
+      key: 'focus',
+      pad: 'focus'.padEnd(padLen),
+      value: 'full-stack web, Linux, FOSS',
+      cls: 'white',
+    },
+    {
+      key: 'tools',
+      pad: 'tools'.padEnd(padLen),
+      value:
+        'Python, Java, JavaScript, HTML, CSS, Bash, Node.js, React, Spring Boot, Git, Linux, Astro',
+      cls: 'white',
+    },
+    {
+      key: 'projects',
+      pad: 'projects'.padEnd(padLen),
+      value: `${projectCount} active`,
+      cls: 'white',
+    },
+    { key: 'posts', pad: 'posts'.padEnd(padLen), value: `${postCount} published`, cls: 'white' },
+    {
+      key: 'github',
+      pad: 'github'.padEnd(padLen),
+      value: 'github.com/wardbryan3',
+      cls: 'link',
+      href: 'https://github.com/wardbryan3',
+    },
+    {
+      key: 'linkedin',
+      pad: 'linkedin'.padEnd(padLen),
+      value: 'linkedin.com/in/bryan-ward-298292196',
+      cls: 'link',
+      href: 'https://www.linkedin.com/in/bryan-ward-298292196/',
+    },
   ];
 }
 
@@ -50,18 +78,21 @@ function renderFastfetchOutput(projectCount, postCount) {
       <pre className="ff-tux">{TUX_ART}</pre>
       <div className="ff-fields">
         {fields.map((f) => {
-          const valueCls = f.cls === 'green'
-            ? 'ff-value ff-value-green'
-            : f.cls === 'purple'
-              ? 'ff-value ff-value-purple'
-              : f.cls === 'link'
-                ? 'ff-value ff-value-link'
-                : 'ff-value';
+          const valueCls =
+            f.cls === 'green'
+              ? 'ff-value ff-value-green'
+              : f.cls === 'purple'
+                ? 'ff-value ff-value-purple'
+                : f.cls === 'link'
+                  ? 'ff-value ff-value-link'
+                  : 'ff-value';
           return (
             <div key={f.key} className="ff-line">
               <span className="ff-key">{f.pad}</span>
               {f.href ? (
-                <a href={f.href} target="_blank" rel="noopener noreferrer" className={valueCls}>{f.value}</a>
+                <a href={f.href} target="_blank" rel="noopener noreferrer" className={valueCls}>
+                  {f.value}
+                </a>
               ) : (
                 <span className={valueCls}>{f.value}</span>
               )}
@@ -76,14 +107,17 @@ function renderFastfetchOutput(projectCount, postCount) {
 export { renderFastfetchOutput };
 
 function renderSearchResults(results, keyword) {
-  if (results.length === 0) return { output: <div className="term-text term-muted">no matches for: {keyword}</div> };
+  if (results.length === 0)
+    return { output: <div className="term-text term-muted">no matches for: {keyword}</div> };
   return {
     output: (
       <div className="term-output">
         {results.map((item, i) => (
           <div key={i} className="term-text">
-            <a href={item.path} className="ff-value-link">{item.type}/{item.slug}</a>
-            <span className="term-muted">  {item.title}</span>
+            <a href={item.path} className="ff-value-link">
+              {item.type}/{item.slug}
+            </a>
+            <span className="term-muted"> {item.title}</span>
           </div>
         ))}
       </div>
@@ -92,7 +126,7 @@ function renderSearchResults(results, keyword) {
 }
 
 export function createCommands({ page, projectCount, postCount, searchData, dirs = [] }) {
-  const normalizePage = (p) => p === '/home' ? '/' : p;
+  const normalizePage = (p) => (p === '/home' ? '/' : p);
   const resolveParent = (p) => {
     if (p === '/') return '/';
     const parts = p.replace(/^\/|\/$/g, '').split('/');
@@ -127,7 +161,7 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
             ['top', 'site activity'],
           ].map(([name, desc]) => (
             <div key={name} className="term-text">
-              <span className="ff-value-green">  {name.padEnd(10)}</span>
+              <span className="ff-value-green"> {name.padEnd(10)}</span>
               <span className="term-muted">— {desc}</span>
             </div>
           ))}
@@ -141,8 +175,8 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
     handler: () => ({
       output: (
         <div className="term-text">
-          Bryan Ward — CS student and developer from southern Oregon. Linux
-          enthusiast, FOSS advocate, exploring agentic engineering and AI tooling.
+          Bryan Ward — CS student and developer from southern Oregon. Linux enthusiast, FOSS
+          advocate, exploring agentic engineering and AI tooling.
         </div>
       ),
     }),
@@ -176,8 +210,8 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
 
   commands.history = {
     description: 'recent commands',
-    handler: (_args, ctx) => {
-      const hist = ctx.registry.getHistory();
+    handler: (_args, _ctx) => {
+      const hist = useOSStore.getState().terminalHistory;
       if (hist.length === 0)
         return { output: <div className="term-text term-muted">no history</div> };
       return {
@@ -185,7 +219,7 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
           <div className="term-output">
             {hist.map((cmd, i) => (
               <div key={i} className="term-text">
-                <span className="term-muted">{String(i + 1).padStart(3)}</span>  {cmd}
+                <span className="term-muted">{String(i + 1).padStart(3)}</span> {cmd}
               </div>
             ))}
           </div>
@@ -204,16 +238,20 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
   commands.ls = {
     description: 'list sections',
     handler: (args) => {
-      if (!searchData || searchData.length === 0) return { output: <div className="term-text term-muted">no search data</div> };
+      if (!searchData || searchData.length === 0)
+        return { output: <div className="term-text term-muted">no search data</div> };
       const raw = args[0];
       if (!raw || raw === '/' || raw === '~') {
         return {
           output: (
             <div className="term-output">
-              {dirs.map(d => (
+              {dirs.map((d) => (
                 <div key={d.name} className="term-text">
                   <span className="ff-value-link">{d.name}/</span>
-                  <span className="term-muted">  {d.description} ({d.count})</span>
+                  <span className="term-muted">
+                    {' '}
+                    {d.description} ({d.count})
+                  </span>
                 </div>
               ))}
               <div className="term-text">README.md</div>
@@ -225,15 +263,25 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
       const target = raw.replace(/\/+$/, '');
 
       if (target === 'blog') {
-        const items = searchData.filter(e => e.type === 'blog');
+        const items = searchData.filter((e) => e.type === 'blog');
         return {
           output: (
             <div className="term-output">
-              {items.map(item => (
+              {items.map((item) => (
                 <div key={item.slug} className="term-text">
-                  <a href={item.path} className="ff-value-link">{item.slug}/</a>
-                  <span className="term-muted">  {item.title}</span>
-                  {item.date && <span className="term-muted" style={{ float: 'right' }}>{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>}
+                  <a href={item.path} className="ff-value-link">
+                    {item.slug}/
+                  </a>
+                  <span className="term-muted"> {item.title}</span>
+                  {item.date && (
+                    <span className="term-muted" style={{ float: 'right' }}>
+                      {new Date(item.date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
@@ -242,14 +290,16 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
       }
 
       if (target === 'projects') {
-        const items = searchData.filter(e => e.type === 'projects');
+        const items = searchData.filter((e) => e.type === 'projects');
         return {
           output: (
             <div className="term-output">
-              {items.map(item => (
+              {items.map((item) => (
                 <div key={item.slug} className="term-text">
-                  <a href={item.path} className="ff-value-link">{item.slug}/</a>
-                  <span className="term-muted">  {item.title}</span>
+                  <a href={item.path} className="ff-value-link">
+                    {item.slug}/
+                  </a>
+                  <span className="term-muted"> {item.title}</span>
                 </div>
               ))}
             </div>
@@ -257,7 +307,11 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
         };
       }
 
-      return { output: <div className="term-text term-muted">ls: cannot access '{raw}': No such directory</div> };
+      return {
+        output: (
+          <div className="term-text term-muted">ls: cannot access '{raw}': No such directory</div>
+        ),
+      };
     },
   };
 
@@ -268,10 +322,17 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
       const current = normalizePage(page);
 
       if (!target || target === '~' || target === '/' || target === 'home') {
-        if (current === '/')
-          return { output: <div className="term-text">already at /</div> };
+        if (current === '/') return { output: <div className="term-text">already at /</div> };
         return {
-          output: <div className="term-text">navigating to <a href="/" className="ff-value-link">/</a>...</div>,
+          output: (
+            <div className="term-text">
+              navigating to{' '}
+              <a href="/" className="ff-value-link">
+                /
+              </a>
+              ...
+            </div>
+          ),
           action: 'navigate',
           url: '/',
         };
@@ -286,7 +347,15 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
         if (parent === current)
           return { output: <div className="term-text term-muted">already at root</div> };
         return {
-          output: <div className="term-text">navigating to <a href={parent} className="ff-value-link">{parent}</a>...</div>,
+          output: (
+            <div className="term-text">
+              navigating to{' '}
+              <a href={parent} className="ff-value-link">
+                {parent}
+              </a>
+              ...
+            </div>
+          ),
           action: 'navigate',
           url: parent,
         };
@@ -294,7 +363,15 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
 
       if (target === 'blog') {
         return {
-          output: <div className="term-text">navigating to <a href="/blog" className="ff-value-link">/blog</a>...</div>,
+          output: (
+            <div className="term-text">
+              navigating to{' '}
+              <a href="/blog" className="ff-value-link">
+                /blog
+              </a>
+              ...
+            </div>
+          ),
           action: 'navigate',
           url: '/blog',
         };
@@ -302,7 +379,15 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
 
       if (target === 'projects') {
         return {
-          output: <div className="term-text">navigating to <a href="/projects" className="ff-value-link">/projects</a>...</div>,
+          output: (
+            <div className="term-text">
+              navigating to{' '}
+              <a href="/projects" className="ff-value-link">
+                /projects
+              </a>
+              ...
+            </div>
+          ),
           action: 'navigate',
           url: '/projects',
         };
@@ -313,31 +398,57 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
         const prefix = target.slice(0, slashIndex);
         const slug = target.slice(slashIndex + 1);
         if ((prefix === 'blog' || prefix === 'projects') && slug) {
-          const entry = searchData.find(e => e.type === prefix && e.slug === slug);
+          const entry = searchData.find((e) => e.type === prefix && e.slug === slug);
           if (entry) {
             return {
-              output: <div className="term-text">navigating to <a href={entry.path} className="ff-value-link">{entry.path}</a>...</div>,
+              output: (
+                <div className="term-text">
+                  navigating to{' '}
+                  <a href={entry.path} className="ff-value-link">
+                    {entry.path}
+                  </a>
+                  ...
+                </div>
+              ),
               action: 'navigate',
               url: entry.path,
             };
           }
         }
-        return { output: <div className="term-text term-muted">cd: no such directory: {target}</div> };
+        return {
+          output: <div className="term-text term-muted">cd: no such directory: {target}</div>,
+        };
       }
 
-      const exactMatch = searchData.find(e => e.slug === target);
+      const exactMatch = searchData.find((e) => e.slug === target);
       if (exactMatch) {
         return {
-          output: <div className="term-text">navigating to <a href={exactMatch.path} className="ff-value-link">{exactMatch.path}</a>...</div>,
+          output: (
+            <div className="term-text">
+              navigating to{' '}
+              <a href={exactMatch.path} className="ff-value-link">
+                {exactMatch.path}
+              </a>
+              ...
+            </div>
+          ),
           action: 'navigate',
           url: exactMatch.path,
         };
       }
 
-      const matches = searchData.filter(e => e.slug.includes(target));
+      const matches = searchData.filter((e) => e.slug.includes(target));
       if (matches.length === 1) {
         return {
-          output: <div className="term-text">navigating to <a href={matches[0].path} className="ff-value-link">{matches[0].path}</a>...</div>,
+          output: (
+            <div className="term-text">
+              navigating to{' '}
+              <a href={matches[0].path} className="ff-value-link">
+                {matches[0].path}
+              </a>
+              ...
+            </div>
+          ),
           action: 'navigate',
           url: matches[0].path,
         };
@@ -348,8 +459,10 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
             <div className="term-output">
               {matches.map((item, i) => (
                 <div key={i} className="term-text">
-                  <a href={item.path} className="ff-value-link">{item.type}/{item.slug}</a>
-                  <span className="term-muted">  {item.title}</span>
+                  <a href={item.path} className="ff-value-link">
+                    {item.type}/{item.slug}
+                  </a>
+                  <span className="term-muted"> {item.title}</span>
                 </div>
               ))}
             </div>
@@ -357,7 +470,9 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
         };
       }
 
-      return { output: <div className="term-text term-muted">cd: no such directory: {target}</div> };
+      return {
+        output: <div className="term-text term-muted">cd: no such directory: {target}</div>,
+      };
     },
   };
 
@@ -365,9 +480,16 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
     description: 'view content',
     handler: (args) => {
       const file = args[0];
-      if (!file) return { output: <div className="term-text term-muted">cat: missing filename</div> };
+      if (!file)
+        return { output: <div className="term-text term-muted">cat: missing filename</div> };
       if (file === 'README.md') {
-        return { output: <div className="term-text">Hi, I'm Bryan — a CS student and developer from southern Oregon. Type 'ls' to explore.</div> };
+        return {
+          output: (
+            <div className="term-text">
+              Hi, I'm Bryan — a CS student and developer from southern Oregon. Type 'ls' to explore.
+            </div>
+          ),
+        };
       }
       return { output: <div className="term-text term-muted">cat: no such file: {file}</div> };
     },
@@ -377,9 +499,11 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
     description: 'search by name',
     handler: (args) => {
       const keyword = args.join(' ').toLowerCase();
-      if (!keyword) return { output: <div className="term-text term-muted">find: missing search term</div> };
-      if (!searchData || searchData.length === 0) return { output: <div className="term-text term-muted">no search data</div> };
-      const results = searchData.filter(item => item.title.toLowerCase().includes(keyword));
+      if (!keyword)
+        return { output: <div className="term-text term-muted">find: missing search term</div> };
+      if (!searchData || searchData.length === 0)
+        return { output: <div className="term-text term-muted">no search data</div> };
+      const results = searchData.filter((item) => item.title.toLowerCase().includes(keyword));
       return renderSearchResults(results, keyword);
     },
   };
@@ -388,11 +512,13 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
     description: 'search by content',
     handler: (args) => {
       const keyword = args.join(' ').toLowerCase();
-      if (!keyword) return { output: <div className="term-text term-muted">grep: missing search term</div> };
-      if (!searchData || searchData.length === 0) return { output: <div className="term-text term-muted">no search data</div> };
-      const results = searchData.filter(item => {
+      if (!keyword)
+        return { output: <div className="term-text term-muted">grep: missing search term</div> };
+      if (!searchData || searchData.length === 0)
+        return { output: <div className="term-text term-muted">no search data</div> };
+      const results = searchData.filter((item) => {
         const inTitle = item.title.toLowerCase().includes(keyword);
-        const inTags = item.tags && item.tags.some(tag => tag.toLowerCase().includes(keyword));
+        const inTags = item.tags && item.tags.some((tag) => tag.toLowerCase().includes(keyword));
         return inTitle || inTags;
       });
       return renderSearchResults(results, keyword);
@@ -404,15 +530,18 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
     handler: () => ({
       output: (
         <div className="term-output">
-          <div className="term-text">Tasks: {projectCount + postCount} total, {projectCount} running, {postCount} sleeping</div>
-          <div className="term-text" style={{ marginTop: 4 }}>
-            <span className="term-muted">PID</span>  <span className="term-muted">USER</span>      <span className="term-muted">%CPU</span> <span className="term-muted">COMMAND</span>
+          <div className="term-text">
+            Tasks: {projectCount + postCount} total, {projectCount} running, {postCount} sleeping
           </div>
-          <div className="term-text">  1  bryan      0.0  /sbin/build</div>
-          <div className="term-text">  2  bryan      5.2  /usr/bin/deploy</div>
-          <div className="term-text">  3  bryan      3.1  /usr/bin/code</div>
-          <div className="term-text">  4  bryan     12.7  /usr/bin/coffee</div>
-          <div className="term-text">  5  bryan      0.3  /usr/bin/zsh</div>
+          <div className="term-text" style={{ marginTop: 4 }}>
+            <span className="term-muted">PID</span> <span className="term-muted">USER</span>{' '}
+            <span className="term-muted">%CPU</span> <span className="term-muted">COMMAND</span>
+          </div>
+          <div className="term-text"> 1 bryan 0.0 /sbin/build</div>
+          <div className="term-text"> 2 bryan 5.2 /usr/bin/deploy</div>
+          <div className="term-text"> 3 bryan 3.1 /usr/bin/code</div>
+          <div className="term-text"> 4 bryan 12.7 /usr/bin/coffee</div>
+          <div className="term-text"> 5 bryan 0.3 /usr/bin/zsh</div>
         </div>
       ),
     }),
@@ -422,7 +551,16 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
     description: 'open an app window (explorer, resume, media, settings, trash)',
     handler: (args) => {
       const app = args?.[0];
-      if (!app) return { output: <div className="term-text term-muted">Usage: open &lt;app&gt;<br />Apps: explorer, resume, media, settings, trash</div> };
+      if (!app)
+        return {
+          output: (
+            <div className="term-text term-muted">
+              Usage: open &lt;app&gt;
+              <br />
+              Apps: explorer, resume, media, settings, trash
+            </div>
+          ),
+        };
       const valid = ['explorer', 'resume', 'media', 'settings', 'trash'];
       const id = app === 'media' ? 'media-player' : app;
       if (valid.includes(app)) {
@@ -437,7 +575,8 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
     description: 'close an app window',
     handler: (args) => {
       const app = args?.[0];
-      if (!app) return { output: <div className="term-text term-muted">Usage: close &lt;app&gt;</div> };
+      if (!app)
+        return { output: <div className="term-text term-muted">Usage: close &lt;app&gt;</div> };
       const id = app === 'media' ? 'media-player' : app;
       useOSStore.getState().closeWindow(id);
       return { output: <div className="term-text">Closing {app}...</div> };
@@ -452,7 +591,13 @@ export function createCommands({ page, projectCount, postCount, searchData, dirs
         .filter(([, w]) => w.open)
         .map(([id, w]) => `  ${id}${w.minimized ? ' (minimized)' : ''}`);
       const list = open.join('\n') || '  (none)';
-      return { output: <div className="term-text" style={{ whiteSpace: 'pre' }}>Open windows:\n{list}</div> };
+      return {
+        output: (
+          <div className="term-text" style={{ whiteSpace: 'pre' }}>
+            Open windows:\n{list}
+          </div>
+        ),
+      };
     },
   };
 

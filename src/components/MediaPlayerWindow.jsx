@@ -2,7 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import Icon from './Icon';
 
 const TRACKS = [
-  { num: '01', title: 'Southern New Hampshire University — B.S. Computer Science (Expected 02/2027) — GPA: 4.0', duration: '4:00' },
+  {
+    num: '01',
+    title:
+      'Southern New Hampshire University — B.S. Computer Science (Expected 02/2027) — GPA: 4.0',
+    duration: '4:00',
+  },
   { num: '02', title: 'Responsive Web Design Certification (freeCodeCamp.com)', duration: '2:02' },
   { num: '03', title: 'Guest speaker: Design Systems Summit', duration: '1:58' },
 ];
@@ -48,7 +53,7 @@ export default function MediaPlayerWindow() {
       return;
     }
     const interval = setInterval(() => {
-      setBars(INITIAL_BARS.map(min => min + Math.floor(Math.random() * 30)));
+      setBars(INITIAL_BARS.map((min) => min + Math.floor(Math.random() * 30)));
     }, 180);
     return () => clearInterval(interval);
   }, [isPlaying, currentTrack]);
@@ -63,7 +68,9 @@ export default function MediaPlayerWindow() {
   return (
     <div
       style={{
-        display: 'flex', flexDirection: 'column', height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
         fontSize: 'calc(0.7rem * var(--os-font-mult))',
       }}
     >
@@ -72,22 +79,31 @@ export default function MediaPlayerWindow() {
           {TRACKS.map((track, i) => (
             <div
               key={track.num}
-              onClick={() => { setCurrentTrack(i); setIsPlaying(true); }}
+              onClick={() => {
+                setCurrentTrack(i);
+                setIsPlaying(true);
+              }}
               style={{
-                display: 'flex', gap: '6px', padding: '5px 6px',
-                cursor: 'pointer', borderRadius: '3px',
+                display: 'flex',
+                gap: '6px',
+                padding: '5px 6px',
+                cursor: 'pointer',
+                borderRadius: '3px',
                 background: currentTrack === i ? 'var(--surface-hover)' : 'transparent',
                 color: currentTrack === i ? 'var(--accent)' : 'var(--text)',
                 borderBottom: '1px solid var(--border)',
               }}
             >
-              <span style={{ color: 'var(--text-muted)', width: '20px' }}>
-                {track.num}
-              </span>
+              <span style={{ color: 'var(--text-muted)', width: '20px' }}>{track.num}</span>
               <span style={{ flex: 1 }}>{track.title}</span>
               <span style={{ color: 'var(--text-muted)' }}>{track.duration}</span>
               {isPlaying && currentTrack === i && (
-                <span style={{ color: 'var(--accent)', fontSize: 'calc(0.65rem * var(--os-font-mult))' }}>
+                <span
+                  style={{
+                    color: 'var(--accent)',
+                    fontSize: 'calc(0.65rem * var(--os-font-mult))',
+                  }}
+                >
                   {'\u266A'}
                 </span>
               )}
@@ -96,9 +112,12 @@ export default function MediaPlayerWindow() {
           {quote && (
             <div
               style={{
-                marginTop: '12px', padding: '8px',
-                border: '1px solid var(--accent)', borderRadius: '4px',
-                fontStyle: 'italic', color: 'var(--accent)',
+                marginTop: '12px',
+                padding: '8px',
+                border: '1px solid var(--accent)',
+                borderRadius: '4px',
+                fontStyle: 'italic',
+                color: 'var(--accent)',
                 fontSize: 'calc(0.65rem * var(--os-font-mult))',
               }}
             >
@@ -109,14 +128,19 @@ export default function MediaPlayerWindow() {
 
         <div
           style={{
-            width: '120px', borderLeft: '1px solid var(--border)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: '120px',
+            borderLeft: '1px solid var(--border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             background: 'var(--surface)',
           }}
         >
           <div
             style={{
-              display: 'flex', alignItems: 'flex-end', gap: '3px',
+              display: 'flex',
+              alignItems: 'flex-end',
+              gap: '3px',
               height: '80px',
             }}
           >
@@ -126,7 +150,8 @@ export default function MediaPlayerWindow() {
                 style={{
                   width: '6px',
                   height: isPlaying && currentTrack >= 0 ? `${h}px` : '20px',
-                  background: 'var(--accent)', borderRadius: '2px',
+                  background: 'var(--accent)',
+                  borderRadius: '2px',
                   transition: 'height 300ms ease',
                   opacity: isPlaying && currentTrack >= 0 ? 0.8 : 0.3,
                 }}
@@ -138,8 +163,11 @@ export default function MediaPlayerWindow() {
 
       <div
         style={{
-          display: 'flex', alignItems: 'center', gap: '10px',
-          padding: '6px 10px', borderTop: '1px solid var(--border)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '6px 10px',
+          borderTop: '1px solid var(--border)',
           background: 'var(--surface)',
         }}
       >
@@ -156,7 +184,9 @@ export default function MediaPlayerWindow() {
         <button onClick={handleShuffle} style={ctrlBtnStyle} title="Shuffle">
           <Icon name="shuffle" size={14} />
         </button>
-        <span style={{ color: 'var(--text-muted)', fontSize: 'calc(0.6rem * var(--os-font-mult))' }}>
+        <span
+          style={{ color: 'var(--text-muted)', fontSize: 'calc(0.6rem * var(--os-font-mult))' }}
+        >
           {currentTrack >= 0 ? TRACKS[currentTrack].duration : '0:00'}
         </span>
       </div>
@@ -165,6 +195,9 @@ export default function MediaPlayerWindow() {
 }
 
 const ctrlBtnStyle = {
-  background: 'none', border: 'none', cursor: 'pointer',
-  color: 'var(--text)', fontSize: 'calc(0.7rem * var(--os-font-mult))',
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
+  color: 'var(--text)',
+  fontSize: 'calc(0.7rem * var(--os-font-mult))',
 };

@@ -68,7 +68,7 @@ const dirs = [{ name: 'blog', description: 'blog posts', count: sortedPosts.leng
         dirs={dirs}
         flow={true}
         defaultOpen={false}
-        client:load
+        client:only="react"
       />
   </div>
 </BaseLayout>
@@ -182,9 +182,6 @@ const dirs = [{ name: 'blog', description: 'blog posts', count: sortedPosts.leng
       flex-direction: column;
     }
     .blog-sidebar-column {
-      display: none;
-    }
-    .terminal-column {
       display: none;
     }
     .blog-content {

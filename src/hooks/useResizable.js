@@ -22,14 +22,12 @@ export default function useResizable({ onResize, minW = 280, minH = 200 }) {
     };
   }, [onResize, minW, minH]);
 
-  const startResize = useCallback((e, currentPos, currentSize) => {
+  const startResize = useCallback((e, _currentPos, currentSize) => {
     resizeRef.current = {
       startX: e.clientX,
       startY: e.clientY,
       origW: currentSize.width || currentSize.w,
       origH: currentSize.height || currentSize.h,
-      posX: currentPos.x,
-      posY: currentPos.y,
     };
     e.preventDefault();
     e.stopPropagation();

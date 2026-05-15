@@ -1,7 +1,53 @@
 import { create } from 'zustand';
 
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function escapeAttr(str) {
+  return String(str).replace(/"/g, '&quot;').replace(/&/g, '&amp;');
+}
+
+function styleObjToCss(style) {
+  if (typeof style === 'string') return style;
+  return Object.entries(style)
+    .map(([k, v]) => `${k.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())}:${v}`)
+    .join(';');
+}
+
+function jsxToHtml(element) {
+  if (element == null || element === false || element === true) return '';
+  if (typeof element === 'string') return escapeHtml(element);
+  if (typeof element === 'number') return String(element);
+  if (Array.isArray(element)) return element.map(jsxToHtml).join('');
+
+  const type = element.type;
+  if (!type) return '';
+  if (typeof type !== 'string') return jsxToHtml(element.props?.children);
+
+  const props = element.props || {};
+  let attrs = '';
+  if (props.className) attrs += ` class="${escapeAttr(props.className)}"`;
+  if (props.href) attrs += ` href="${escapeAttr(props.href)}"`;
+  if (props.target) attrs += ` target="${escapeAttr(props.target)}"`;
+  if (props.rel) attrs += ` rel="${escapeAttr(props.rel)}"`;
+  if (props.style && typeof props.style === 'object')
+    attrs += ` style="${escapeAttr(styleObjToCss(props.style))}"`;
+
+  if (type === 'br' || type === 'hr' || type === 'img')
+    return `<${type}${attrs} />`;
+
+  const children = jsxToHtml(props.children);
+  return `<${type}${attrs}>${children}</${type}>`;
+}
+
 function computePositions() {
-  const w = 640, h = 480;
+  const w = 640,
+    h = 480;
   const nav = document.querySelector('nav');
   const footer = document.querySelector('footer');
   const navH = nav ? nav.offsetHeight : 48;
@@ -20,48 +66,157 @@ function computePositions() {
   };
 }
 
-const positions = typeof document !== 'undefined' ? computePositions() : {
-    terminal: { x: 640, y: 215 },
-  settings: { x: 1500, y: 84 },
-};
+const positions =
+  typeof document !== 'undefined'
+    ? computePositions()
+    : {
+        terminal: { x: 640, y: 215 },
+        settings: { x: 1500, y: 84 },
+      };
 
 const DEFAULT_WINDOWS = {
-  explorer:     { id: 'explorer',     title: 'Projects ~ Portfolio',   icon: 'folder',  open: false, minimized: false, maximized: false, position: { x: 60, y: 60 },    size: { width: 640, height: 480 },  zIndex: 1 },
-  resume:       { id: 'resume',       title: 'resume_current.pdf \u2014 Preview', icon: 'file', open: false, minimized: false, maximized: false, position: { x: 680, y: 100 },   size: { width: 520, height: 600 },  zIndex: 2 },
-  'media-player': { id: 'media-player', title: 'Now Playing',          icon: 'music',  open: false, minimized: false, maximized: false, position: { x: 200, y: 200 },   size: { width: 420, height: 360 },  zIndex: 3 },
-  trash:        { id: 'trash',        title: 'Trash (0 items)',        icon: 'trash',  open: false, minimized: false, maximized: false, position: { x: 800, y: 350 },   size: { width: 360, height: 280 },  zIndex: 4 },
-  settings:     { id: 'settings',     title: 'Settings \u2014 Portfolio OS', icon: 'gear',  open: false, minimized: false, maximized: false, position: { ...positions.settings }, size: { width: 400, height: 380 },  zIndex: 5 },
-  terminal:     { id: 'terminal',     title: 'Terminal',               icon: 'terminal', open: false, minimized: false, maximized: false, position: { ...positions.terminal }, size: { width: 640, height: 480 },  zIndex: 1 },
+  explorer: {
+    id: 'explorer',
+    title: 'Projects ~ Portfolio',
+    icon: 'folder',
+    open: false,
+    minimized: false,
+    maximized: false,
+    position: { x: 60, y: 60 },
+    size: { width: 640, height: 480 },
+    zIndex: 1,
+  },
+  resume: {
+    id: 'resume',
+    title: 'resume_current.pdf \u2014 Preview',
+    icon: 'file',
+    open: false,
+    minimized: false,
+    maximized: false,
+    position: { x: 680, y: 100 },
+    size: { width: 520, height: 600 },
+    zIndex: 2,
+  },
+  'media-player': {
+    id: 'media-player',
+    title: 'Now Playing',
+    icon: 'music',
+    open: false,
+    minimized: false,
+    maximized: false,
+    position: { x: 200, y: 200 },
+    size: { width: 420, height: 360 },
+    zIndex: 3,
+  },
+  trash: {
+    id: 'trash',
+    title: 'Trash (0 items)',
+    icon: 'trash',
+    open: false,
+    minimized: false,
+    maximized: false,
+    position: { x: 800, y: 350 },
+    size: { width: 360, height: 280 },
+    zIndex: 4,
+  },
+  settings: {
+    id: 'settings',
+    title: 'Settings \u2014 Portfolio OS',
+    icon: 'gear',
+    open: false,
+    minimized: false,
+    maximized: false,
+    position: { ...positions.settings },
+    size: { width: 400, height: 380 },
+    zIndex: 5,
+  },
+  terminal: {
+    id: 'terminal',
+    title: 'Terminal',
+    icon: 'terminal',
+    open: false,
+    minimized: false,
+    maximized: false,
+    position: { ...positions.terminal },
+    size: { width: 640, height: 480 },
+    zIndex: 1,
+  },
 };
 
 function loadSettings() {
+  if (typeof localStorage === 'undefined') {
+    return {
+      theme: 'system',
+      wallpaper: 'particle-field',
+      terminalFont: 'mono',
+      clockFormat: '12h',
+      dockPosition: 'top',
+      fontSize: 'small',
+      terminalOutputLines: [],
+      terminalHistory: [],
+      terminalBooted: false,
+    };
+  }
   try {
     const saved = localStorage.getItem('portfolio-os-settings');
     if (saved) return JSON.parse(saved);
-  } catch {}
-  return { theme: 'system', wallpaper: 'particle-field', terminalFont: 'mono', clockFormat: '12h', dockPosition: 'top', fontSize: 'small' };
+  } catch (e) {
+    console.warn('[osStore] Failed to load settings:', e);
+  }
+  return {
+    theme: 'system',
+    wallpaper: 'particle-field',
+    terminalFont: 'mono',
+    clockFormat: '12h',
+    dockPosition: 'top',
+    fontSize: 'small',
+    terminalOutputLines: [],
+    terminalHistory: [],
+    terminalBooted: false,
+  };
 }
 
 function saveSettings(s) {
+  if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem('portfolio-os-settings', JSON.stringify({
-      theme: s.theme, wallpaper: s.wallpaper, terminalFont: s.terminalFont, clockFormat: s.clockFormat, dockPosition: s.dockPosition, fontSize: s.fontSize,
-    }));
-  } catch {}
+    localStorage.setItem(
+      'portfolio-os-settings',
+      JSON.stringify({
+        theme: s.theme,
+        wallpaper: s.wallpaper,
+        terminalFont: s.terminalFont,
+        clockFormat: s.clockFormat,
+        dockPosition: s.dockPosition,
+        fontSize: s.fontSize,
+        terminalOutputLines: (s.terminalOutputLines || []).map((line) => ({
+          type: line.type,
+          text: line.text,
+          html: line.html,
+        })),
+        terminalHistory: s.terminalHistory,
+        terminalBooted: s.terminalBooted,
+      }),
+    );
+  } catch (e) {
+    console.warn('[osStore] Failed to save settings:', e);
+  }
 }
 
 function getDefaultPositions() {
-  const p = typeof document !== 'undefined' ? computePositions() : {
-    terminal: { x: 640, y: 215 },
-    settings: { x: 1500, y: 84 },
-  };
+  const p =
+    typeof document !== 'undefined'
+      ? computePositions()
+      : {
+          terminal: { x: 640, y: 215 },
+          settings: { x: 1500, y: 84 },
+        };
   return {
-    explorer:     { x: 60, y: 60 },
-    resume:       { x: 680, y: 100 },
+    explorer: { x: 60, y: 60 },
+    resume: { x: 680, y: 100 },
     'media-player': { x: 200, y: 200 },
-    trash:        { x: 800, y: 350 },
-    settings:     { ...p.settings },
-    terminal:     { ...p.terminal },
+    trash: { x: 800, y: 350 },
+    settings: { ...p.settings },
+    terminal: { ...p.terminal },
   };
 }
 
@@ -71,9 +226,7 @@ const initialOpenIds = Object.entries(DEFAULT_WINDOWS)
   .map(([id]) => id);
 
 export const useOSStore = create((set, get) => ({
-  windows: Object.fromEntries(
-    Object.entries(DEFAULT_WINDOWS).map(([id, w]) => [id, { ...w }])
-  ),
+  windows: Object.fromEntries(Object.entries(DEFAULT_WINDOWS).map(([id, w]) => [id, { ...w }])),
   windowOrder: [...initialOpenIds],
   activeApp: initialOpenIds.length > 0 ? initialOpenIds[initialOpenIds.length - 1] : null,
   nextZIndex: 7,
@@ -151,9 +304,7 @@ export const useOSStore = create((set, get) => ({
       return {
         windows: { ...s.windows, [id]: { ...w, minimized } },
         windowOrder: newOrder,
-        activeApp: minimized
-          ? (newOrder.length > 0 ? newOrder[newOrder.length - 1] : null)
-          : id,
+        activeApp: minimized ? (newOrder.length > 0 ? newOrder[newOrder.length - 1] : null) : id,
       };
     });
   },
@@ -209,9 +360,7 @@ export const useOSStore = create((set, get) => ({
 
   restoreAll: () => {
     const state = get();
-    const ids = Object.keys(state.windows).filter(
-      (id) => state.windows[id].minimized
-    );
+    const ids = Object.keys(state.windows).filter((id) => state.windows[id].minimized);
     if (ids.length === 0) return;
     set((s) => {
       const updated = { ...s.windows };
@@ -255,6 +404,43 @@ export const useOSStore = create((set, get) => ({
     set({ fontSize });
   },
 
+  // Persistent terminal state (output persisted as HTML, history as strings)
+  terminalOutputLines: settings.terminalOutputLines || [],
+  terminalHistory: settings.terminalHistory || [],
+  terminalBooted: settings.terminalBooted || false,
+
+  addTerminalOutput: (input, output) =>
+    set((s) => {
+      const next = {
+        terminalOutputLines: [
+          ...s.terminalOutputLines,
+          { type: 'input', text: input },
+          { type: 'output', html: jsxToHtml(output), content: output },
+        ],
+      };
+      saveSettings({ ...get(), ...next });
+      return next;
+    }),
+
+  clearTerminalOutput: () => {
+    set({ terminalOutputLines: [], terminalBooted: true });
+    saveSettings({ ...get(), terminalOutputLines: [], terminalBooted: true });
+  },
+
+  markTerminalBooted: () => {
+    set({ terminalBooted: true });
+    saveSettings({ ...get(), terminalBooted: true });
+  },
+
+  pushTerminalHistory: (cmd) =>
+    set((s) => {
+      const next = {
+        terminalHistory: [...s.terminalHistory.slice(-99), cmd],
+      };
+      saveSettings({ ...get(), ...next });
+      return next;
+    }),
+
   // Mobile state
   mobileActiveTab: 'home',
   moreSheetOpen: false,
@@ -262,17 +448,16 @@ export const useOSStore = create((set, get) => ({
   mobileViewStack: [],
   mobilePreviousTab: 'home',
 
-  setMobileTab: (tab) => set((s) => ({
-    mobileActiveTab: tab,
-    mobileViewStack: [],
-    mobilePreviousTab: tab === 'terminal' ? s.mobileActiveTab : s.mobilePreviousTab,
-  })),
+  setMobileTab: (tab) =>
+    set((s) => ({
+      mobileActiveTab: tab,
+      mobileViewStack: [],
+      mobilePreviousTab: tab === 'terminal' ? s.mobileActiveTab : s.mobilePreviousTab,
+    })),
   openMoreSheet: () => set({ moreSheetOpen: true }),
   closeMoreSheet: () => set({ moreSheetOpen: false }),
   openMobileTerminal: () => set({ terminalOpen: true, moreSheetOpen: false }),
   closeMobileTerminal: () => set({ terminalOpen: false }),
-  pushMobileView: (view) =>
-    set((s) => ({ mobileViewStack: [...s.mobileViewStack, view] })),
-  popMobileView: () =>
-    set((s) => ({ mobileViewStack: s.mobileViewStack.slice(0, -1) })),
+  pushMobileView: (view) => set((s) => ({ mobileViewStack: [...s.mobileViewStack, view] })),
+  popMobileView: () => set((s) => ({ mobileViewStack: s.mobileViewStack.slice(0, -1) })),
 }));
