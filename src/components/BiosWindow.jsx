@@ -9,21 +9,24 @@ export default function BiosWindow() {
     document.dispatchEvent(new CustomEvent('boot:bios-yes'));
   }, []);
 
-  const handleKey = useCallback((e) => {
-    if (!show) return;
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      e.preventDefault();
-      setSelected(prev => prev === 'Y' ? 'N' : 'Y');
-    }
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      boot();
-    }
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      boot();
-    }
-  }, [show, boot]);
+  const handleKey = useCallback(
+    (e) => {
+      if (!show) return;
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        setSelected((prev) => (prev === 'Y' ? 'N' : 'Y'));
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        boot();
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        boot();
+      }
+    },
+    [show, boot],
+  );
 
   useEffect(() => {
     document.addEventListener('keydown', handleKey);
@@ -63,18 +66,26 @@ export default function BiosWindow() {
             <div className="bios-window-titlebar">Boot Confirmation</div>
             <div className="bios-window-body">
               <div className="bios-window-text" style={{ color: '#000' }}>
-                My wife made me put this here,<br />would you like to boot?
+                My wife made me put this here,
+                <br />
+                would you like to boot?
               </div>
               <div className="bios-choices">
                 <div
                   className={`bios-choice ${selected === 'Y' ? 'bios-choice-selected' : ''}`}
-                  onClick={() => { setSelected('Y'); boot(); }}
+                  onClick={() => {
+                    setSelected('Y');
+                    boot();
+                  }}
                 >
                   <span className="bios-choice-label">[Y]</span> Yes
                 </div>
                 <div
                   className={`bios-choice ${selected === 'N' ? 'bios-choice-selected' : ''}`}
-                  onClick={() => { setSelected('N'); boot(); }}
+                  onClick={() => {
+                    setSelected('N');
+                    boot();
+                  }}
                 >
                   <span className="bios-choice-label">[N]</span> No
                 </div>
@@ -89,23 +100,34 @@ export default function BiosWindow() {
           <div className="bios-help-heading">Item Specific Help</div>
           <hr className="bios-help-separator" />
           <div>
-            Confirm whether to<br />
-            continue booting into<br />
+            Confirm whether to
+            <br />
+            continue booting into
+            <br />
             Portfolio OS.
           </div>
           <hr className="bios-help-separator" />
           <div className="bios-help-hints">
-            &larr; &rarr; Change<br />
+            &larr; &rarr; Change
+            <br />
             Enter Accept
           </div>
         </div>
       </div>
 
       <div className="bios-footer">
-        <span><span className="bios-footer-key">F1</span> Help</span>
-        <span><span className="bios-footer-key">ESC</span> Exit</span>
-        <span><span className="bios-footer-key">&larr; &rarr;</span> Select</span>
-        <span><span className="bios-footer-key">Enter</span> Accept</span>
+        <span>
+          <span className="bios-footer-key">F1</span> Help
+        </span>
+        <span>
+          <span className="bios-footer-key">ESC</span> Exit
+        </span>
+        <span>
+          <span className="bios-footer-key">&larr; &rarr;</span> Select
+        </span>
+        <span>
+          <span className="bios-footer-key">Enter</span> Accept
+        </span>
       </div>
     </div>
   );

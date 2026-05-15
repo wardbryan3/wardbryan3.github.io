@@ -20,7 +20,9 @@ export default class ErrorBoundary extends Component {
       return (
         <div className="error-boundary-fallback">
           <p className="term-muted">Component crashed: {msg}</p>
-          <p className="term-muted" style={{ fontSize: '0.75rem' }}>Refresh to restart</p>
+          <p className="term-muted" style={{ fontSize: '0.75rem' }}>
+            Refresh to restart
+          </p>
         </div>
       );
     }

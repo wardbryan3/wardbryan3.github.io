@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { CommandRegistry } from './CommandRegistry';
 import { createCommands, renderFastfetchOutput } from './commands';
+import { useOSStore } from '../stores/osStore';
 import useDraggable from '../hooks/useDraggable';
 import useResizable from '../hooks/useResizable';
 
@@ -21,10 +22,12 @@ export default function Terminal({
   embedded = false,
   terminalFont = 'mono',
 }) {
-  const [phase, setPhase] = useState(side || flow ? 'interactive' : 'growing');
+  const [phase, setPhase] = useState(() => {
+    if (side || flow) return 'interactive';
+    return useOSStore.getState().terminalBooted ? 'interactive' : 'growing';
+  });
   const [commandText, setCommandText] = useState('');
   const [input, setInput] = useState('');
-  const [outputLines, setOutputLines] = useState([]);
   const [collapsed, setCollapsed] = useState(!defaultOpen);
   const [maximized, setMaximized] = useState(false);
   const [pos, setPos] = useState(side ? null : { x: 0, y: 0 });
@@ -34,31 +37,12 @@ export default function Terminal({
   const [historyIndex, setHistoryIndex] = useState(-1);
   const savedInputRef = useRef('');
 
-  // Restore terminal state from sessionStorage
-  const [restored] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem('terminal-state-v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return parsed;
-      }
-    } catch {}
-    return null;
-  });
-
-  useEffect(() => {
-    if (restored && restored.outputLines) {
-      setOutputLines(restored.outputLines);
-    }
-  }, [restored]);
-
-  // Clear cached terminal output when navigating to a different page
-  useEffect(() => {
-    if (restored) {
-      setOutputLines([]);
-      try { sessionStorage.removeItem('terminal-state-v1'); } catch {}
-    }
-  }, [page]);
+  const outputLines = useOSStore((s) => s.terminalOutputLines);
+  const addTerminalOutput = useOSStore((s) => s.addTerminalOutput);
+  const clearTerminalOutput = useOSStore((s) => s.clearTerminalOutput);
+  const pushTerminalHistory = useOSStore((s) => s.pushTerminalHistory);
+  const terminalBooted = useOSStore((s) => s.terminalBooted);
+  const markTerminalBooted = useOSStore((s) => s.markTerminalBooted);
 
   const navRef = useRef(48);
   const preMinRef = useRef(null);
@@ -81,6 +65,10 @@ export default function Terminal({
 
   // Center on mount (client-side)
   useEffect(() => {
+    if (embedded) {
+      setReady(true);
+      return;
+    }
     if (!side && typeof window !== 'undefined') {
       const navH = navRef.current;
       const footerH = footerRef.current;
@@ -90,7 +78,13 @@ export default function Terminal({
         setPos({ x: 0, y: navH });
         setPhase('prompt');
       } else {
-        const maxY = Math.max(navH + MARGIN, Math.min((window.innerHeight - DEFAULT_H) / 2, window.innerHeight - DEFAULT_H - footerH - MARGIN));
+        const maxY = Math.max(
+          navH + MARGIN,
+          Math.min(
+            (window.innerHeight - DEFAULT_H) / 2,
+            window.innerHeight - DEFAULT_H - footerH - MARGIN,
+          ),
+        );
         setPos({
           x: Math.max(MARGIN, (window.innerWidth - DEFAULT_W) / 2),
           y: maxY,
@@ -99,8 +93,6 @@ export default function Terminal({
       setReady(true);
     }
   }, [side]);
-
-
 
   // Reposition and resize when viewport changes
   useEffect(() => {
@@ -119,19 +111,28 @@ export default function Terminal({
           const w = Math.round(window.innerWidth * 0.9);
           const h = Math.round(window.innerHeight * 0.85);
           setSize({ w, h });
-          setPos({ x: Math.round((window.innerWidth - w) / 2), y: Math.round((window.innerHeight - h) / 2) });
+          setPos({
+            x: Math.round((window.innerWidth - w) / 2),
+            y: Math.round((window.innerHeight - h) / 2),
+          });
         }
       } else {
-        setPos(prev => {
+        setPos((prev) => {
           if (!prev) return prev;
           const clampedX = Math.max(MARGIN, Math.min(prev.x, window.innerWidth - s.w - MARGIN));
-          const clampedY = Math.max(navH + MARGIN, Math.min(prev.y, window.innerHeight - s.h - footerRef.current - MARGIN));
+          const clampedY = Math.max(
+            navH + MARGIN,
+            Math.min(prev.y, window.innerHeight - s.h - footerRef.current - MARGIN),
+          );
           return { x: clampedX, y: clampedY };
         });
-        setSize(prev => {
+        setSize((prev) => {
           if (!prev) return prev;
           const clampedW = Math.min(prev.w, window.innerWidth - MARGIN * 2);
-          const clampedH = Math.min(prev.h, window.innerHeight - navH - footerRef.current - MARGIN * 2);
+          const clampedH = Math.min(
+            prev.h,
+            window.innerHeight - navH - footerRef.current - MARGIN * 2,
+          );
           return { w: Math.max(480, clampedW), h: Math.max(320, clampedH) };
         });
       }
@@ -146,7 +147,7 @@ export default function Terminal({
       if (e.ctrlKey && e.key === '`') {
         e.preventDefault();
         setCollapsed(false);
-        setGlobalFocusKey(k => k + 1);
+        setGlobalFocusKey((k) => k + 1);
       }
     };
     document.addEventListener('keydown', handler);
@@ -164,7 +165,10 @@ export default function Terminal({
     onMove: (x, y) => setPos({ x, y }),
     constraints: (x, y) => ({
       x: Math.max(MARGIN, Math.min(x, window.innerWidth - (size?.w || DEFAULT_W) - MARGIN)),
-      y: Math.max(navRef.current + MARGIN, Math.min(y, window.innerHeight - (size?.h || DEFAULT_H) - footerRef.current - MARGIN)),
+      y: Math.max(
+        navRef.current + MARGIN,
+        Math.min(y, window.innerHeight - (size?.h || DEFAULT_H) - footerRef.current - MARGIN),
+      ),
     }),
   });
 
@@ -189,65 +193,79 @@ export default function Terminal({
   }, [page, projectCount, postCount, searchData, dirs]);
 
   // Execute command
-  const executeCommand = useCallback((raw) => {
-    const trimmed = raw.trim();
-    if (!trimmed) return;
-    const parts = trimmed.split(/\s+/);
-    const cmdName = parts[0];
-    const args = parts.slice(1);
-    const result = registryRef.current.execute(cmdName, args, { registry: registryRef.current });
+  const executeCommand = useCallback(
+    (raw) => {
+      const trimmed = raw.trim();
+      if (!trimmed) return;
+      const parts = trimmed.split(/\s+/);
+      const cmdName = parts[0];
+      const args = parts.slice(1);
+      const result = registryRef.current.execute(cmdName, args, {
+        registry: registryRef.current,
+      });
 
-    if (result.action === 'clear') {
-      setOutputLines([]);
+      pushTerminalHistory(trimmed);
+
+      if (result.action === 'clear') {
+        clearTerminalOutput();
+        setInput('');
+        return;
+      }
+
+      if (result.action === 'navigate') {
+        addTerminalOutput(trimmed, result.output);
+        setInput('');
+        window.location.href = result.url;
+        return;
+      }
+
+      addTerminalOutput(trimmed, result.output);
       setInput('');
-      try { sessionStorage.removeItem('terminal-state-v1'); } catch {}
-      return;
-    }
+    },
+    [addTerminalOutput, clearTerminalOutput, pushTerminalHistory],
+  );
 
-    if (result.action === 'navigate') {
-      setOutputLines(prev => [...prev, { type: 'input', text: trimmed }, { type: 'output', content: result.output }]);
-      setInput('');
-      window.location.href = result.url;
-      return;
-    }
-
-    setOutputLines(prev => [...prev, { type: 'input', text: trimmed }, { type: 'output', content: result.output }]);
-    setInput('');
-  }, []);
-
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter') {
-      executeCommand(input);
-      setHistoryIndex(-1);
-      savedInputRef.current = '';
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      const hist = registryRef.current.getHistory();
-      if (hist.length === 0) return;
-      if (historyIndex === -1) savedInputRef.current = input;
-      const newIdx = Math.min(historyIndex + 1, hist.length - 1);
-      setHistoryIndex(newIdx);
-      setInput(hist[hist.length - 1 - newIdx]);
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (historyIndex === -1) return;
-      const newIdx = historyIndex - 1;
-      if (newIdx < 0) {
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'Enter') {
+        executeCommand(input);
         setHistoryIndex(-1);
-        setInput(savedInputRef.current);
-      } else {
-        const hist = registryRef.current.getHistory();
+        savedInputRef.current = '';
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const hist = useOSStore.getState().terminalHistory;
+        if (hist.length === 0) return;
+        if (historyIndex === -1) savedInputRef.current = input;
+        const newIdx = Math.min(historyIndex + 1, hist.length - 1);
         setHistoryIndex(newIdx);
         setInput(hist[hist.length - 1 - newIdx]);
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex === -1) return;
+        const newIdx = historyIndex - 1;
+        if (newIdx < 0) {
+          setHistoryIndex(-1);
+          setInput(savedInputRef.current);
+        } else {
+          const hist = useOSStore.getState().terminalHistory;
+          setHistoryIndex(newIdx);
+          setInput(hist[hist.length - 1 - newIdx]);
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setCollapsed((prev) => !prev);
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+        e.preventDefault();
+        clearTerminalOutput();
       }
-    } else if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); setCollapsed(prev => !prev); }
-    else if ((e.ctrlKey || e.metaKey) && e.key === 'l') { e.preventDefault(); setOutputLines([]); }
-  }, [input, executeCommand, historyIndex]);
+    },
+    [input, executeCommand, historyIndex, clearTerminalOutput],
+  );
 
   const toggleMaximize = useCallback(() => {
     if (side) return;
     setCollapsed(false);
-    setMaximized(prev => {
+    setMaximized((prev) => {
       const next = !prev;
       if (next) {
         if (window.innerWidth <= MOBILE_BP) {
@@ -258,11 +276,17 @@ export default function Terminal({
           const w = Math.round(window.innerWidth * 0.9);
           const h = Math.round(window.innerHeight * 0.85);
           setSize({ w, h });
-          setPos({ x: Math.round((window.innerWidth - w) / 2), y: Math.round((window.innerHeight - h) / 2) });
+          setPos({
+            x: Math.round((window.innerWidth - w) / 2),
+            y: Math.round((window.innerHeight - h) / 2),
+          });
         }
       } else {
         setSize({ w: DEFAULT_W, h: DEFAULT_H });
-        setPos({ x: Math.round((window.innerWidth - DEFAULT_W) / 2), y: Math.round((window.innerHeight - DEFAULT_H) / 2) });
+        setPos({
+          x: Math.round((window.innerWidth - DEFAULT_W) / 2),
+          y: Math.round((window.innerHeight - DEFAULT_H) / 2),
+        });
       }
       return next;
     });
@@ -288,7 +312,8 @@ export default function Terminal({
   }, [side, collapsed, pos, size]);
 
   useEffect(() => {
-    if (!collapsed && phase === 'interactive' && inputRef.current) inputRef.current.focus({ preventScroll: true });
+    if (!collapsed && phase === 'interactive' && inputRef.current)
+      inputRef.current.focus({ preventScroll: true });
   }, [collapsed, phase]);
 
   // Auto-scroll to keep prompt visible when window resizes
@@ -303,18 +328,6 @@ export default function Terminal({
     if (bodyRef.current) {
       bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
     }
-  }, [outputLines]);
-
-  // Persist terminal state to sessionStorage (debounced)
-  const persistRef = useRef(null);
-  useEffect(() => {
-    clearTimeout(persistRef.current);
-    persistRef.current = setTimeout(() => {
-      try {
-        sessionStorage.setItem('terminal-state-v1', JSON.stringify({ outputLines }));
-      } catch {}
-    }, 1000);
-    return () => clearTimeout(persistRef.current);
   }, [outputLines]);
 
   // Animation phases
@@ -338,9 +351,15 @@ export default function Terminal({
     const timer = setInterval(() => {
       i++;
       setCommandText(target.slice(0, i));
-      if (i >= target.length) { clearInterval(timer); doneTimer = setTimeout(() => setPhase('output'), 300); }
+      if (i >= target.length) {
+        clearInterval(timer);
+        doneTimer = setTimeout(() => setPhase('output'), 300);
+      }
     }, 60);
-    return () => { clearInterval(timer); clearTimeout(doneTimer); };
+    return () => {
+      clearInterval(timer);
+      clearTimeout(doneTimer);
+    };
   }, [phase]);
 
   useEffect(() => {
@@ -349,8 +368,18 @@ export default function Terminal({
     return () => clearTimeout(timer);
   }, [phase]);
 
+  // On first boot, add fastfetch output to persistent history
+  const didInitialBoot = useRef(false);
   useEffect(() => {
-    if (phase === 'interactive' && !collapsed && inputRef.current) inputRef.current.focus({ preventScroll: true });
+    if (phase !== 'interactive' || terminalBooted || didInitialBoot.current) return;
+    didInitialBoot.current = true;
+    addTerminalOutput('fastfetch', renderFastfetchOutput(projectCount, postCount));
+    markTerminalBooted();
+  }, [phase, terminalBooted, addTerminalOutput, markTerminalBooted, projectCount, postCount]);
+
+  useEffect(() => {
+    if (phase === 'interactive' && !collapsed && inputRef.current)
+      inputRef.current.focus({ preventScroll: true });
   }, [phase, collapsed]);
 
   const showCursor = phase === 'prompt' || phase === 'command';
@@ -361,9 +390,11 @@ export default function Terminal({
       className={`terminal-window-body${isInteractive ? ' terminal-body-interactive' : ''}`}
       ref={bodyRef}
       onClick={() => isInteractive && inputRef.current?.focus()}
-      style={{ fontFamily: terminalFont === 'sans-serif' ? 'var(--font-sans)' : 'var(--font-mono)' }}
+      style={{
+        fontFamily: terminalFont === 'sans-serif' ? 'var(--font-sans)' : 'var(--font-mono)',
+      }}
     >
-      {(phase !== 'growing' || side) && !flow && (
+      {!terminalBooted && (phase !== 'growing' || side) && !flow && (
         <div className="ff-line">
           <span className="ff-prompt">bryan@ward:~$ </span>
           {phase !== 'prompt' && commandText && <span className="ff-command">{commandText}</span>}
@@ -371,10 +402,19 @@ export default function Terminal({
         </div>
       )}
 
-      {!side && !flow && phase !== 'growing' && phase !== 'prompt' && phase !== 'command' && renderFastfetchOutput(projectCount, postCount)}
+      {!terminalBooted &&
+        !side &&
+        !flow &&
+        phase !== 'growing' &&
+        phase !== 'prompt' &&
+        phase !== 'command' &&
+        renderFastfetchOutput(projectCount, postCount)}
 
-      {isInteractive && outputLines.length === 0 && (
-        <div className="term-muted" style={{ marginTop: '0.5rem', fontSize: 'calc(0.75rem * var(--os-font-mult, 1))' }}>
+      {isInteractive && !terminalBooted && outputLines.length === 0 && (
+        <div
+          className="term-muted"
+          style={{ marginTop: '0.5rem', fontSize: 'calc(0.75rem * var(--os-font-mult, 1))' }}
+        >
           Type 'help' for a list of available commands
         </div>
       )}
@@ -387,7 +427,14 @@ export default function Terminal({
               <span className="term-input-text">{line.text}</span>
             </div>
           ) : (
-            <div className="term-output-wrapper">{line.content}</div>
+            <div className="term-output-wrapper">
+              {line.content || (
+                <div
+                  className="term-output-restored"
+                  dangerouslySetInnerHTML={{ __html: line.html || '' }}
+                />
+              )}
+            </div>
           )}
         </div>
       ))}
@@ -395,14 +442,24 @@ export default function Terminal({
       {isInteractive && (
         <div className="ff-line term-input-line">
           <span className="ff-prompt">bryan@ward:~$ </span>
-          <input ref={inputRef} className="term-input" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} spellCheck={false} aria-label="Terminal command input" />
+          <input
+            ref={inputRef}
+            className="term-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            spellCheck={false}
+            aria-label="Terminal command input"
+          />
         </div>
       )}
     </div>
   );
 
   if (embedded) {
-    return <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>{terminalBody}</div>;
+    return (
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>{terminalBody}</div>
+    );
   }
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
@@ -415,19 +472,17 @@ export default function Terminal({
         {!isMobile && (
           <button
             className="terminal-flow-toggle"
-            onClick={() => setCollapsed(prev => !prev)}
+            onClick={() => setCollapsed((prev) => !prev)}
             aria-label={collapsed ? 'Open terminal' : 'Close terminal'}
             title={collapsed ? 'Open terminal (Ctrl+K)' : 'Close terminal (Ctrl+K)'}
           >
             {collapsed ? '<' : '>'}
           </button>
         )}
-        <div className={`terminal-window terminal-flow${effectiveCollapsed ? ' terminal-collapsed' : ''}`}>
-          {!effectiveCollapsed && (
-            <div className="terminal-flow-body">
-              {terminalBody}
-            </div>
-          )}
+        <div
+          className={`terminal-window terminal-flow${effectiveCollapsed ? ' terminal-collapsed' : ''}`}
+        >
+          {!effectiveCollapsed && <div className="terminal-flow-body">{terminalBody}</div>}
         </div>
       </div>
     );
@@ -439,19 +494,17 @@ export default function Terminal({
         {!isMobile && (
           <button
             className="terminal-flow-toggle"
-            onClick={() => setCollapsed(prev => !prev)}
+            onClick={() => setCollapsed((prev) => !prev)}
             aria-label={collapsed ? 'Open terminal' : 'Close terminal'}
             title={collapsed ? 'Open terminal (Ctrl+K)' : 'Close terminal (Ctrl+K)'}
           >
             {collapsed ? '<' : '>'}
           </button>
         )}
-        <div className={`terminal-window terminal-flow${effectiveCollapsed ? ' terminal-collapsed' : ''}`}>
-          {!effectiveCollapsed && (
-            <div className="terminal-flow-body">
-              {terminalBody}
-            </div>
-          )}
+        <div
+          className={`terminal-window terminal-flow${effectiveCollapsed ? ' terminal-collapsed' : ''}`}
+        >
+          {!effectiveCollapsed && <div className="terminal-flow-body">{terminalBody}</div>}
         </div>
       </div>
     );
@@ -460,20 +513,130 @@ export default function Terminal({
   return (
     <div
       className={windowClasses}
-      style={{ position: 'fixed', left: pos?.x ?? 0, top: pos?.y ?? 0, width: size?.w ?? DEFAULT_W, height: effectiveCollapsed ? '34px' : (size?.h ?? DEFAULT_H) + 'px', minHeight: effectiveCollapsed ? '34px' : undefined, zIndex: 10, opacity: ready ? 1 : 0 }}
+      style={{
+        position: 'fixed',
+        left: pos?.x ?? 0,
+        top: pos?.y ?? 0,
+        width: size?.w ?? DEFAULT_W,
+        height: effectiveCollapsed ? '34px' : (size?.h ?? DEFAULT_H) + 'px',
+        minHeight: effectiveCollapsed ? '34px' : undefined,
+        zIndex: 10,
+        opacity: ready ? 1 : 0,
+      }}
     >
-      <div className="terminal-titlebar" onMouseDown={(e) => { if (pos) startDrag(e, pos); }}>
+      <div
+        className="terminal-titlebar"
+        onMouseDown={(e) => {
+          if (pos) startDrag(e, pos);
+        }}
+      >
         <span className="titlebar-title">bryan@ward — fastfetch</span>
         {!isMobile && (
           <div className="titlebar-buttons">
-            <span className="titlebar-btn titlebar-minimize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Minimize"><svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="4.5" width="8" height="1" fill="currentColor"/></svg></span>
-            <span className="titlebar-btn titlebar-maximize" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); toggleMaximize(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMaximize(); } }} title={maximized ? 'Restore' : 'Maximize'}>{maximized ? <svg viewBox="0 0 10 10" width="10" height="10"><rect x="1" y="3.5" width="5.5" height="5.5" fill="none" stroke="currentColor" strokeWidth="1"/><rect x="3.5" y="1" width="5.5" height="5.5" fill="none" stroke="currentColor" strokeWidth="1"/></svg> : <svg viewBox="0 0 10 10" width="10" height="10"><rect x="2" y="2" width="6" height="6" fill="none" stroke="currentColor" strokeWidth="1"/></svg>}</span>
-            <span className="titlebar-btn titlebar-close" role="button" tabIndex={0} onMouseDown={(e) => { e.stopPropagation(); closeWindow(); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWindow(); } }} title="Close"><svg viewBox="0 0 10 10" width="10" height="10"><line x1="2" y1="2" x2="8" y2="8" stroke="currentColor" strokeWidth="1.2"/><line x1="8" y1="2" x2="2" y2="8" stroke="currentColor" strokeWidth="1.2"/></svg></span>
+            <span
+              className="titlebar-btn titlebar-minimize"
+              role="button"
+              tabIndex={0}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                closeWindow();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  closeWindow();
+                }
+              }}
+              title="Minimize"
+            >
+              <svg viewBox="0 0 10 10" width="10" height="10">
+                <rect x="1" y="4.5" width="8" height="1" fill="currentColor" />
+              </svg>
+            </span>
+            <span
+              className="titlebar-btn titlebar-maximize"
+              role="button"
+              tabIndex={0}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                toggleMaximize();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  toggleMaximize();
+                }
+              }}
+              title={maximized ? 'Restore' : 'Maximize'}
+            >
+              {maximized ? (
+                <svg viewBox="0 0 10 10" width="10" height="10">
+                  <rect
+                    x="1"
+                    y="3.5"
+                    width="5.5"
+                    height="5.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                  />
+                  <rect
+                    x="3.5"
+                    y="1"
+                    width="5.5"
+                    height="5.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                  />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 10 10" width="10" height="10">
+                  <rect
+                    x="2"
+                    y="2"
+                    width="6"
+                    height="6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                  />
+                </svg>
+              )}
+            </span>
+            <span
+              className="titlebar-btn titlebar-close"
+              role="button"
+              tabIndex={0}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                closeWindow();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  closeWindow();
+                }
+              }}
+              title="Close"
+            >
+              <svg viewBox="0 0 10 10" width="10" height="10">
+                <line x1="2" y1="2" x2="8" y2="8" stroke="currentColor" strokeWidth="1.2" />
+                <line x1="8" y1="2" x2="2" y2="8" stroke="currentColor" strokeWidth="1.2" />
+              </svg>
+            </span>
           </div>
         )}
       </div>
       {!effectiveCollapsed && terminalBody}
-      {!effectiveCollapsed && <div className="terminal-resize-handle" onMouseDown={(e) => { if (pos && size) startResize(e, pos, size); }} />}
+      {!effectiveCollapsed && (
+        <div
+          className="terminal-resize-handle"
+          onMouseDown={(e) => {
+            if (pos && size) startResize(e, pos, size);
+          }}
+        />
+      )}
     </div>
   );
 }

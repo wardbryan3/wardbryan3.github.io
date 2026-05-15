@@ -1,8 +1,17 @@
 import { useOSStore } from '../stores/osStore';
 
 const THEMES = [
-  'system', 'tokyonight', 'everforest', 'ayu', 'catppuccin',
-  'catppuccin-macchiato', 'gruvbox', 'kanagawa', 'nord', 'matrix', 'one-dark',
+  'system',
+  'tokyonight',
+  'everforest',
+  'ayu',
+  'catppuccin',
+  'catppuccin-macchiato',
+  'gruvbox',
+  'kanagawa',
+  'nord',
+  'matrix',
+  'one-dark',
 ];
 
 const WALLPAPERS = ['particle-field', 'digital-rain', 'hex-field', 'dots', 'grid', 'none'];
@@ -29,16 +38,14 @@ export default function SettingsWindow() {
   return (
     <div
       style={{
-        padding: '10px', fontSize: 'calc(0.7rem * var(--os-font-mult))', height: '100%',
+        padding: '10px',
+        fontSize: 'calc(0.7rem * var(--os-font-mult))',
+        height: '100%',
         overflow: 'auto',
       }}
     >
       <SettingRow label="Theme">
-        <select
-          value={theme}
-          onChange={(e) => setTheme(e.target.value)}
-          style={selectStyle}
-        >
+        <select value={theme} onChange={(e) => setTheme(e.target.value)} style={selectStyle}>
           {THEMES.map((t) => (
             <option key={t} value={t}>
               {t}
@@ -104,11 +111,7 @@ export default function SettingsWindow() {
       </SettingRow>
 
       <SettingRow label="Font size">
-        <select
-          value={fontSize}
-          onChange={(e) => setFontSize(e.target.value)}
-          style={selectStyle}
-        >
+        <select value={fontSize} onChange={(e) => setFontSize(e.target.value)} style={selectStyle}>
           {FONT_SIZES.map((f) => (
             <option key={f} value={f}>
               {f}
@@ -121,10 +124,14 @@ export default function SettingsWindow() {
         <button
           onClick={resetWindows}
           style={{
-            width: '100%', padding: '5px 0',
+            width: '100%',
+            padding: '5px 0',
             background: 'var(--surface-hover)',
-            border: '1px solid var(--border)', borderRadius: '4px',
-            cursor: 'pointer', color: 'var(--text)', fontSize: 'calc(0.65rem * var(--os-font-mult))',
+            border: '1px solid var(--border)',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            color: 'var(--text)',
+            fontSize: 'calc(0.65rem * var(--os-font-mult))',
           }}
         >
           Reset window positions
@@ -133,8 +140,10 @@ export default function SettingsWindow() {
 
       <div
         style={{
-          padding: '8px 0', textAlign: 'center',
-          color: 'var(--text-muted)', fontSize: 'calc(0.6rem * var(--os-font-mult))',
+          padding: '8px 0',
+          textAlign: 'center',
+          color: 'var(--text-muted)',
+          fontSize: 'calc(0.6rem * var(--os-font-mult))',
           borderTop: '1px solid var(--border)',
         }}
       >
@@ -148,8 +157,10 @@ function SettingRow({ label, children }) {
   return (
     <div
       style={{
-        display: 'flex', justifyContent: 'space-between',
-        alignItems: 'center', padding: '6px 0',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '6px 0',
         borderBottom: '1px solid var(--border)',
       }}
     >
@@ -160,7 +171,11 @@ function SettingRow({ label, children }) {
 }
 
 const selectStyle = {
-  background: 'var(--surface)', color: 'var(--text)',
-  border: '1px solid var(--border)', borderRadius: '3px',
-  padding: '2px 6px', fontSize: 'calc(0.65rem * var(--os-font-mult))', cursor: 'pointer',
+  background: 'var(--surface)',
+  color: 'var(--text)',
+  border: '1px solid var(--border)',
+  borderRadius: '3px',
+  padding: '2px 6px',
+  fontSize: 'calc(0.65rem * var(--os-font-mult))',
+  cursor: 'pointer',
 };

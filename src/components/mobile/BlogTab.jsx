@@ -5,13 +5,15 @@ import MobileHeader from './MobileHeader';
  */
 export default function BlogTab({ posts = [] }) {
   const sorted = [...posts].sort(
-    (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+    (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
   );
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
       <MobileHeader title="Blog" />
-      <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div
+        style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}
+      >
         {sorted.map((post) => {
           const wordCount = post.body ? post.body.split(/\s+/).length : 0;
           const readTime = Math.max(1, Math.round(wordCount / 200));
@@ -28,13 +30,35 @@ export default function BlogTab({ posts = [] }) {
                 display: 'block',
               }}
             >
-              <div style={{ fontSize: 'calc(16px * var(--os-font-mult, 1))', fontWeight: 600, color: 'var(--text)', marginBottom: '4px' }}>
+              <div
+                style={{
+                  fontSize: 'calc(16px * var(--os-font-mult, 1))',
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  marginBottom: '4px',
+                }}
+              >
                 {post.data.title}
               </div>
-              <div style={{ fontSize: 'calc(13px * var(--os-font-mult, 1))', color: 'var(--muted)', lineHeight: 1.5, marginBottom: '8px' }}>
+              <div
+                style={{
+                  fontSize: 'calc(13px * var(--os-font-mult, 1))',
+                  color: 'var(--muted)',
+                  lineHeight: 1.5,
+                  marginBottom: '8px',
+                }}
+              >
                 {post.data.description}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'calc(11px * var(--os-font-mult, 1))', color: 'var(--muted)' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: 'calc(11px * var(--os-font-mult, 1))',
+                  color: 'var(--muted)',
+                }}
+              >
                 <span>
                   {new Date(post.data.date).toLocaleDateString('en-US', {
                     month: 'short',

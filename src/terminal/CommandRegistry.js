@@ -1,7 +1,6 @@
 export class CommandRegistry {
   constructor() {
     this.commands = new Map();
-    this.history = [];
   }
 
   register(name, handler, description) {
@@ -22,11 +21,6 @@ export class CommandRegistry {
   execute(name, args, context) {
     const cmd = this.get(name);
     if (!cmd) return { output: `command not found: ${name}` };
-    this.history.push(`${name}${args.length ? ' ' + args.join(' ') : ''}`);
     return cmd.handler(args, context);
-  }
-
-  getHistory() {
-    return [...this.history];
   }
 }

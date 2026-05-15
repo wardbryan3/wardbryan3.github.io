@@ -13,7 +13,9 @@ export default function WorkTab({ projects = [] }) {
   return (
     <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
       <MobileHeader title="Work" />
-      <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div
+        style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}
+      >
         {sorted.map((project) => (
           <div
             key={project.slug}
@@ -24,12 +26,28 @@ export default function WorkTab({ projects = [] }) {
               border: '1px solid var(--border)',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+            >
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 'calc(16px * var(--os-font-mult, 1))', fontWeight: 600, color: 'var(--text)', marginBottom: '2px' }}>
+                <div
+                  style={{
+                    fontSize: 'calc(16px * var(--os-font-mult, 1))',
+                    fontWeight: 600,
+                    color: 'var(--text)',
+                    marginBottom: '2px',
+                  }}
+                >
                   {project.data.title}
                 </div>
-                <div style={{ fontSize: 'calc(13px * var(--os-font-mult, 1))', color: 'var(--muted)', lineHeight: 1.5, marginBottom: '8px' }}>
+                <div
+                  style={{
+                    fontSize: 'calc(13px * var(--os-font-mult, 1))',
+                    color: 'var(--muted)',
+                    lineHeight: 1.5,
+                    marginBottom: '8px',
+                  }}
+                >
                   {project.data.description}
                 </div>
               </div>
@@ -58,7 +76,11 @@ export default function WorkTab({ projects = [] }) {
                   href={project.data.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ fontSize: 'calc(12px * var(--os-font-mult, 1))', color: 'var(--accent)', textDecoration: 'none' }}
+                  style={{
+                    fontSize: 'calc(12px * var(--os-font-mult, 1))',
+                    color: 'var(--accent)',
+                    textDecoration: 'none',
+                  }}
                 >
                   Live Demo
                 </a>
@@ -68,7 +90,11 @@ export default function WorkTab({ projects = [] }) {
                   href={project.data.repo}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ fontSize: 'calc(12px * var(--os-font-mult, 1))', color: 'var(--muted)', textDecoration: 'none' }}
+                  style={{
+                    fontSize: 'calc(12px * var(--os-font-mult, 1))',
+                    color: 'var(--muted)',
+                    textDecoration: 'none',
+                  }}
                 >
                   Source
                 </a>
