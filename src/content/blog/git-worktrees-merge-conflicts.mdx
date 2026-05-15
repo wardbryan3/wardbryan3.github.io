@@ -1,0 +1,64 @@
+---
+title: "I Broke My Own Docs Site (Then Fixed It With Git Worktrees)"
+date: 2026-05-15
+description: "Merge conflicts still happen when you work alone. Here's how I handle them, why git add . is dangerous, and why worktrees are my remote-work superpower."
+tags: ["git", "documentation", "remote-work", "tools"]
+---
+
+I'm an intern at Vantage Compute, and I maintain [docs.vantagecompute.ai](https://docs.vantagecompute.ai), mostly alone. You'd think that means no merge conflicts. You'd be wrong.
+
+A few weeks ago, I opened two pull requests at once. Both touched the same navigation file and a couple of overlapping pages. GitHub showed that dreaded red "Merge conflict" banner, and I realized I wasn't sure which branch was right. There's no senior dev next to me. I'm fully remote, just me, VS Code, and a browser tab full of Stack Overflow answers.
+
+Maintaining documentation alone means you figure things out fast. It also means there's nobody to blame when you break the build. Here's what I learned from that mess, plus the tool that makes working alone on a big docs project actually pleasant.
+
+## When I Broke the Docs
+
+I had one PR rewriting the getting-started tutorial and another PR restructuring the getting-started overview. Both edited `sidebar.js` (because that controls the left navigation) and shared a couple of content snippets. When I tried to merge the first PR, Git said: "Automatic merge failed."
+
+I didn't know which branch was "correct." I solved it by:
+
+```bash
+git checkout main
+git pull origin main
+git checkout feature/getting-started-rewrite
+git merge main   # now the conflicts appear locally
+```
+
+Then I opened `sidebar.js`, looked for `<<<<<<< HEAD` and `>>>>>>>`, kept both changes manually (because I needed both sidebar updates), saved, and ran `git add` on that specific file. I deliberately typed the filename instead of using `git add .`, and I'm glad I did. Early on, a careless `git add .` staged `CLAUDE.md` and the whole Superpower folder that Claude generated. Now I run `git status` first, every time.
+
+The lesson: two PRs at once means conflict risk, even solo. Now I finish one PR, merge it, pull fresh main, then start the next.
+
+## Worktrees: My Remote-Work Superpower
+
+Working on several doc sections at once (Get Started, Platform, and References), I used to `git checkout -b` back and forth. Then I discovered `git worktree`.
+
+Now in my project folder:
+
+```bash
+git worktree add ../docs-worktree-api feature/api-update
+git worktree add ../docs-worktree-guide feature/new-guide
+```
+
+I open each folder in a separate VS Code window. No branch switching, no stash chaos. They all share the same Git history. When one is ready, I commit, push, and delete the worktree.
+
+For a solo docs maintainer working from home, this means I can bounce between a troubleshooting rewrite and an API reference update without losing my place in either.
+
+## A Book That Actually Helped
+
+Working on the docs late one night, stuck on yet another rebase gone wrong, I had about eight browser tabs open: Stack Overflow, Git docs, three blog posts, and a forum thread from 2017. None of them were answering the question I was actually asking.
+
+So I ordered [Pro Git](https://amzn.to/4wvE5UP) by Scott Chacon and Ben Straub. It's written by a GitHub co-founder and explains how Git's internal object model works, which turned out to be the thing I was missing. Once you understand what a commit actually is and how branches are just pointers, merge conflicts stop feeling like magic gone wrong. The Kindle edition is free on Amazon, so you can't argue with the price.
+
+## What I Learned
+
+This mess taught me more about Git than any tutorial ever did:
+
+**Don't open two PRs that touch the same files.** Merge one, pull fresh main, then start the next. Overlapping PRs create conflicts even when you're the only contributor. Sequencing them one at a time eliminates the problem entirely.
+
+**`git add .` is dangerous.** I accidentally staged agent config files and generated folders that should never touch version control. Now `git status` comes first, then `git add <file>` or `git add -p` for staging chunks. Five extra seconds saves hours of cleanup.
+
+**Worktrees are underrated for solo developers.** Opening each feature branch in a separate VS Code window means I never lose context mid-task. No stash juggling, no mental stack of "where was I?" They all share the same Git history, so merging is straightforward. For remote developers jumping between features or doc sections, worktrees remove a surprising amount of friction.
+
+**Remote work means writing better commit messages.** When you're the only person on a project, there's no teammate to ask what you meant. Future-you will open a five-month-old commit and need to understand it instantly. Write messages that explain the *why*, not just the *what*.
+
+Most of my Git disasters were self-inflicted. The good news is that means I can fix them too. Try worktrees next time you're juggling features. Buy the book if you're stuck. And always run `git status` before `git add`.
