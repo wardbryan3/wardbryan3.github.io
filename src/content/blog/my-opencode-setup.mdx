@@ -1,0 +1,123 @@
+---
+title: "My OpenCode Setup: 17 Models, Custom Agents, and a Split Keyboard"
+date: 2026-05-19
+description: "After months of tweaking, I landed on an OpenCode config that's fast, safe, and surprisingly smart. Here's the full breakdown: model routing, custom subagents, permissions, and the one piece of hardware I can't work without."
+tags: ["opencode", "ai", "tools", "developer-tools"]
+---
+
+I'm a CS student at SNHU and an intern at Vantage Compute, where I maintain the docs site. Between data structures homework and documentation PRs, I needed a coding assistant that wouldn't slow me down. After six months of daily use and more tweaking than I'd like to admit, OpenCode 1.15.5 became that assistant. Here's how I configured it, what I learned, and why I'll never go back to one model doing everything.
+
+## One File Changed Everything
+
+All my agents follow a single `AGENTS.md` file at `~/.config/opencode/`. I told them: I'm a full-stack developer who hates emojis in code, loves small focused functions, and always uses venv for Python. Push back if I'm about to do something stupid. Write failing tests first.
+
+This one file transformed OpenCode from a toy into a teammate. Most AI assistants default to vague, overly cheerful responses. By baking my preferences into a permanent instruction file, every agent, whether it's planning a feature or fixing a typo, behaves like me. No more asking to remove emojis every single time. No more explaining why `pip install --global` is bad. The `AGENTS.md` is the single most important file in my config.
+
+I also set strict conventions: conventional commits, atomic commits, never force-push without approval, and always include error handling. For docs, the `docs-quality-reviewer` subagent checks every markdown file for consistency. This baseline means I don't have to repeat myself.
+
+## 17 Models, One Smart Router
+
+I have two providers: opencode-go (12 models) and Google via Antigravity + native Gemini CLI (10 more). Instead of picking one model, I use `oh-my-opencode-slim` to route tasks. Here's how the agents are mapped:
+
+| Agent | Model | Variant | Purpose |
+|-------|-------|---------|---------|
+| Orchestrator | glm-5.1 | default | High-level planning |
+| Oracle | deepseek-v4-pro | max | Deep reasoning, simplification |
+| Council | deepseek-v4-pro | high | Peer review / consensus |
+| Librarian | minimax-m2.7 | default | Web search + MCP tools |
+| Explorer | minimax-m2.7 | default | Codebase exploration |
+| Designer | kimi-k2.6 | medium | UI/architecture design |
+| Fixer | deepseek-v4-flash | high | Fast debugging |
+| Observer | kimi-k2.6 | default | Monitoring agent |
+
+I disabled the generic explore and general agents to force routing through the Orchestrator. The real power is having cheap flash models for search and expensive reasoning models only when needed. The `deepseek-v4-flash` model costs almost nothing but fixes syntax errors instantly.
+
+Why not just use one giant model? Because context windows fill up, costs explode, and latency kills flow. A $0.01 flash model can grep your codebase and summarize findings in two seconds, then a reasoning model spends its expensive tokens only on synthesis. This separation of concerns is why my setup feels snappy even with 17 models.
+
+## MCP Servers and Plugins
+
+Two MCP servers keep my agents informed:
+
+- **context7**: real-time documentation lookup
+- **gh_grep**: grep over GitHub repositories
+
+I also use seven plugins. The most impactful:
+
+- **@different-ai/opencode-browser**: browser automation (screenshots, form filling)
+- **superpowers**: a skill system for brainstorming, TDD, systematic debugging, and writing plans
+- **opencode-antigravity-\***: authentication, web search, and image generation (Gemini 3 Pro Image)
+- **@mohak34/opencode-notifier**: desktop notifications when long tasks finish
+- **oh-my-opencode-slim**: the TUI plugin that manages all the routing
+
+The superpowers plugin alone changed how I work. Its `test-driven-development` skill makes me write tests before implementation, and `systematic-debugging` forces me to understand a bug before proposing fixes. The `using-git-worktrees` skill is a lifesaver when I'm juggling multiple feature branches for different classes or tickets.
+
+## Permissions: Fast but Safe
+
+I allow all bash commands by default. But I ask for confirmation before destructive file ops (`rm`, `mv`, `cp`, `shred`), permission changes (`chmod`, `chown`), destructive git operations (`push`, `reset --hard`, `clean`, `rebase`, `merge`, branch deletion), GitHub destructive actions (`pr merge`, `issue close`, `release delete`), package publishes or uninstalls, Docker destructive commands, and network mutations (`scp`, `rsync`, `curl -X POST`). I explicitly deny `dd *`, `mkfs *`, `fdisk *`, and `rm -rf /*`. External directory access is limited to `~/.config/opencode/**` and `/tmp/*`.
+
+Why not just deny everything and approve manually? Because that constant interruption destroys flow. I'd rather risk a rare mistake (mitigated by the deny list) than click "allow" fifty times a day. The confirmation list catches the genuinely dangerous operations, while routine commands like `ls`, `cat`, `grep`, and even `npm install` run freely.
+
+## Custom Subagents and Slash Commands
+
+I wrote four subagents for specialized tasks:
+
+- **agent-creator**: transforms requirements into well-structured agent definitions. It follows a Discovery, Design, Build, Review workflow and covers patterns like Specialist, Orchestrator, and Debugger.
+- **code-tutor**: uses the Socratic method to teach. It never writes complete solutions, only hints, pseudocode, and analogies. I use this when I'm stuck on an algorithm concept.
+- **docs-quality-reviewer**: audits markdown files for formatting consistency, code block encapsulation, and clarity. It outputs a priority summary (High/Medium/Low) so I know what to fix first.
+- **screenshot-journey**: generates and runs Playwright scripts to capture documentation screenshots. It uses a persistent Chromium context at 1440x900 and updates markdown files automatically.
+
+My most-used slash commands: `/explain` for deep code explanation, `/review` for pre-commit code review, `/commit` for staging and conventional commit messages, `/pr` for creating PRs with proper descriptions, `/test` for detecting and running tests, `/generate-image` for diagrams via Gemini 3 Pro Image, and `/doc-coauthoring` for a three-stage documentation workflow (Context Gathering, Refinement and Structure, Reader Testing). Each command is a markdown file in `~/.config/opencode/command/`. Writing a new one takes about ten minutes. The `/doc-coauthoring` command alone has improved my documentation quality more than any style guide.
+
+## Custom Skills (Overriding Superpowers)
+
+I've implemented custom skills that override the superpowers plugin versions. The superpowers plugin still provides skills like `dispatching-parallel-agents`, `executing-plans`, `using-git-worktrees`, and `verification-before-completion`. I rely on `subagent-driven-development` for complex features.
+
+Why override? Because the generic versions in superpowers are good, but they aren't tailored to my workflow. My custom `creating-pull-requests` skill fills out PR templates honestly from actual branch changes: it knows where my company keeps its PR template and how to extract commit messages. The superpowers version works, but mine works faster for my specific repos.
+
+## The Config File Structure
+
+My entire config lives in `~/.config/opencode/` and is tracked in a private GitHub repository:
+
+```text
+~/.config/opencode/
+  opencode.json              # Core config
+  oh-my-opencode-slim.json   # Agent routing presets
+  tui.json                   # TUI plugin config
+  AGENTS.md                  # Persistent global instructions
+  README.md                  # Setup documentation
+  setup.sh                   # Bootstrap script
+  package.json               # NPM dependencies
+  agents/                    # Four subagent definitions
+  command/                   # Eight slash commands
+  skills/                    # Custom skills
+```
+
+The `setup.sh` script checks for git, npm/bun, opencode, and authentication. I run it on any new machine, and within two minutes I have the exact same environment. Keeping the config private means my API keys, internal company routing rules, and personal preferences stay safe, but I still get full version control and easy recovery.
+
+## What I Learned
+
+After six months of daily OpenCode use:
+
+**Model routing matters more than model quality.** A cheap flash model searching the web plus a reasoning model synthesizing the answer costs less and works better than one giant model doing everything. My `deepseek-v4-flash` + `glm-5.1` pipeline has saved me hundreds of API calls.
+
+**Write down your preferences.** My `AGENTS.md` stops agents from using global pip installs or emojis. Without it, every assistant defaults to its own style. The `docs-quality-reviewer` alone caught 50+ formatting issues in my first week.
+
+**MCP servers are underrated.** `context7` and `grep.app` give my librarian real-time access to docs and codebases. That's far more useful than any context window. I no longer need to paste huge documentation snippets.
+
+**Permissions are a productivity lever.** Saying "yes to all bash" saves hours of clicking "allow", as long as you blacklist the truly dangerous commands. I haven't had to type `y` for `curl` in months.
+
+**Custom subagents pay off quickly.** Writing `agent-creator` took two hours. It has since generated several new agents for me, saving countless hours. `screenshot-journey` turned a tedious manual task into a one-command operation.
+
+**Skills beat prompts.** A well-structured skill with a clear workflow produces consistent, repeatable results. A one-off prompt gives you a lottery ticket. The superpowers plugin's `writing-skills` skill taught me how to structure my own.
+
+**Version control your config.** I've lost entire setups before. Now, cloning my private repo and running `setup.sh` restores everything: agents, commands, skills, even the TUI theme. If you're still tweaking OpenCode by hand, stop. Put it in Git today.
+
+## The Hardware That Makes It Sustainable
+
+All this AI power is useless if you're hunched over a laptop or fighting RSI. I spend 8-10 hours coding daily between school and my internship, and the single best physical upgrade was a split mechanical keyboard, specifically a [Dactyl Manuform](https://github.com/abstracthat/dactyl-manuform) with extra thumb keys.
+
+The concave key wells match the natural curve of your fingers. The split design lets you position each half at shoulder width. And those extra bottom keys? I mapped mine to brackets, `[`, `]`, `{`, `}`, which are essential for TypeScript and Python dictionaries. No more reaching for the right pinky.
+
+I actually built mine, hand-wired, with custom firmware. That was a weekend project that deserves its own post. But I know not everyone wants to solder diodes or flash QMK. If you want an off-the-shelf alternative that feels 90% as good, the [Kinesis Advantage360](https://amzn.to/4nE1TBX) is a professional split ergonomic keyboard with mechanical switches, tenting, and a similar thumb cluster.
+
+Whether you build your own Dactyl or buy the Kinesis, the split ergonomic layout is a game changer. Your wrists will thank you after that 8-hour debugging session. And with OpenCode handling the boilerplate, you'll have more time to enjoy the click.
